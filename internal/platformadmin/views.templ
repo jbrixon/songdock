@@ -1,0 +1,559 @@
+package platformadmin
+
+templ platformStyles() {
+	<style>
+		:root {
+			color-scheme: dark;
+			--bg: #0b1326;
+			--surface: rgba(23, 31, 51, 0.84);
+			--surface-low: #131b2e;
+			--surface-high: #222a3d;
+			--surface-highest: #2d3449;
+			--surface-border: rgba(255, 255, 255, 0.1);
+			--text: #dae2fd;
+			--muted: #dfbec5;
+			--accent: #ffb1c6;
+			--accent-2: #ecc300;
+			--accent-cool: #46c2a9;
+			--accent-text: #3f001c;
+			--danger-bg: rgba(147, 0, 10, 0.28);
+			--danger-border: rgba(255, 180, 171, 0.38);
+			--danger-text: #ffdad6;
+			--font-display: Sora, ui-sans-serif, system-ui, sans-serif;
+			--font-body: "Hanken Grotesk", Inter, ui-sans-serif, system-ui, sans-serif;
+			--font-label: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+			--radius-card: 1rem;
+			--radius-control: 0.75rem;
+			--radius-pill: 999px;
+		}
+		* { box-sizing: border-box; }
+		*:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 3px;
+		}
+		body {
+			margin: 0;
+			min-height: 100vh;
+			display: grid;
+			place-items: center;
+			padding: 1.5rem;
+			font-family: var(--font-body);
+			background:
+				radial-gradient(circle at 16% -10%, rgba(255, 177, 198, 0.17), transparent 34rem),
+				radial-gradient(circle at 92% 100%, rgba(236, 195, 0, 0.09), transparent 28rem),
+				var(--bg);
+			color: var(--text);
+		}
+		.platform-shell,
+		.platform-card {
+			width: min(100%, 52rem);
+			padding: 2rem;
+			border: 1px solid var(--surface-border);
+			border-radius: var(--radius-card);
+			background: var(--surface);
+			box-shadow: 0 24px 80px rgba(0, 0, 0, 0.44), 0 0 44px rgba(255, 177, 198, 0.12);
+			backdrop-filter: blur(20px);
+		}
+		.platform-card { max-width: 28rem; }
+		.platform-header {
+			display: flex;
+			align-items: start;
+			justify-content: space-between;
+			gap: 1rem;
+			margin-bottom: 1.5rem;
+		}
+		.platform-actions {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: flex-end;
+			gap: 0.75rem;
+		}
+		.platform-card__header { margin-bottom: 1.5rem; }
+		.platform-eyebrow {
+			margin: 0 0 0.4rem;
+			color: var(--accent-2);
+			font-family: var(--font-label);
+			font-size: 0.75rem;
+			font-weight: 600;
+			letter-spacing: 0.18em;
+			text-transform: uppercase;
+		}
+		h1 {
+			margin: 0;
+			font-family: var(--font-display);
+			font-size: clamp(2rem, 7vw, 2.5rem);
+			line-height: 1.15;
+		}
+		.platform-copy { margin: 0.5rem 0 0; color: var(--muted); }
+		.platform-alert {
+			margin-bottom: 1rem;
+			padding: 0.9rem 1rem;
+			border: 1px solid var(--danger-border);
+			border-radius: var(--radius-control);
+			background: var(--danger-bg);
+			color: var(--danger-text);
+		}
+		.platform-alert--neutral {
+			border-color: rgba(70, 194, 169, 0.36);
+			background: rgba(70, 194, 169, 0.12);
+			color: #c8fff3;
+		}
+		.platform-field-status { margin: -0.4rem 0 0; color: var(--muted); font-size: 0.88rem; }
+		.platform-field-status--ok { color: #9af5df; }
+		.platform-field-status--error { color: var(--danger-text); }
+		.platform-form { display: grid; gap: 0.85rem; }
+		.platform-form--inline {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+			align-items: end;
+			margin-bottom: 1.5rem;
+		}
+		.platform-form--artist {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+			align-items: end;
+			margin-bottom: 1.5rem;
+		}
+		.platform-form--inline > label:nth-child(1),
+		.platform-form--artist > label:nth-child(1) {
+			grid-column: 1;
+			grid-row: 1;
+		}
+		.platform-form--inline > input:nth-child(2),
+		.platform-form--artist > input:nth-child(2) {
+			grid-column: 1;
+			grid-row: 2;
+		}
+		.platform-form--inline > label:nth-child(3) {
+			grid-column: 2;
+			grid-row: 1;
+		}
+		.platform-form--inline > select:nth-child(4) {
+			grid-column: 2;
+			grid-row: 2;
+		}
+		.platform-form--inline > button:nth-child(5) {
+			grid-column: 3;
+			grid-row: 2;
+			margin-top: 0;
+		}
+		.platform-form--artist > .platform-form__slug {
+			grid-column: 2;
+			grid-row: 1 / span 2;
+			display: grid;
+			gap: 0.85rem;
+			align-content: start;
+		}
+		.platform-form--artist > .platform-form__slug .platform-field-status { margin-top: -0.4rem; }
+		.platform-form--artist > button:nth-child(4) {
+			grid-column: 3;
+			grid-row: 2;
+			margin-top: 0;
+		}
+		.platform-label {
+			font-family: var(--font-label);
+			font-size: 0.78rem;
+			font-weight: 600;
+			letter-spacing: 0.05em;
+			text-transform: uppercase;
+		}
+		.platform-input {
+			width: 100%;
+			padding: 0.9rem 1rem;
+			border: 1px solid var(--surface-border);
+			border-radius: var(--radius-control);
+			background: rgba(6, 14, 32, 0.88);
+			color: var(--text);
+			font: inherit;
+		}
+		.platform-input:focus {
+			border-color: var(--accent);
+			box-shadow: 0 0 0 4px rgba(255, 177, 198, 0.12);
+		}
+		.platform-button,
+		.platform-link,
+		.platform-nav a {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0.95rem 1rem;
+			border: 0;
+			border-radius: var(--radius-pill);
+			background: linear-gradient(135deg, var(--accent), var(--accent-2));
+			color: var(--accent-text);
+			font: inherit;
+			font-weight: 800;
+			text-decoration: none;
+			cursor: pointer;
+			box-shadow: 0 0 24px rgba(255, 177, 198, 0.22);
+			transition: transform 160ms ease, box-shadow 160ms ease;
+		}
+		.platform-button:hover,
+		.platform-link:hover,
+		.platform-nav a:hover {
+			transform: translateY(-1px);
+			box-shadow: 0 0 38px rgba(255, 177, 198, 0.34);
+		}
+		.platform-nav {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.75rem;
+		}
+		.platform-panel { overflow-x: auto; }
+		.platform-table {
+			width: 100%;
+			border-collapse: collapse;
+			table-layout: fixed;
+		}
+		.platform-table th,
+		.platform-table td {
+			padding: 0.85rem;
+			border-top: 1px solid var(--surface-border);
+			text-align: left;
+			vertical-align: top;
+			overflow-wrap: anywhere;
+		}
+		.platform-table th {
+			color: var(--muted);
+			font-family: var(--font-label);
+			font-size: 0.75rem;
+			font-weight: 600;
+			letter-spacing: 0.05em;
+			text-transform: uppercase;
+		}
+		@media (max-width: 760px) {
+			body { display: block; }
+			.platform-shell,
+			.platform-card { padding: 1.25rem; }
+			.platform-header { display: block; }
+			.platform-actions { margin-top: 1rem; justify-content: start; }
+			.platform-link { margin-top: 1rem; }
+			.platform-form--inline,
+			.platform-form--artist { grid-template-columns: 1fr; }
+			.platform-form--inline > *,
+			.platform-form--artist > * {
+				grid-column: auto !important;
+				grid-row: auto !important;
+			}
+		}
+	</style>
+}
+
+templ htmxScript() {
+	<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+}
+
+templ LoginCard(view loginView) {
+	<section id="login-card" class="platform-card" aria-labelledby="platform-login-title">
+		<div class="platform-card__header">
+			<p class="platform-eyebrow">Platform Admin</p>
+			<h1 id="platform-login-title">Log in</h1>
+			<p class="platform-copy">Sign in to manage platform users.</p>
+		</div>
+		if view.Error != "" {
+			<div class="platform-alert" role="alert">{ view.Error }</div>
+		}
+		<form
+			class="platform-form"
+			method="post"
+			action="/platform/admin/login"
+			hx-post="/platform/admin/login"
+			hx-target="#login-card"
+			hx-swap="outerHTML"
+		>
+			<label class="platform-label" for="username">Username</label>
+			<input class="platform-input" id="username" name="username" type="text" autocomplete="username" required value={ view.Username }/>
+			<label class="platform-label" for="password">Password</label>
+			<input class="platform-input" id="password" name="password" type="password" autocomplete="current-password" required/>
+			<button class="platform-button" type="submit">Log in</button>
+		</form>
+	</section>
+}
+
+templ LoginPage(view loginView) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Platform Admin Login</title>
+			@htmxScript()
+			@platformStyles()
+		</head>
+		<body>
+			@LoginCard(view)
+		</body>
+	</html>
+}
+
+templ HomePage(view homeView) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Platform Admin</title>
+			@platformStyles()
+		</head>
+		<body>
+			<main class="platform-shell">
+				<header class="platform-header">
+					<div>
+						<p class="platform-eyebrow">Platform Admin</p>
+						<h1>Dashboard</h1>
+						<p class="platform-copy">Signed in as { view.Email }.</p>
+					</div>
+					<form method="post" action="/platform/admin/logout">
+						<button class="platform-button" type="submit">Log out</button>
+					</form>
+				</header>
+				<nav class="platform-nav" aria-label="Platform admin navigation">
+					<a href="/platform/admin/users">Manage users</a>
+					<a href="/platform/admin/artists">Manage artists</a>
+				</nav>
+			</main>
+		</body>
+	</html>
+}
+
+templ UsersPage(view usersView) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Platform Users</title>
+			@htmxScript()
+			@platformStyles()
+		</head>
+		<body>
+			<main class="platform-shell">
+				<header class="platform-header">
+					<div>
+						<p class="platform-eyebrow">Platform Admin</p>
+						<h1>Users</h1>
+						<p class="platform-copy">View platform users and their artist assignments.</p>
+					</div>
+					<div class="platform-actions">
+						<a class="platform-link" href="/platform/admin/invitations">Manage invitations</a>
+						<a class="platform-link" href="/platform/admin/">Dashboard</a>
+					</div>
+				</header>
+				@UsersPanel(view)
+			</main>
+		</body>
+	</html>
+}
+
+templ UsersPanel(view usersView) {
+	<section id="users-panel" class="platform-panel" aria-label="User management">
+		<table class="platform-table">
+			<thead>
+				<tr>
+					<th scope="col">Email</th>
+					<th scope="col">Artists</th>
+				</tr>
+			</thead>
+			<tbody>
+				if len(view.Users) > 0 {
+					for _, user := range view.Users {
+						<tr>
+							<td>{ user.Email }</td>
+							<td>
+								if len(user.Artists) > 0 {
+									for i, artist := range user.Artists {
+										if i > 0 {
+											<span>, </span>
+										}
+										<span>{ artist.Name }</span>
+									}
+								} else {
+									<span>Unassigned</span>
+								}
+							</td>
+						</tr>
+					}
+				} else {
+					<tr>
+						<td colspan="2">No users yet.</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</section>
+}
+
+templ InvitationsPage(view invitationsView) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Platform Invitations</title>
+			@htmxScript()
+			@platformStyles()
+		</head>
+		<body>
+			<main class="platform-shell">
+				<header class="platform-header">
+					<div>
+						<p class="platform-eyebrow">Platform Admin</p>
+						<h1>Invitations</h1>
+						<p class="platform-copy">Create and manage invitations for artist administrators.</p>
+					</div>
+					<div class="platform-actions">
+						<a class="platform-link" href="/platform/admin/users">Manage users</a>
+						<a class="platform-link" href="/platform/admin/">Dashboard</a>
+					</div>
+				</header>
+				@InvitationsPanel(view)
+			</main>
+		</body>
+	</html>
+}
+
+templ InvitationsPanel(view invitationsView) {
+	<section id="invitations-panel" class="platform-panel" aria-label="Invitation management">
+		if view.Message != "" {
+			<div class="platform-alert platform-alert--neutral" role="status">{ view.Message }</div>
+		}
+		<form
+			class="platform-form platform-form--inline"
+			method="post"
+			action="/platform/admin/invitations"
+			hx-post="/platform/admin/invitations"
+			hx-target="#invitations-panel"
+			hx-swap="outerHTML"
+		>
+			<label class="platform-label" for="email">Email</label>
+			<input class="platform-input" id="email" name="email" type="email" autocomplete="email" required value={ view.Email }/>
+			<label class="platform-label" for="artist_id">Artist</label>
+			<select class="platform-input" id="artist_id" name="artist_id" required>
+				<option value="">Choose an artist</option>
+				for _, artist := range view.Artists {
+					if view.ArtistID == artist.ID {
+						<option value={ int64String(artist.ID) } selected>{ artist.Name }</option>
+					} else {
+						<option value={ int64String(artist.ID) }>{ artist.Name }</option>
+					}
+				}
+			</select>
+			<button class="platform-button" type="submit">Create invitation</button>
+		</form>
+		<table class="platform-table">
+			<thead>
+				<tr>
+					<th scope="col">Pending invitation</th>
+					<th scope="col">Artist</th>
+					<th scope="col">Expires</th>
+					<th scope="col">Status</th>
+					<th scope="col">Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				if len(view.PendingInvitations) > 0 {
+					for _, invitation := range view.PendingInvitations {
+						<tr>
+							<td>{ invitation.Email }</td>
+							<td>{ invitation.ArtistName }</td>
+							<td>{ invitation.ExpiresAt }</td>
+							<td>{ invitation.Status }</td>
+							<td>
+								if invitation.Status == "active" {
+									<form method="post" action={ "/platform/admin/invitations/" + int64String(invitation.ID) + "/revoke" } hx-post={ "/platform/admin/invitations/" + int64String(invitation.ID) + "/revoke" } hx-target="#invitations-panel" hx-swap="outerHTML">
+										<button class="platform-button" type="submit">Revoke</button>
+									</form>
+								} else {
+									<span class="platform-copy">{ invitation.Status }</span>
+								}
+							</td>
+						</tr>
+					}
+				} else {
+					<tr>
+						<td colspan="5">No pending invitations.</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</section>
+}
+
+templ ArtistsPage(view artistsView) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Platform Artists</title>
+			@htmxScript()
+			@platformStyles()
+		</head>
+		<body>
+			<main class="platform-shell">
+				<header class="platform-header">
+					<div>
+						<p class="platform-eyebrow">Platform Admin</p>
+						<h1>Artists</h1>
+						<p class="platform-copy">Create platform-managed artist tenants.</p>
+					</div>
+					<div class="platform-actions">
+						<a class="platform-link" href="/platform/admin/">Dashboard</a>
+					</div>
+				</header>
+				@ArtistsPanel(view)
+			</main>
+		</body>
+	</html>
+}
+
+templ ArtistsPanel(view artistsView) {
+	<section id="artists-panel" class="platform-panel" aria-label="Artist management">
+		if view.Message != "" {
+			<div class="platform-alert platform-alert--neutral" role="status">{ view.Message }</div>
+		}
+		<form
+			class="platform-form platform-form--artist"
+			method="post"
+			action="/platform/admin/artists"
+			hx-post="/platform/admin/artists"
+			hx-target="#artists-panel"
+			hx-swap="outerHTML"
+		>
+			<label class="platform-label" for="name">Artist name</label>
+			<input class="platform-input" id="name" name="name" required value={ view.Name } hx-get="/platform/admin/artists/slug/auto" hx-trigger="input changed delay:350ms" hx-include="#artist-slug-field" hx-target="#artist-slug-field" hx-swap="outerHTML"/>
+			@ArtistSlugFields(view)
+			<button class="platform-button" type="submit">Create artist</button>
+		</form>
+		<table class="platform-table">
+			<thead>
+				<tr>
+					<th scope="col">Artist</th>
+					<th scope="col">Slug</th>
+				</tr>
+			</thead>
+			<tbody>
+				if len(view.Artists) > 0 {
+					for _, artist := range view.Artists {
+						<tr>
+							<td>{ artist.Name }</td>
+							<td>{ artist.Slug }</td>
+						</tr>
+					}
+				} else {
+					<tr>
+						<td colspan="2">No artists yet.</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</section>
+}
+
+templ ArtistSlugFields(view artistsView) {
+	<div id="artist-slug-field" class="platform-form__slug">
+		<input type="hidden" name="slug_mode" value={ view.SlugMode }/>
+		<label class="platform-label" for="slug">Slug</label>
+		<input class="platform-input" id="slug" name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" aria-describedby="slug-status" value={ view.Slug } hx-get="/platform/admin/artists/slug/manual" hx-trigger="input changed delay:350ms" hx-include="#name" hx-target="#artist-slug-field" hx-swap="outerHTML"/>
+		<p class={ "platform-field-status" + artistSlugStatusClass(view.SlugStatus.State) } id="slug-status" aria-live="polite">{ view.SlugStatus.Message }</p>
+	</div>
+}
