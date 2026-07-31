@@ -49,6 +49,7 @@ jobs:
 
       - name: Build release artifact
         env:
+          CGO_ENABLED: 0
           VERSION: ${{ steps.version.outputs.version }}
         if: steps.version.outputs.released != 'true'
         run: |
