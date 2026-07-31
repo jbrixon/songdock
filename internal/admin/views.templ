@@ -52,6 +52,12 @@ templ adminAuthStyles() {
 			backdrop-filter: blur(24px);
 		}
 		.admin-card__header { margin-bottom: 1.5rem; }
+		.admin-logo {
+			display: block;
+			width: min(100%, 17rem);
+			height: auto;
+			margin: 0 auto 1.75rem;
+		}
 		.admin-eyebrow {
 			margin: 0 0 0.4rem;
 			color: var(--accent-2);
@@ -176,6 +182,12 @@ templ adminBaseStyles() {
 			right: 2rem;
 		}
 		.admin-logout-button { margin-top: 0; }
+		.admin-page-logo {
+			display: block;
+			width: 8rem;
+			height: auto;
+			margin-bottom: 1rem;
+		}
 		h1,
 		h2 {
 			font-family: var(--font-display);
@@ -334,6 +346,7 @@ templ htmxScript() {
 templ LoginCard(view loginView) {
 	<section id="login-card" class="admin-card" aria-labelledby="admin-login-title">
 		<div class="admin-card__header">
+			<img class="admin-logo" src="/static/songdock_logo_dark.png" alt="SongDock"/>
 			<p class="admin-eyebrow">Admin</p>
 			<h1 id="admin-login-title">Log in</h1>
 			<p class="admin-copy">Sign in to access admin pages.</p>
@@ -380,6 +393,7 @@ templ LoginPage(view loginView) {
 templ RegisterCard(view registerView) {
 	<section id="register-card" class="admin-card" aria-labelledby="admin-register-title">
 		<div class="admin-card__header">
+			<img class="admin-logo" src="/static/songdock_logo_dark.png" alt="SongDock"/>
 			<p class="admin-eyebrow">Admin</p>
 			<h1 id="admin-register-title">Create account</h1>
 			<p class="admin-copy">Enter the invite code you received and choose a password.</p>
@@ -437,6 +451,7 @@ templ HomePage(view homeView) {
 		</head>
 		<body>
 			<main>
+				<img class="admin-page-logo" src="/static/songdock_logo_dark.png" alt="SongDock"/>
 				<h1>Admin</h1>
 				<p>Signed in as { view.Email }.</p>
 				<form class="admin-logout-form" method="post" action="/admin/logout">
@@ -511,6 +526,7 @@ templ SongFormPage(view songFormView) {
 		</head>
 		<body>
 			<main style="width:min(100%,36rem);">
+				<img class="admin-page-logo" src="/static/songdock_logo_dark.png" alt="SongDock"/>
 				<h1>{ view.PageTitle }</h1>
 				if view.Error != "" {
 					<p class="admin-alert" role="alert">{ view.Error }</p>

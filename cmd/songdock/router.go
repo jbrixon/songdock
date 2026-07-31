@@ -13,6 +13,7 @@ import (
 	"github.com/jbrixon/songdock/internal/store"
 	"github.com/jbrixon/songdock/internal/templates"
 	"github.com/jbrixon/songdock/internal/urlpolicy"
+	static "github.com/jbrixon/songdock/web/static"
 )
 
 const maxAdminRequestBody = 64 << 10
@@ -20,6 +21,7 @@ const maxAdminRequestBody = 64 << 10
 func newRouter(songs store.SongRepository, adminRepo admin.Repository, platformRepo platformadmin.Repository, secret []byte, platformUsername, platformPassword string) http.Handler {
 	r := chi.NewRouter()
 	r.Use(securityHeaders)
+	r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.FS(static.FS))))
 	a := admin.New(adminRepo, secret)
 	platform := platformadmin.New(
 		platformRepo,
