@@ -57,6 +57,7 @@ jobs:
           PLATFORM_ADMIN_PASSWORD: ci-platform-password
         run: |
           mkdir -p "$RUNNER_TEMP/songdock-data"
+          chmod 777 "$RUNNER_TEMP/songdock-data"
           docker run --detach --name songdock-release \
             --publish 8080:8080 \
             --volume "$RUNNER_TEMP/songdock-data:/data" \
