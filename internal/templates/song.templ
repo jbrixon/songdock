@@ -171,6 +171,40 @@ templ SongPage(
 				  list-style: none;
 				}
 
+				.powered-by {
+				  display: flex;
+				  align-items: baseline;
+				  justify-content: center;
+				  gap: 0.35rem;
+				  margin-top: 2.75rem;
+				  color: rgba(218, 226, 253, 0.58);
+				  font-size: 0.78rem;
+				  letter-spacing: 0.02em;
+				}
+
+				.songdock-logo {
+				  display: inline-flex;
+				  align-items: baseline;
+				  color: inherit;
+				  font-family: Inter, Manrope, "Helvetica Neue", Arial, sans-serif;
+				  font-size: 1rem;
+				  font-weight: 700;
+				  line-height: 1;
+				  letter-spacing: -0.055em;
+				  text-decoration: none;
+				  white-space: nowrap;
+				}
+
+				.songdock-logo__song { color: #fff; }
+
+				.songdock-logo__dock {
+				  color: #ff6b68;
+				  background: linear-gradient(90deg, #f43f72 0%, #ff6467 45%, #ff9b3f 100%);
+				  background-clip: text;
+				  -webkit-background-clip: text;
+				  -webkit-text-fill-color: transparent;
+				}
+
 				.links li {
 				  width: 100%;
 				}
@@ -334,6 +368,10 @@ templ SongPage(
 						</li>
 					}
 				</ul>
+				<footer class="powered-by">
+					<span>Powered by</span>
+					<a class="songdock-logo" href="https://github.com/jbrixon/songdock" target="_blank" rel="noopener noreferrer" aria-label="SongDock on GitHub"><span class="songdock-logo__song">Song</span><span class="songdock-logo__dock">Dock</span></a>
+				</footer>
 			</main>
 		</body>
 	</html>
