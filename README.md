@@ -44,39 +44,56 @@ SongDock gives independent artists and small labels a simple alternative:
 
 ### Requirements
 
-- Go 1.25 or newer for local development.
-- [`mise`](https://mise.jdx.dev/) for the repository's development commands.
-- Docker and Docker Compose for container deployment.
+- Docker.
 
-### Run locally
+### Run the container
 
-Clone the repository and create a local environment file:
+Create a directory for the deployment and an environment file:
 
 ```sh
-git clone https://github.com/jbrixon/songdock.git
+mkdir songdock
 cd songdock
-cp .env.example .env
 ```
 
-Edit `.env` and replace the example values. Generate a strong backend secret with:
+Create `.env` with the following values, replacing the example credentials:
+
+```dotenv
+ADMIN_BACKEND_SECRET=replace-with-a-random-secret
+PLATFORM_ADMIN_USERNAME=platform-root
+PLATFORM_ADMIN_PASSWORD=replace-with-a-strong-password
+```
+
+Generate a strong value for `ADMIN_BACKEND_SECRET` with:
 
 ```sh
 openssl rand -hex 32
 ```
 
-Then start SongDock:
+Create a named volume for SongDock's SQLite database:
 
 ```sh
-mise run dev
+docker volume create songdock_data
 ```
 
-The server listens on [http://localhost:8080](http://localhost:8080). The first-run setup is described below.
-
-To use another port for one invocation:
+Run the latest SongDock image:
 
 ```sh
-PORT=3000 mise run dev
+docker run -d \
+  --name songdock \
+  --restart unless-stopped \
+  --env-file .env \
+  -e DB_PATH=/data/songs.db \
+  -p 8080:8080 \
+  -v songdock_data:/data \
+  ghcr.io/jbrixon/songdock:latest
 ```
+
+SongDock is now available at [http://localhost:8080](http://localhost:8080).
+To create the first artist and invite an artist administrator, continue with
+the [first-run setup](#first-run-setup) below.
+
+To expose SongDock on another host port, change the first port in `-p`, for
+example `-p 3000:8080`.
 
 ## First-run setup
 
