@@ -1,56 +1,76 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
 
 permissions:
-  contents: read
+  contents: write
   packages: write
+
+concurrency:
+  group: release-main
+  cancel-in-progress: false
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository }}
 
 jobs:
   release:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
       - uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
           cache: true
 
-      - name: Check formatting
-        run: test -z "$(gofmt -l .)"
-
-      - name: Run vet and unit tests
+      - name: Check version
+        id: version
         run: |
-          go vet ./...
-          go test ./...
+          version=$(tr -d '[:space:]' < VERSION)
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
+            echo "VERSION must contain a semantic version, got: $version" >&2
+            exit 1
+          }
+          tag="v$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code origin "refs/tags/$tag" > /dev/null 2>&1; then
+            echo "released=true" >> "$GITHUB_OUTPUT"
+            echo "$tag is already released; nothing to do"
+          else
+            echo "released=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Build release artifact
         env:
-          VERSION: ${{ github.ref_name }}
+          VERSION: ${{ steps.version.outputs.version }}
+        if: steps.version.outputs.released != 'true'
         run: |
-          version="${VERSION#v}"
           mkdir -p dist
-          go build -trimpath -ldflags='-s -w' -o "dist/songdock-${version}" ./cmd/songdock
-          sha256sum "dist/songdock-${version}" > "dist/songdock-${version}.sha256"
-          cp "dist/songdock-${version}" dist/songdock
+          go build -trimpath -ldflags='-s -w' -o "dist/songdock-${VERSION}" ./cmd/songdock
+          sha256sum "dist/songdock-${VERSION}" > "dist/songdock-${VERSION}.sha256"
+          cp "dist/songdock-${VERSION}" dist/songdock
 
       - name: Upload release artifact
         uses: actions/upload-artifact@v4
+        if: steps.version.outputs.released != 'true'
         with:
-          name: songdock-${{ github.ref_name }}
+          name: songdock-v${{ steps.version.outputs.version }}
           path: |
             dist/songdock-*
 
       - name: Build release image
-        run: docker build --build-arg VERSION="${GITHUB_REF_NAME#v}" -t songdock:release .
+        if: steps.version.outputs.released != 'true'
+        run: docker build --build-arg VERSION="${{ steps.version.outputs.version }}" -t songdock:release .
 
       - name: Start release image
+        if: steps.version.outputs.released != 'true'
         env:
           ADMIN_BACKEND_SECRET: ci-admin-backend-secret-012345678901234567890123456789
           PLATFORM_ADMIN_USERNAME: ci-platform-admin
@@ -68,6 +88,7 @@ jobs:
             songdock:release
 
       - name: Run acceptance tests against release image
+        if: steps.version.outputs.released != 'true'
         env:
           ADMIN_BACKEND_SECRET: ci-admin-backend-secret-012345678901234567890123456789
           PLATFORM_ADMIN_USERNAME: ci-platform-admin
@@ -85,12 +106,13 @@ jobs:
           go test -tags acceptance ./test/acceptance/...
 
       - name: Stop release image
-        if: always()
+        if: always() && steps.version.outputs.released != 'true'
         run: |
           docker logs songdock-release || true
           docker rm --force songdock-release || true
 
       - name: Log in to GHCR
+        if: steps.version.outputs.released != 'true'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -99,18 +121,29 @@ jobs:
 
       - name: Extract image metadata
         id: meta
+        if: steps.version.outputs.released != 'true'
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ github.ref_name }}
-            type=semver,pattern={{version}}
+            type=raw,value=v${{ steps.version.outputs.version }}
+            type=raw,value=${{ steps.version.outputs.version }}
             type=raw,value=latest
 
       - name: Publish release image
+        if: steps.version.outputs.released != 'true'
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Create Git tag and GitHub release
+        if: steps.version.outputs.released != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+          RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          gh release create "$TAG" --target "$RELEASE_SHA" --title "$TAG" --generate-notes dist/songdock-*
