@@ -67,3 +67,9 @@ ACCEPTANCE_BASE_URL=https://example.com mise run acceptance
 ```
 
 `ACCEPTANCE_BASE_URL` controls the target; it defaults to `http://localhost:8080`.
+
+## CI/CD
+
+GitHub Actions runs formatting, vet, unit tests, and acceptance tests on pushes to `main` and pull requests.
+
+Create a semantic version tag such as `v1.2.3` to build and test the release container, then publish it to GitHub Container Registry as `ghcr.io/jbrixon/songdock:v1.2.3` and `latest`.

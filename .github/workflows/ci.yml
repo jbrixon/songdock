@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Check formatting
+        run: test -z "$(gofmt -l .)"
+
+      - name: Run vet
+        run: go vet ./...
+
+      - name: Run unit tests
+        run: go test ./...
+
+      - name: Build application
+        run: go build -o "$RUNNER_TEMP/songdock" ./cmd/songdock
+
+      - name: Run integration tests
+        env:
+          ADMIN_BACKEND_SECRET: ci-admin-backend-secret-012345678901234567890123456789
+          PLATFORM_ADMIN_USERNAME: ci-platform-admin
+          PLATFORM_ADMIN_PASSWORD: ci-platform-password
+          DB_PATH: ${{ runner.temp }}/songdock-ci.db
+          PORT: 8080
+        run: |
+          "$RUNNER_TEMP/songdock" > "$RUNNER_TEMP/songdock.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8080/platform/admin/login > /dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:8080/platform/admin/login > /dev/null
+          go test -tags acceptance ./test/acceptance/...

@@ -1,0 +1,115 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Check formatting
+        run: test -z "$(gofmt -l .)"
+
+      - name: Run vet and unit tests
+        run: |
+          go vet ./...
+          go test ./...
+
+      - name: Build release artifact
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          version="${VERSION#v}"
+          mkdir -p dist
+          go build -trimpath -ldflags='-s -w' -o "dist/songdock-${version}" ./cmd/songdock
+          sha256sum "dist/songdock-${version}" > "dist/songdock-${version}.sha256"
+          cp "dist/songdock-${version}" dist/songdock
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: songdock-${{ github.ref_name }}
+          path: |
+            dist/songdock-*
+
+      - name: Build release image
+        run: docker build --build-arg VERSION="${GITHUB_REF_NAME#v}" -t songdock:release .
+
+      - name: Start release image
+        env:
+          ADMIN_BACKEND_SECRET: ci-admin-backend-secret-012345678901234567890123456789
+          PLATFORM_ADMIN_USERNAME: ci-platform-admin
+          PLATFORM_ADMIN_PASSWORD: ci-platform-password
+        run: |
+          mkdir -p "$RUNNER_TEMP/songdock-data"
+          docker run --detach --name songdock-release \
+            --publish 8080:8080 \
+            --volume "$RUNNER_TEMP/songdock-data:/data" \
+            --env ADMIN_BACKEND_SECRET \
+            --env PLATFORM_ADMIN_USERNAME \
+            --env PLATFORM_ADMIN_PASSWORD \
+            --env DB_PATH=/data/songs.db \
+            songdock:release
+
+      - name: Run acceptance tests against release image
+        env:
+          ADMIN_BACKEND_SECRET: ci-admin-backend-secret-012345678901234567890123456789
+          PLATFORM_ADMIN_USERNAME: ci-platform-admin
+          PLATFORM_ADMIN_PASSWORD: ci-platform-password
+          ACCEPTANCE_BASE_URL: http://127.0.0.1:8080
+          DB_PATH: ${{ runner.temp }}/songdock-data/songs.db
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent "$ACCEPTANCE_BASE_URL/platform/admin/login" > /dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          curl --fail --silent "$ACCEPTANCE_BASE_URL/platform/admin/login" > /dev/null
+          go test -tags acceptance ./test/acceptance/...
+
+      - name: Stop release image
+        if: always()
+        run: |
+          docker logs songdock-release || true
+          docker rm --force songdock-release || true
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ github.ref_name }}
+            type=semver,pattern={{version}}
+            type=raw,value=latest
+
+      - name: Publish release image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
