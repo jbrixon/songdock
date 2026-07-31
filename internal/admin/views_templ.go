@@ -29,7 +29,7 @@ func adminAuthStyles() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<style>\n\t\t:root {\n\t\t\tcolor-scheme: dark;\n\t\t\t--bg: #0b1326;\n\t\t\t--surface: rgba(23, 31, 51, 0.82);\n\t\t\t--surface-strong: #222a3d;\n\t\t\t--surface-border: rgba(255, 255, 255, 0.1);\n\t\t\t--text: #dae2fd;\n\t\t\t--muted: #dfbec5;\n\t\t\t--accent: #ffb1c6;\n\t\t\t--accent-2: #ecc300;\n\t\t\t--accent-text: #3f001c;\n\t\t\t--danger-bg: rgba(147, 0, 10, 0.28);\n\t\t\t--danger-border: rgba(255, 180, 171, 0.38);\n\t\t\t--danger-text: #ffdad6;\n\t\t\t--font-display: Sora, ui-sans-serif, system-ui, sans-serif;\n\t\t\t--font-body: \"Hanken Grotesk\", Inter, ui-sans-serif, system-ui, sans-serif;\n\t\t\t--font-label: \"JetBrains Mono\", ui-monospace, SFMono-Regular, monospace;\n\t\t\t--radius-card: 1rem;\n\t\t\t--radius-control: 0.75rem;\n\t\t\t--radius-pill: 999px;\n\t\t\t--shadow-glow: 0 24px 80px rgba(0, 0, 0, 0.46), 0 0 48px rgba(255, 177, 198, 0.16);\n\t\t}\n\t\t* { box-sizing: border-box; }\n\t\t*:focus-visible {\n\t\t\toutline: 2px solid var(--accent);\n\t\t\toutline-offset: 3px;\n\t\t}\n\t\tbody {\n\t\t\tmargin: 0;\n\t\t\tmin-height: 100vh;\n\t\t\tdisplay: grid;\n\t\t\tplace-items: center;\n\t\t\tpadding: 1.5rem;\n\t\t\tfont-family: var(--font-body);\n\t\t\tbackground:\n\t\t\t\tradial-gradient(circle at 20% -10%, rgba(255, 177, 198, 0.18), transparent 34rem),\n\t\t\t\tradial-gradient(circle at 85% 100%, rgba(236, 195, 0, 0.1), transparent 26rem),\n\t\t\t\tvar(--bg);\n\t\t\tcolor: var(--text);\n\t\t}\n\t\t.admin-card {\n\t\t\twidth: min(100%, 28rem);\n\t\t\tpadding: 2rem;\n\t\t\tborder: 1px solid var(--surface-border);\n\t\t\tborder-radius: var(--radius-card);\n\t\t\tbackground: var(--surface);\n\t\t\tbox-shadow: var(--shadow-glow);\n\t\t\tbackdrop-filter: blur(24px);\n\t\t}\n\t\t.admin-card__header { margin-bottom: 1.5rem; }\n\t\t.admin-logo {\n\t\t\tdisplay: block;\n\t\t\twidth: min(100%, 17rem);\n\t\t\theight: auto;\n\t\t\tmargin: 0 auto 1.75rem;\n\t\t}\n\t\t.admin-eyebrow {\n\t\t\tmargin: 0 0 0.4rem;\n\t\t\tcolor: var(--accent-2);\n\t\t\tfont-family: var(--font-label);\n\t\t\tfont-size: 0.75rem;\n\t\t\tfont-weight: 600;\n\t\t\tletter-spacing: 0.18em;\n\t\t\ttext-transform: uppercase;\n\t\t}\n\t\th1 {\n\t\t\tmargin: 0;\n\t\t\tfont-family: var(--font-display);\n\t\t\tfont-size: clamp(2rem, 8vw, 2.5rem);\n\t\t\tline-height: 1.15;\n\t\t}\n\t\t.admin-copy { margin: 0.5rem 0 0; color: var(--muted); }\n\t\t.admin-alert {\n\t\t\tmargin-bottom: 1rem;\n\t\t\tpadding: 0.9rem 1rem;\n\t\t\tborder: 1px solid var(--danger-border);\n\t\t\tborder-radius: var(--radius-control);\n\t\t\tbackground: var(--danger-bg);\n\t\t\tcolor: var(--danger-text);\n\t\t}\n\t\t.admin-form { display: grid; gap: 0.85rem; }\n\t\t.admin-label {\n\t\t\tfont-family: var(--font-label);\n\t\t\tfont-size: 0.78rem;\n\t\t\tfont-weight: 600;\n\t\t\tletter-spacing: 0.05em;\n\t\t\ttext-transform: uppercase;\n\t\t}\n\t\t.admin-input {\n\t\t\twidth: 100%;\n\t\t\tpadding: 0.9rem 1rem;\n\t\t\tborder: 1px solid var(--surface-border);\n\t\t\tborder-radius: var(--radius-control);\n\t\t\tbackground: rgba(6, 14, 32, 0.88);\n\t\t\tcolor: var(--text);\n\t\t\tfont: inherit;\n\t\t}\n\t\t.admin-input:focus {\n\t\t\tborder-color: var(--accent);\n\t\t\tbox-shadow: 0 0 0 4px rgba(255, 177, 198, 0.12);\n\t\t}\n\t\t.admin-button {\n\t\t\tmargin-top: 0.5rem;\n\t\t\tpadding: 0.95rem 1rem;\n\t\t\tborder: 0;\n\t\t\tborder-radius: var(--radius-pill);\n\t\t\tbackground: linear-gradient(135deg, var(--accent), var(--accent-2));\n\t\t\tcolor: var(--accent-text);\n\t\t\tfont: inherit;\n\t\t\tfont-weight: 800;\n\t\t\tcursor: pointer;\n\t\t\tbox-shadow: 0 0 28px rgba(255, 177, 198, 0.25);\n\t\t\ttransition: transform 160ms ease, box-shadow 160ms ease;\n\t\t}\n\t\t.admin-button:hover {\n\t\t\ttransform: translateY(-1px);\n\t\t\tbox-shadow: 0 0 42px rgba(255, 177, 198, 0.38);\n\t\t}\n\t</style>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<style>\n\t\t:root {\n\t\t\tcolor-scheme: dark;\n\t\t\t--bg: #0b1326;\n\t\t\t--surface: rgba(23, 31, 51, 0.82);\n\t\t\t--surface-strong: #222a3d;\n\t\t\t--surface-border: rgba(255, 255, 255, 0.1);\n\t\t\t--text: #dae2fd;\n\t\t\t--muted: #dfbec5;\n\t\t\t--accent: #ffb1c6;\n\t\t\t--accent-2: #ecc300;\n\t\t\t--accent-text: #3f001c;\n\t\t\t--danger-bg: rgba(147, 0, 10, 0.28);\n\t\t\t--danger-border: rgba(255, 180, 171, 0.38);\n\t\t\t--danger-text: #ffdad6;\n\t\t\t--font-display: Sora, ui-sans-serif, system-ui, sans-serif;\n\t\t\t--font-body: \"Hanken Grotesk\", Inter, ui-sans-serif, system-ui, sans-serif;\n\t\t\t--font-label: \"JetBrains Mono\", ui-monospace, SFMono-Regular, monospace;\n\t\t\t--radius-card: 1rem;\n\t\t\t--radius-control: 0.75rem;\n\t\t\t--radius-pill: 999px;\n\t\t\t--shadow-glow: 0 24px 80px rgba(0, 0, 0, 0.46), 0 0 48px rgba(255, 177, 198, 0.16);\n\t\t}\n\t\t* { box-sizing: border-box; }\n\t\t*:focus-visible {\n\t\t\toutline: 2px solid var(--accent);\n\t\t\toutline-offset: 3px;\n\t\t}\n\t\tbody {\n\t\t\tmargin: 0;\n\t\t\tmin-height: 100vh;\n\t\t\tdisplay: grid;\n\t\t\tplace-items: start center;\n\t\t\tpadding: clamp(1.5rem, 5vw, 4rem) 1rem;\n\t\t\tfont-family: var(--font-body);\n\t\t\tbackground:\n\t\t\t\tradial-gradient(circle at 20% -10%, rgba(255, 177, 198, 0.18), transparent 34rem),\n\t\t\t\tradial-gradient(circle at 85% 100%, rgba(236, 195, 0, 0.1), transparent 26rem),\n\t\t\t\tvar(--bg);\n\t\t\tcolor: var(--text);\n\t\t}\n\t\t.admin-card {\n\t\t\twidth: min(100%, 28rem);\n\t\t\tpadding: clamp(1.5rem, 5vw, 2.5rem);\n\t\t\tborder: 1px solid var(--surface-border);\n\t\t\tborder-radius: var(--radius-card);\n\t\t\tbackground: var(--surface);\n\t\t\tbox-shadow: var(--shadow-glow);\n\t\t\tbackdrop-filter: blur(24px);\n\t\t}\n\t\t.admin-card__header { margin-bottom: 2rem; }\n\t\t.admin-logo {\n\t\t\tdisplay: block;\n\t\t\twidth: min(100%, 17rem);\n\t\t\theight: auto;\n\t\t\tmargin: 0 auto 1.75rem;\n\t\t}\n\t\t.admin-eyebrow {\n\t\t\tmargin: 0 0 0.4rem;\n\t\t\tcolor: var(--accent-2);\n\t\t\tfont-family: var(--font-label);\n\t\t\tfont-size: 0.75rem;\n\t\t\tfont-weight: 600;\n\t\t\tletter-spacing: 0.18em;\n\t\t\ttext-transform: uppercase;\n\t\t}\n\t\th1 {\n\t\t\tmargin: 0;\n\t\t\tfont-family: var(--font-display);\n\t\t\tfont-size: clamp(2rem, 8vw, 2.5rem);\n\t\t\tline-height: 1.15;\n\t\t}\n\t\t.admin-copy { margin: 0.5rem 0 0; color: var(--muted); }\n\t\t.admin-alert {\n\t\t\tmargin-bottom: 1rem;\n\t\t\tpadding: 0.9rem 1rem;\n\t\t\tborder: 1px solid var(--danger-border);\n\t\t\tborder-radius: var(--radius-control);\n\t\t\tbackground: var(--danger-bg);\n\t\t\tcolor: var(--danger-text);\n\t\t}\n\t\t.admin-form { display: grid; gap: 0.5rem; }\n\t\t.admin-form label {\n\t\t\tmargin-top: 1rem;\n\t\t\tmargin-bottom: 0.1rem;\n\t\t}\n\t\t.admin-form label:first-child { margin-top: 0; }\n\t\t.admin-label {\n\t\t\tfont-family: var(--font-label);\n\t\t\tfont-size: 0.78rem;\n\t\t\tfont-weight: 600;\n\t\t\tletter-spacing: 0.05em;\n\t\t\ttext-transform: uppercase;\n\t\t}\n\t\t.admin-input {\n\t\t\twidth: 100%;\n\t\t\tpadding: 0.9rem 1rem;\n\t\t\tborder: 1px solid var(--surface-border);\n\t\t\tborder-radius: var(--radius-control);\n\t\t\tbackground: rgba(6, 14, 32, 0.88);\n\t\t\tcolor: var(--text);\n\t\t\tfont: inherit;\n\t\t}\n\t\t.admin-input:focus {\n\t\t\tborder-color: var(--accent);\n\t\t\tbox-shadow: 0 0 0 4px rgba(255, 177, 198, 0.12);\n\t\t}\n\t\t.admin-button {\n\t\t\tmargin-top: 0.5rem;\n\t\t\tmin-height: 2.875rem;\n\t\t\twidth: 100%;\n\t\t\tpadding: 0.95rem 1rem;\n\t\t\tborder: 0;\n\t\t\tborder-radius: var(--radius-pill);\n\t\t\tbackground: linear-gradient(135deg, var(--accent), var(--accent-2));\n\t\t\tcolor: var(--accent-text);\n\t\t\tfont: inherit;\n\t\t\tfont-weight: 800;\n\t\t\tcursor: pointer;\n\t\t\tbox-shadow: 0 0 28px rgba(255, 177, 198, 0.25);\n\t\t\ttransition: transform 160ms ease, box-shadow 160ms ease;\n\t\t}\n\t\t.admin-button:hover {\n\t\t\ttransform: translateY(-1px);\n\t\t\tbox-shadow: 0 0 42px rgba(255, 177, 198, 0.38);\n\t\t}\n\t</style>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -58,7 +58,7 @@ func adminBaseStyles() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<style>\n\t\t:root {\n\t\t\tcolor-scheme: dark;\n\t\t\t--bg: #0b1326;\n\t\t\t--surface: rgba(23, 31, 51, 0.84);\n\t\t\t--surface-low: #131b2e;\n\t\t\t--surface-high: #222a3d;\n\t\t\t--surface-border: rgba(255, 255, 255, 0.1);\n\t\t\t--text: #dae2fd;\n\t\t\t--muted: #dfbec5;\n\t\t\t--accent: #ffb1c6;\n\t\t\t--accent-2: #ecc300;\n\t\t\t--accent-text: #3f001c;\n\t\t\t--danger-bg: rgba(147, 0, 10, 0.28);\n\t\t\t--danger-border: rgba(255, 180, 171, 0.38);\n\t\t\t--danger-text: #ffdad6;\n\t\t\t--font-display: Sora, ui-sans-serif, system-ui, sans-serif;\n\t\t\t--font-body: \"Hanken Grotesk\", Inter, ui-sans-serif, system-ui, sans-serif;\n\t\t\t--font-label: \"JetBrains Mono\", ui-monospace, SFMono-Regular, monospace;\n\t\t\t--radius-card: 1rem;\n\t\t\t--radius-control: 0.75rem;\n\t\t\t--radius-pill: 999px;\n\t\t}\n\t\t* { box-sizing: border-box; }\n\t\t*:focus-visible {\n\t\t\toutline: 2px solid var(--accent);\n\t\t\toutline-offset: 3px;\n\t\t}\n\t\tbody {\n\t\t\tmargin: 0;\n\t\t\tmin-height: 100vh;\n\t\t\tdisplay: grid;\n\t\t\tplace-items: center;\n\t\t\tpadding: 1.5rem;\n\t\t\tfont-family: var(--font-body);\n\t\t\tbackground:\n\t\t\t\tradial-gradient(circle at 15% -8%, rgba(255, 177, 198, 0.15), transparent 34rem),\n\t\t\t\tradial-gradient(circle at 100% 90%, rgba(236, 195, 0, 0.08), transparent 28rem),\n\t\t\t\tvar(--bg);\n\t\t\tcolor: var(--text);\n\t\t}\n\t\tmain {\n\t\t\twidth: min(100%, 48rem);\n\t\t\tposition: relative;\n\t\t\tpadding: 2rem;\n\t\t\tborder: 1px solid var(--surface-border);\n\t\t\tborder-radius: var(--radius-card);\n\t\t\tbackground: var(--surface);\n\t\t\tbox-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);\n\t\t\tbackdrop-filter: blur(18px);\n\t\t}\n\t\tsection { margin-top: 1.5rem; overflow-x: auto; }\n\t\t.admin-logout-form {\n\t\t\tposition: absolute;\n\t\t\ttop: 2rem;\n\t\t\tright: 2rem;\n\t\t}\n\t\t.admin-logout-button { margin-top: 0; }\n\t\t.admin-page-logo {\n\t\t\tdisplay: block;\n\t\t\twidth: 8rem;\n\t\t\theight: auto;\n\t\t\tmargin-bottom: 1rem;\n\t\t}\n\t\th1,\n\t\th2 {\n\t\t\tfont-family: var(--font-display);\n\t\t\tline-height: 1.2;\n\t\t}\n\t\th1 { margin: 0; font-size: clamp(2rem, 7vw, 2.5rem); }\n\t\th2 { margin: 0 0 0.75rem; font-size: 1.5rem; }\n\t\tp { color: var(--muted); }\n\t\tlabel {\n\t\t\tdisplay: block;\n\t\t\tmargin-bottom: 0.5rem;\n\t\t\tfont-family: var(--font-label);\n\t\t\tfont-size: 0.78rem;\n\t\t\tfont-weight: 600;\n\t\t\tletter-spacing: 0.05em;\n\t\t\ttext-transform: uppercase;\n\t\t}\n\t\tselect {\n\t\t\twidth: 100%;\n\t\t\tpadding: 0.85rem 0.95rem;\n\t\t\tborder: 1px solid var(--surface-border);\n\t\t\tborder-radius: var(--radius-control);\n\t\t\tbackground: #060e20;\n\t\t\tcolor: var(--text);\n\t\t\tfont: inherit;\n\t\t}\n\t\tselect.admin-disabled-control {\n\t\t\tborder-color: rgba(223, 190, 197, 0.32);\n\t\t\tbackground: repeating-linear-gradient(135deg, #1a2235, #1a2235 0.45rem, #222a3d 0.45rem, #222a3d 0.9rem);\n\t\t\tcolor: #aab2c4;\n\t\t\tcursor: not-allowed;\n\t\t\tbox-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);\n\t\t\topacity: 1;\n\t\t}\n\t\tselect:focus,\n\t\tinput:focus,\n\t\ttextarea:focus {\n\t\t\tborder-color: var(--accent);\n\t\t\tbox-shadow: 0 0 0 4px rgba(255, 177, 198, 0.12);\n\t\t}\n\t\tbutton {\n\t\t\tmargin-top: 0.8rem;\n\t\t\tpadding: 0.85rem 1.1rem;\n\t\t\tborder: 0;\n\t\t\tborder-radius: var(--radius-pill);\n\t\t\tbackground: linear-gradient(135deg, var(--accent), var(--accent-2));\n\t\t\tcolor: var(--accent-text);\n\t\t\tfont: inherit;\n\t\t\tfont-weight: 800;\n\t\t\tcursor: pointer;\n\t\t\tbox-shadow: 0 0 24px rgba(255, 177, 198, 0.22);\n\t\t}\n\t\tbutton.admin-disabled-control {\n\t\t\tborder: 1px solid rgba(223, 190, 197, 0.32);\n\t\t\tbackground: #222a3d;\n\t\t\tcolor: #aab2c4;\n\t\t\tcursor: not-allowed;\n\t\t\tbox-shadow: none;\n\t\t\topacity: 1;\n\t\t}\n\t\tbutton.admin-disabled-control:hover {\n\t\t\tbox-shadow: none;\n\t\t\ttransform: none;\n\t\t}\n\t\t.admin-link-button {\n\t\t\tdisplay: inline-flex;\n\t\t\talign-items: center;\n\t\t\tjustify-content: center;\n\t\t\tpadding: 0.85rem 1.1rem;\n\t\t\tborder-radius: var(--radius-pill);\n\t\t\tbackground: linear-gradient(135deg, var(--accent), var(--accent-2));\n\t\t\tcolor: var(--accent-text);\n\t\t\tfont-weight: 800;\n\t\t\ttext-decoration: none;\n\t\t\tbox-shadow: 0 0 24px rgba(255, 177, 198, 0.22);\n\t\t}\n\t\t.admin-link-button--disabled {\n\t\t\topacity: 0.45;\n\t\t\tcursor: not-allowed;\n\t\t}\n\t\t.admin-create-song {\n\t\t\tdisplay: flex;\n\t\t\tjustify-content: flex-end;\n\t\t\tmargin: 1.5rem 0 0;\n\t\t}\n\t\ttable {\n\t\t\twidth: 100%;\n\t\t\tborder-collapse: collapse;\n\t\t\ttable-layout: fixed;\n\t\t}\n\t\tth,\n\t\ttd {\n\t\t\tpadding: 0.85rem 0.75rem;\n\t\t\tborder-top: 1px solid var(--surface-border);\n\t\t\ttext-align: left;\n\t\t\tvertical-align: top;\n\t\t\toverflow-wrap: anywhere;\n\t\t}\n\t\tth {\n\t\t\tcolor: var(--muted);\n\t\t\tfont-family: var(--font-label);\n\t\t\tfont-size: 0.75rem;\n\t\t\tfont-weight: 600;\n\t\t\tletter-spacing: 0.05em;\n\t\t\ttext-transform: uppercase;\n\t\t}\n\t\tth:nth-child(3),\n\t\ttd:nth-child(3) {\n\t\t\twidth: 6rem;\n\t\t}\n\t\ta { color: var(--accent); }\n\t\t.admin-alert {\n\t\t\tpadding: 0.9rem 1rem;\n\t\t\tborder: 1px solid var(--danger-border);\n\t\t\tborder-radius: var(--radius-control);\n\t\t\tbackground: var(--danger-bg);\n\t\t\tcolor: var(--danger-text);\n\t\t}\n\t\tinput,\n\t\ttextarea {\n\t\t\twidth: 100%;\n\t\t\tpadding: 0.85rem 0.95rem;\n\t\t\tborder: 1px solid var(--surface-border);\n\t\t\tborder-radius: var(--radius-control);\n\t\t\tbackground: #060e20;\n\t\t\tcolor: var(--text);\n\t\t\tfont: inherit;\n\t\t}\n\t\ttextarea { min-height: 7rem; resize: vertical; }\n\t\t.admin-actions {\n\t\t\tdisplay: flex;\n\t\t\tflex-wrap: wrap;\n\t\t\tgap: 0.75rem;\n\t\t\talign-items: center;\n\t\t\tmargin-top: 0.5rem;\n\t\t}\n\t\t.admin-danger-button {\n\t\t\tborder: 1px solid var(--danger-border);\n\t\t\tbackground: var(--danger-bg);\n\t\t\tcolor: var(--danger-text);\n\t\t\tbox-shadow: none;\n\t\t}\n\t\t@media (max-width: 640px) {\n\t\t\tbody { display: block; padding: 1rem; }\n\t\t\tmain { padding: 1.25rem; }\n\t\t\t.admin-logout-form { top: 1.25rem; right: 1.25rem; }\n\t\t\ttable { min-width: 36rem; }\n\t\t}\n\t</style>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<style>\n\t\t:root {\n\t\t\tcolor-scheme: dark;\n\t\t\t--bg: #0b1326;\n\t\t\t--surface: rgba(23, 31, 51, 0.84);\n\t\t\t--surface-low: #131b2e;\n\t\t\t--surface-high: #222a3d;\n\t\t\t--surface-border: rgba(255, 255, 255, 0.1);\n\t\t\t--text: #dae2fd;\n\t\t\t--muted: #dfbec5;\n\t\t\t--accent: #ffb1c6;\n\t\t\t--accent-2: #ecc300;\n\t\t\t--accent-text: #3f001c;\n\t\t\t--danger-bg: rgba(147, 0, 10, 0.28);\n\t\t\t--danger-border: rgba(255, 180, 171, 0.38);\n\t\t\t--danger-text: #ffdad6;\n\t\t\t--font-display: Sora, ui-sans-serif, system-ui, sans-serif;\n\t\t\t--font-body: \"Hanken Grotesk\", Inter, ui-sans-serif, system-ui, sans-serif;\n\t\t\t--font-label: \"JetBrains Mono\", ui-monospace, SFMono-Regular, monospace;\n\t\t\t--radius-card: 1rem;\n\t\t\t--radius-control: 0.75rem;\n\t\t\t--radius-pill: 999px;\n\t\t}\n\t\t* { box-sizing: border-box; }\n\t\t*:focus-visible {\n\t\t\toutline: 2px solid var(--accent);\n\t\t\toutline-offset: 3px;\n\t\t}\n\t\tbody {\n\t\t\tmargin: 0;\n\t\t\tmin-height: 100vh;\n\t\t\tdisplay: grid;\n\t\t\tplace-items: start center;\n\t\t\tpadding: clamp(1.5rem, 5vw, 4rem) 1rem;\n\t\t\tfont-family: var(--font-body);\n\t\t\tbackground:\n\t\t\t\tradial-gradient(circle at 15% -8%, rgba(255, 177, 198, 0.15), transparent 34rem),\n\t\t\t\tradial-gradient(circle at 100% 90%, rgba(236, 195, 0, 0.08), transparent 28rem),\n\t\t\t\tvar(--bg);\n\t\t\tcolor: var(--text);\n\t\t}\n\t\tmain {\n\t\t\twidth: min(100%, 64rem);\n\t\t\tposition: relative;\n\t\t\tpadding: clamp(1.5rem, 4vw, 2.75rem);\n\t\t\tborder: 1px solid var(--surface-border);\n\t\t\tborder-radius: var(--radius-card);\n\t\t\tbackground: var(--surface);\n\t\t\tbox-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);\n\t\t\tbackdrop-filter: blur(18px);\n\t\t}\n\t\tsection { margin-top: 2.5rem; overflow-x: auto; }\n\t\t.admin-section-header {\n\t\t\tdisplay: flex;\n\t\t\talign-items: end;\n\t\t\tjustify-content: space-between;\n\t\t\tgap: 1rem;\n\t\t\tmargin-bottom: 1rem;\n\t\t}\n\t\t.admin-section-header h2 { margin-bottom: 0; }\n\t\t.admin-meta { margin: 0.5rem 0 0; }\n\t\t.admin-logout-form {\n\t\t\tposition: absolute;\n\t\t\ttop: 2rem;\n\t\t\tright: 2rem;\n\t\t}\n\t\t.admin-logout-button { margin-top: 0; }\n\t\t.admin-page-logo {\n\t\t\tdisplay: block;\n\t\t\twidth: 8rem;\n\t\t\theight: auto;\n\t\t\tmargin-bottom: 1.25rem;\n\t\t}\n\t\th1,\n\t\th2 {\n\t\t\tfont-family: var(--font-display);\n\t\t\tline-height: 1.2;\n\t\t}\n\t\th1 { margin: 0; font-size: clamp(2rem, 7vw, 2.75rem); letter-spacing: -0.03em; }\n\t\th2 { margin: 0 0 0.75rem; font-size: 1.5rem; letter-spacing: -0.02em; }\n\t\tp { color: var(--muted); }\n\t\tlabel {\n\t\t\tdisplay: block;\n\t\t\tmargin-bottom: 0.5rem;\n\t\t\tfont-family: var(--font-label);\n\t\t\tfont-size: 0.78rem;\n\t\t\tfont-weight: 600;\n\t\t\tletter-spacing: 0.05em;\n\t\t\ttext-transform: uppercase;\n\t\t}\n\t\tselect {\n\t\t\twidth: 100%;\n\t\t\tpadding: 0.85rem 0.95rem;\n\t\t\tborder: 1px solid var(--surface-border);\n\t\t\tborder-radius: var(--radius-control);\n\t\t\tbackground: #060e20;\n\t\t\tcolor: var(--text);\n\t\t\tfont: inherit;\n\t\t}\n\t\tselect.admin-disabled-control {\n\t\t\tborder-color: rgba(223, 190, 197, 0.32);\n\t\t\tbackground: repeating-linear-gradient(135deg, #1a2235, #1a2235 0.45rem, #222a3d 0.45rem, #222a3d 0.9rem);\n\t\t\tcolor: #aab2c4;\n\t\t\tcursor: not-allowed;\n\t\t\tbox-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);\n\t\t\topacity: 1;\n\t\t}\n\t\tselect:focus,\n\t\tinput:focus,\n\t\ttextarea:focus {\n\t\t\tborder-color: var(--accent);\n\t\t\tbox-shadow: 0 0 0 4px rgba(255, 177, 198, 0.12);\n\t\t}\n\t\tbutton {\n\t\t\tmin-height: 2.875rem;\n\t\t\tmargin-top: 0.8rem;\n\t\t\tpadding: 0.85rem 1.1rem;\n\t\t\tborder: 0;\n\t\t\tborder-radius: var(--radius-pill);\n\t\t\tbackground: linear-gradient(135deg, var(--accent), var(--accent-2));\n\t\t\tcolor: var(--accent-text);\n\t\t\tfont: inherit;\n\t\t\tfont-weight: 800;\n\t\t\tcursor: pointer;\n\t\t\tbox-shadow: 0 0 24px rgba(255, 177, 198, 0.22);\n\t\t}\n\t\tbutton.admin-disabled-control {\n\t\t\tborder: 1px solid rgba(223, 190, 197, 0.32);\n\t\t\tbackground: #222a3d;\n\t\t\tcolor: #aab2c4;\n\t\t\tcursor: not-allowed;\n\t\t\tbox-shadow: none;\n\t\t\topacity: 1;\n\t\t}\n\t\tbutton.admin-disabled-control:hover {\n\t\t\tbox-shadow: none;\n\t\t\ttransform: none;\n\t\t}\n\t\t.admin-link-button {\n\t\t\tdisplay: inline-flex;\n\t\t\talign-items: center;\n\t\t\tjustify-content: center;\n\t\t\tpadding: 0.85rem 1.1rem;\n\t\t\tmin-height: 2.875rem;\n\t\t\tborder-radius: var(--radius-pill);\n\t\t\tbackground: linear-gradient(135deg, var(--accent), var(--accent-2));\n\t\t\tcolor: var(--accent-text);\n\t\t\tfont-weight: 800;\n\t\t\ttext-decoration: none;\n\t\t\tbox-shadow: 0 0 24px rgba(255, 177, 198, 0.22);\n\t\t}\n\t\t.admin-link-button--disabled {\n\t\t\topacity: 0.45;\n\t\t\tcursor: not-allowed;\n\t\t}\n\t\t.admin-create-song {\n\t\t\tdisplay: flex;\n\t\t\tjustify-content: flex-end;\n\t\t\tmargin: 1.25rem 0 0;\n\t\t}\n\t\ttable {\n\t\t\twidth: 100%;\n\t\t\tborder-collapse: collapse;\n\t\t\ttable-layout: fixed;\n\t\t}\n\t\tth,\n\t\ttd {\n\t\t\tpadding: 0.85rem 0.75rem;\n\t\t\tborder-top: 1px solid var(--surface-border);\n\t\t\ttext-align: left;\n\t\t\tvertical-align: top;\n\t\t\toverflow-wrap: anywhere;\n\t\t}\n\t\tth {\n\t\t\tcolor: var(--muted);\n\t\t\tfont-family: var(--font-label);\n\t\t\tfont-size: 0.75rem;\n\t\t\tfont-weight: 600;\n\t\t\tletter-spacing: 0.05em;\n\t\t\ttext-transform: uppercase;\n\t\t}\n\t\tth:nth-child(3),\n\t\ttd:nth-child(3) {\n\t\t\twidth: 6rem;\n\t\t}\n\t\ta { color: var(--accent); }\n\t\t.admin-alert {\n\t\t\tpadding: 0.9rem 1rem;\n\t\t\tborder: 1px solid var(--danger-border);\n\t\t\tborder-radius: var(--radius-control);\n\t\t\tbackground: var(--danger-bg);\n\t\t\tcolor: var(--danger-text);\n\t\t}\n\t\tinput,\n\t\ttextarea {\n\t\t\twidth: 100%;\n\t\t\tpadding: 0.85rem 0.95rem;\n\t\t\tborder: 1px solid var(--surface-border);\n\t\t\tborder-radius: var(--radius-control);\n\t\t\tbackground: #060e20;\n\t\t\tcolor: var(--text);\n\t\t\tfont: inherit;\n\t\t}\n\t\ttextarea { min-height: 7rem; resize: vertical; }\n\t\t.admin-actions {\n\t\t\tdisplay: flex;\n\t\t\tflex-wrap: wrap;\n\t\t\tgap: 0.75rem;\n\t\t\talign-items: center;\n\t\t\tmargin-top: 0.5rem;\n\t\t}\n\t\t.admin-actions button { margin-top: 0; }\n\t\t.admin-danger-button {\n\t\t\tborder: 1px solid var(--danger-border);\n\t\t\tbackground: var(--danger-bg);\n\t\t\tcolor: var(--danger-text);\n\t\t\tbox-shadow: none;\n\t\t}\n\t\t.admin-danger-menu {\n\t\t\tmargin-top: 2rem;\n\t\t\tpadding-top: 1.25rem;\n\t\t\tborder-top: 1px solid var(--surface-border);\n\t\t}\n\t\t.admin-danger-menu summary {\n\t\t\tcolor: var(--muted);\n\t\t\tcursor: pointer;\n\t\t\tfont-family: var(--font-label);\n\t\t\tfont-size: 0.78rem;\n\t\t\tfont-weight: 600;\n\t\t\tletter-spacing: 0.05em;\n\t\t\ttext-transform: uppercase;\n\t\t}\n\t\t.admin-danger-menu form { margin-top: 1rem; }\n\t\t.admin-danger-menu button { margin-top: 0; }\n\t\t@media (max-width: 640px) {\n\t\t\tbody { display: block; padding: 0; }\n\t\t\tmain {\n\t\t\t\twidth: 100% !important;\n\t\t\t\tpadding: 1.25rem;\n\t\t\t\tborder-radius: 0;\n\t\t\t\tborder-left: 0;\n\t\t\t\tborder-right: 0;\n\t\t\t}\n\t\t\t.admin-section-header { display: block; }\n\t\t\t.admin-section-header .admin-link-button { margin-top: 0.75rem; width: 100%; }\n\t\t\t.admin-logout-form { top: 1.25rem; right: 1.25rem; }\n\t\t\ttable { min-width: 36rem; }\n\t\t}\n\t</style>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -128,7 +128,7 @@ func LoginCard(view loginView) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(view.Error)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 355, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 398, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -146,7 +146,7 @@ func LoginCard(view loginView) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.Email)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 366, Col: 115}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 409, Col: 115}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 		if templ_7745c5c3_Err != nil {
@@ -242,7 +242,7 @@ func RegisterCard(view registerView) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(view.Error)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 402, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 446, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -260,7 +260,7 @@ func RegisterCard(view registerView) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.InviteCode)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 413, Col: 129}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 457, Col: 129}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 		if templ_7745c5c3_Err != nil {
@@ -356,20 +356,20 @@ func HomePage(view homeView) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</head><body><main><img class=\"admin-page-logo\" src=\"/static/songdock_logo_dark.png\" alt=\"SongDock\"><h1>Admin</h1><p>Signed in as ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</head><body><main><header class=\"admin-section-header\"><div><img class=\"admin-page-logo\" src=\"/static/songdock_logo_dark.png\" alt=\"SongDock\"><h1>Admin</h1><p class=\"admin-meta\">Signed in as ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(view.Email)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 456, Col: 32}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 504, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, ".</p><form class=\"admin-logout-form\" method=\"post\" action=\"/admin/logout\"><button class=\"admin-logout-button\" type=\"submit\">Log out</button></form>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, ".</p></div><form class=\"admin-logout-form\" method=\"post\" action=\"/admin/logout\"><button class=\"admin-logout-button\" type=\"submit\">Log out</button></form></header>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -381,7 +381,7 @@ func HomePage(view homeView) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(view.Error)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 461, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 511, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -406,7 +406,7 @@ func HomePage(view homeView) templ.Component {
 					var templ_7745c5c3_Var15 string
 					templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.ResolveAttributeValue(artist.Slug)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 469, Col: 36}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 519, Col: 36}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
 					if templ_7745c5c3_Err != nil {
@@ -419,7 +419,7 @@ func HomePage(view homeView) templ.Component {
 					var templ_7745c5c3_Var16 string
 					templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(artist.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 469, Col: 61}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 519, Col: 61}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 					if templ_7745c5c3_Err != nil {
@@ -437,7 +437,7 @@ func HomePage(view homeView) templ.Component {
 					var templ_7745c5c3_Var17 string
 					templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.ResolveAttributeValue(artist.Slug)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 471, Col: 36}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 521, Col: 36}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var17)
 					if templ_7745c5c3_Err != nil {
@@ -450,7 +450,7 @@ func HomePage(view homeView) templ.Component {
 					var templ_7745c5c3_Var18 string
 					templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(artist.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 471, Col: 52}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 521, Col: 52}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 					if templ_7745c5c3_Err != nil {
@@ -473,7 +473,7 @@ func HomePage(view homeView) templ.Component {
 			}
 		}
 		if view.ActiveArtist != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<section aria-labelledby=\"songs-title\"><h2 id=\"songs-title\">Songs</h2><table><thead><tr><th scope=\"col\">Title</th><th scope=\"col\">Final URL</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<section aria-labelledby=\"songs-title\"><div class=\"admin-section-header\"><h2 id=\"songs-title\">Songs</h2></div><table><thead><tr><th scope=\"col\">Title</th><th scope=\"col\">Final URL</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -486,7 +486,7 @@ func HomePage(view homeView) templ.Component {
 					var templ_7745c5c3_Var19 string
 					templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(song.Title)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 495, Col: 27}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 547, Col: 27}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 					if templ_7745c5c3_Err != nil {
@@ -499,7 +499,7 @@ func HomePage(view homeView) templ.Component {
 					var templ_7745c5c3_Var20 templ.SafeURL
 					templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinURLErrs(song.FinalURL)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 496, Col: 38}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 548, Col: 38}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 					if templ_7745c5c3_Err != nil {
@@ -512,7 +512,7 @@ func HomePage(view homeView) templ.Component {
 					var templ_7745c5c3_Var21 string
 					templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(song.FinalURL)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 496, Col: 98}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 548, Col: 98}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 					if templ_7745c5c3_Err != nil {
@@ -525,7 +525,7 @@ func HomePage(view homeView) templ.Component {
 					var templ_7745c5c3_Var22 templ.SafeURL
 					templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinURLErrs(song.EditURL)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 497, Col: 37}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 549, Col: 37}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 					if templ_7745c5c3_Err != nil {
@@ -588,7 +588,7 @@ func SongFormPage(view songFormView) templ.Component {
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(view.PageTitle)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 523, Col: 26}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 576, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 		if templ_7745c5c3_Err != nil {
@@ -606,20 +606,20 @@ func SongFormPage(view songFormView) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "</head><body><main style=\"width:min(100%,36rem);\"><img class=\"admin-page-logo\" src=\"/static/songdock_logo_dark.png\" alt=\"SongDock\"><h1>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "</head><body><main style=\"width:min(100%,36rem);\"><header class=\"admin-section-header\"><div><img class=\"admin-page-logo\" src=\"/static/songdock_logo_dark.png\" alt=\"SongDock\"><h1>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var25 string
 		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(view.PageTitle)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 530, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 585, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "</h1>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "</h1></div></header>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -631,7 +631,7 @@ func SongFormPage(view songFormView) templ.Component {
 			var templ_7745c5c3_Var26 string
 			templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(view.Error)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 532, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 589, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 			if templ_7745c5c3_Err != nil {
@@ -650,7 +650,7 @@ func SongFormPage(view songFormView) templ.Component {
 			var templ_7745c5c3_Var27 string
 			templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(view.ActiveArtist.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 535, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 592, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 			if templ_7745c5c3_Err != nil {
@@ -663,7 +663,7 @@ func SongFormPage(view songFormView) templ.Component {
 			var templ_7745c5c3_Var28 templ.SafeURL
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinURLErrs(view.Action)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 536, Col: 64}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 593, Col: 64}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 			if templ_7745c5c3_Err != nil {
@@ -676,7 +676,7 @@ func SongFormPage(view songFormView) templ.Component {
 			var templ_7745c5c3_Var29 string
 			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 538, Col: 64}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 595, Col: 64}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var29)
 			if templ_7745c5c3_Err != nil {
@@ -689,7 +689,7 @@ func SongFormPage(view songFormView) templ.Component {
 			var templ_7745c5c3_Var30 string
 			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(view.Description)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 540, Col: 70}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 597, Col: 70}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 			if templ_7745c5c3_Err != nil {
@@ -702,7 +702,7 @@ func SongFormPage(view songFormView) templ.Component {
 			var templ_7745c5c3_Var31 string
 			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.ImageURL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 542, Col: 66}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 599, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var31)
 			if templ_7745c5c3_Err != nil {
@@ -715,7 +715,7 @@ func SongFormPage(view songFormView) templ.Component {
 			var templ_7745c5c3_Var32 string
 			templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.YouTubeURL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 544, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 601, Col: 72}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var32)
 			if templ_7745c5c3_Err != nil {
@@ -728,7 +728,7 @@ func SongFormPage(view songFormView) templ.Component {
 			var templ_7745c5c3_Var33 string
 			templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.SpotifyURL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 546, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 603, Col: 72}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var33)
 			if templ_7745c5c3_Err != nil {
@@ -741,7 +741,7 @@ func SongFormPage(view songFormView) templ.Component {
 			var templ_7745c5c3_Var34 string
 			templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.AppleMusicURL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 548, Col: 83}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 605, Col: 83}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var34)
 			if templ_7745c5c3_Err != nil {
@@ -754,7 +754,7 @@ func SongFormPage(view songFormView) templ.Component {
 			var templ_7745c5c3_Var35 string
 			templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(view.SubmitLabel)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 550, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 607, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 			if templ_7745c5c3_Err != nil {
@@ -765,14 +765,14 @@ func SongFormPage(view songFormView) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if view.Mode == "edit" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "<form method=\"post\" action=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "<details class=\"admin-danger-menu\"><summary>More options</summary><form method=\"post\" action=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var36 templ.SafeURL
 				templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinURLErrs(view.DeleteAction)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 555, Col: 52}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 614, Col: 53}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 				if templ_7745c5c3_Err != nil {
@@ -785,13 +785,13 @@ func SongFormPage(view songFormView) templ.Component {
 				var templ_7745c5c3_Var37 string
 				templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.DeleteAction)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 555, Col: 82}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 614, Col: 83}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var37)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "\" hx-confirm=\"Delete this song? This cannot be undone.\" hx-swap=\"none\"><div class=\"admin-actions\"><button class=\"admin-danger-button\" type=\"submit\">Delete Song</button></div></form>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "\" hx-confirm=\"Delete this song? This cannot be undone.\" hx-swap=\"none\"><button class=\"admin-danger-button\" type=\"submit\">Delete Song</button></form></details>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

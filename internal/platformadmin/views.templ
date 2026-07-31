@@ -35,8 +35,8 @@ templ platformStyles() {
 			margin: 0;
 			min-height: 100vh;
 			display: grid;
-			place-items: center;
-			padding: 1.5rem;
+			place-items: start center;
+			padding: clamp(1.5rem, 5vw, 4rem) 1rem;
 			font-family: var(--font-body);
 			background:
 				radial-gradient(circle at 16% -10%, rgba(255, 177, 198, 0.17), transparent 34rem),
@@ -46,21 +46,21 @@ templ platformStyles() {
 		}
 		.platform-shell,
 		.platform-card {
-			width: min(100%, 52rem);
-			padding: 2rem;
+			width: min(100%, 68rem);
+			padding: clamp(1.5rem, 4vw, 2.75rem);
 			border: 1px solid var(--surface-border);
 			border-radius: var(--radius-card);
 			background: var(--surface);
 			box-shadow: 0 24px 80px rgba(0, 0, 0, 0.44), 0 0 44px rgba(255, 177, 198, 0.12);
 			backdrop-filter: blur(20px);
 		}
-		.platform-card { max-width: 28rem; }
+		.platform-card { max-width: 30rem; }
 		.platform-header {
 			display: flex;
 			align-items: start;
 			justify-content: space-between;
 			gap: 1rem;
-			margin-bottom: 1.5rem;
+			margin-bottom: 2.25rem;
 		}
 		.platform-actions {
 			display: flex;
@@ -69,7 +69,7 @@ templ platformStyles() {
 			justify-content: flex-end;
 			gap: 0.75rem;
 		}
-		.platform-card__header { margin-bottom: 1.5rem; }
+		.platform-card__header { margin-bottom: 2rem; }
 		.platform-logo {
 			display: block;
 			width: min(100%, 17rem);
@@ -96,6 +96,7 @@ templ platformStyles() {
 			font-family: var(--font-display);
 			font-size: clamp(2rem, 7vw, 2.5rem);
 			line-height: 1.15;
+			letter-spacing: -0.03em;
 		}
 		.platform-copy { margin: 0.5rem 0 0; color: var(--muted); }
 		.platform-alert {
@@ -115,6 +116,7 @@ templ platformStyles() {
 		.platform-field-status--ok { color: #9af5df; }
 		.platform-field-status--error { color: var(--danger-text); }
 		.platform-form { display: grid; gap: 0.85rem; }
+		.platform-form > .platform-label:not(:first-child) { margin-top: 0.35rem; }
 		.platform-form--inline {
 			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
 			align-items: end;
@@ -188,6 +190,7 @@ templ platformStyles() {
 			align-items: center;
 			justify-content: center;
 			padding: 0.95rem 1rem;
+			min-height: 2.875rem;
 			border: 0;
 			border-radius: var(--radius-pill);
 			background: linear-gradient(135deg, var(--accent), var(--accent-2));
@@ -209,6 +212,7 @@ templ platformStyles() {
 			display: flex;
 			flex-wrap: wrap;
 			gap: 0.75rem;
+			margin-top: 0.5rem;
 		}
 		.platform-panel { overflow-x: auto; }
 		.platform-table {
@@ -232,13 +236,21 @@ templ platformStyles() {
 			letter-spacing: 0.05em;
 			text-transform: uppercase;
 		}
+		.platform-panel > .platform-table { margin-top: 1.75rem; }
+		.platform-panel > .platform-form + .platform-table { margin-top: 2.5rem; }
 		@media (max-width: 760px) {
-			body { display: block; }
+			body { display: block; padding: 0; }
 			.platform-shell,
-			.platform-card { padding: 1.25rem; }
+			.platform-card {
+				width: 100%;
+				padding: 1.25rem;
+				border-radius: 0;
+				border-left: 0;
+				border-right: 0;
+			}
 			.platform-header { display: block; }
 			.platform-actions { margin-top: 1rem; justify-content: start; }
-			.platform-link { margin-top: 1rem; }
+			.platform-link { margin-top: 1rem; width: 100%; }
 			.platform-form--inline,
 			.platform-form--artist { grid-template-columns: 1fr; }
 			.platform-form--inline > *,

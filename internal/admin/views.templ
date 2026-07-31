@@ -33,8 +33,8 @@ templ adminAuthStyles() {
 			margin: 0;
 			min-height: 100vh;
 			display: grid;
-			place-items: center;
-			padding: 1.5rem;
+			place-items: start center;
+			padding: clamp(1.5rem, 5vw, 4rem) 1rem;
 			font-family: var(--font-body);
 			background:
 				radial-gradient(circle at 20% -10%, rgba(255, 177, 198, 0.18), transparent 34rem),
@@ -44,14 +44,14 @@ templ adminAuthStyles() {
 		}
 		.admin-card {
 			width: min(100%, 28rem);
-			padding: 2rem;
+			padding: clamp(1.5rem, 5vw, 2.5rem);
 			border: 1px solid var(--surface-border);
 			border-radius: var(--radius-card);
 			background: var(--surface);
 			box-shadow: var(--shadow-glow);
 			backdrop-filter: blur(24px);
 		}
-		.admin-card__header { margin-bottom: 1.5rem; }
+		.admin-card__header { margin-bottom: 2rem; }
 		.admin-logo {
 			display: block;
 			width: min(100%, 17rem);
@@ -82,7 +82,12 @@ templ adminAuthStyles() {
 			background: var(--danger-bg);
 			color: var(--danger-text);
 		}
-		.admin-form { display: grid; gap: 0.85rem; }
+		.admin-form { display: grid; gap: 0.5rem; }
+		.admin-form label {
+			margin-top: 1rem;
+			margin-bottom: 0.1rem;
+		}
+		.admin-form label:first-child { margin-top: 0; }
 		.admin-label {
 			font-family: var(--font-label);
 			font-size: 0.78rem;
@@ -105,6 +110,8 @@ templ adminAuthStyles() {
 		}
 		.admin-button {
 			margin-top: 0.5rem;
+			min-height: 2.875rem;
+			width: 100%;
 			padding: 0.95rem 1rem;
 			border: 0;
 			border-radius: var(--radius-pill);
@@ -156,8 +163,8 @@ templ adminBaseStyles() {
 			margin: 0;
 			min-height: 100vh;
 			display: grid;
-			place-items: center;
-			padding: 1.5rem;
+			place-items: start center;
+			padding: clamp(1.5rem, 5vw, 4rem) 1rem;
 			font-family: var(--font-body);
 			background:
 				radial-gradient(circle at 15% -8%, rgba(255, 177, 198, 0.15), transparent 34rem),
@@ -166,16 +173,25 @@ templ adminBaseStyles() {
 			color: var(--text);
 		}
 		main {
-			width: min(100%, 48rem);
+			width: min(100%, 64rem);
 			position: relative;
-			padding: 2rem;
+			padding: clamp(1.5rem, 4vw, 2.75rem);
 			border: 1px solid var(--surface-border);
 			border-radius: var(--radius-card);
 			background: var(--surface);
 			box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
 			backdrop-filter: blur(18px);
 		}
-		section { margin-top: 1.5rem; overflow-x: auto; }
+		section { margin-top: 2.5rem; overflow-x: auto; }
+		.admin-section-header {
+			display: flex;
+			align-items: end;
+			justify-content: space-between;
+			gap: 1rem;
+			margin-bottom: 1rem;
+		}
+		.admin-section-header h2 { margin-bottom: 0; }
+		.admin-meta { margin: 0.5rem 0 0; }
 		.admin-logout-form {
 			position: absolute;
 			top: 2rem;
@@ -186,15 +202,15 @@ templ adminBaseStyles() {
 			display: block;
 			width: 8rem;
 			height: auto;
-			margin-bottom: 1rem;
+			margin-bottom: 1.25rem;
 		}
 		h1,
 		h2 {
 			font-family: var(--font-display);
 			line-height: 1.2;
 		}
-		h1 { margin: 0; font-size: clamp(2rem, 7vw, 2.5rem); }
-		h2 { margin: 0 0 0.75rem; font-size: 1.5rem; }
+		h1 { margin: 0; font-size: clamp(2rem, 7vw, 2.75rem); letter-spacing: -0.03em; }
+		h2 { margin: 0 0 0.75rem; font-size: 1.5rem; letter-spacing: -0.02em; }
 		p { color: var(--muted); }
 		label {
 			display: block;
@@ -229,6 +245,7 @@ templ adminBaseStyles() {
 			box-shadow: 0 0 0 4px rgba(255, 177, 198, 0.12);
 		}
 		button {
+			min-height: 2.875rem;
 			margin-top: 0.8rem;
 			padding: 0.85rem 1.1rem;
 			border: 0;
@@ -257,6 +274,7 @@ templ adminBaseStyles() {
 			align-items: center;
 			justify-content: center;
 			padding: 0.85rem 1.1rem;
+			min-height: 2.875rem;
 			border-radius: var(--radius-pill);
 			background: linear-gradient(135deg, var(--accent), var(--accent-2));
 			color: var(--accent-text);
@@ -271,7 +289,7 @@ templ adminBaseStyles() {
 		.admin-create-song {
 			display: flex;
 			justify-content: flex-end;
-			margin: 1.5rem 0 0;
+			margin: 1.25rem 0 0;
 		}
 		table {
 			width: 100%;
@@ -324,15 +342,40 @@ templ adminBaseStyles() {
 			align-items: center;
 			margin-top: 0.5rem;
 		}
+		.admin-actions button { margin-top: 0; }
 		.admin-danger-button {
 			border: 1px solid var(--danger-border);
 			background: var(--danger-bg);
 			color: var(--danger-text);
 			box-shadow: none;
 		}
+		.admin-danger-menu {
+			margin-top: 2rem;
+			padding-top: 1.25rem;
+			border-top: 1px solid var(--surface-border);
+		}
+		.admin-danger-menu summary {
+			color: var(--muted);
+			cursor: pointer;
+			font-family: var(--font-label);
+			font-size: 0.78rem;
+			font-weight: 600;
+			letter-spacing: 0.05em;
+			text-transform: uppercase;
+		}
+		.admin-danger-menu form { margin-top: 1rem; }
+		.admin-danger-menu button { margin-top: 0; }
 		@media (max-width: 640px) {
-			body { display: block; padding: 1rem; }
-			main { padding: 1.25rem; }
+			body { display: block; padding: 0; }
+			main {
+				width: 100% !important;
+				padding: 1.25rem;
+				border-radius: 0;
+				border-left: 0;
+				border-right: 0;
+			}
+			.admin-section-header { display: block; }
+			.admin-section-header .admin-link-button { margin-top: 0.75rem; width: 100%; }
 			.admin-logout-form { top: 1.25rem; right: 1.25rem; }
 			table { min-width: 36rem; }
 		}
@@ -454,12 +497,16 @@ templ HomePage(view homeView) {
 		</head>
 		<body>
 			<main>
-				<img class="admin-page-logo" src="/static/songdock_logo_dark.png" alt="SongDock"/>
-				<h1>Admin</h1>
-				<p>Signed in as { view.Email }.</p>
+				<header class="admin-section-header">
+					<div>
+						<img class="admin-page-logo" src="/static/songdock_logo_dark.png" alt="SongDock"/>
+						<h1>Admin</h1>
+						<p class="admin-meta">Signed in as { view.Email }.</p>
+					</div>
 				<form class="admin-logout-form" method="post" action="/admin/logout">
 					<button class="admin-logout-button" type="submit">Log out</button>
 				</form>
+				</header>
 				if view.Error != "" {
 					<p class="admin-alert" role="alert">{ view.Error }</p>
 				}
@@ -482,7 +529,9 @@ templ HomePage(view homeView) {
 				}
 				if view.ActiveArtist != nil {
 					<section aria-labelledby="songs-title">
+						<div class="admin-section-header">
 						<h2 id="songs-title">Songs</h2>
+						</div>
 						<table>
 							<thead>
 								<tr>
@@ -530,8 +579,12 @@ templ SongFormPage(view songFormView) {
 		</head>
 		<body>
 			<main style="width:min(100%,36rem);">
-				<img class="admin-page-logo" src="/static/songdock_logo_dark.png" alt="SongDock"/>
-				<h1>{ view.PageTitle }</h1>
+				<header class="admin-section-header">
+					<div>
+						<img class="admin-page-logo" src="/static/songdock_logo_dark.png" alt="SongDock"/>
+						<h1>{ view.PageTitle }</h1>
+					</div>
+				</header>
 				if view.Error != "" {
 					<p class="admin-alert" role="alert">{ view.Error }</p>
 				}
@@ -556,11 +609,12 @@ templ SongFormPage(view songFormView) {
 						</div>
 					</form>
 					if view.Mode == "edit" {
-						<form method="post" action={ view.DeleteAction } hx-post={ view.DeleteAction } hx-confirm="Delete this song? This cannot be undone." hx-swap="none">
-							<div class="admin-actions">
+						<details class="admin-danger-menu">
+							<summary>More options</summary>
+							<form method="post" action={ view.DeleteAction } hx-post={ view.DeleteAction } hx-confirm="Delete this song? This cannot be undone." hx-swap="none">
 								<button class="admin-danger-button" type="submit">Delete Song</button>
-							</div>
-						</form>
+							</form>
+						</details>
 					}
 				} else {
 					<p><a class="admin-link-button" href="/admin/">Back to dashboard</a></p>

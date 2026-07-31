@@ -29,7 +29,7 @@ func platformStyles() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<style>\n\t\t:root {\n\t\t\tcolor-scheme: dark;\n\t\t\t--bg: #0b1326;\n\t\t\t--surface: rgba(23, 31, 51, 0.84);\n\t\t\t--surface-low: #131b2e;\n\t\t\t--surface-high: #222a3d;\n\t\t\t--surface-highest: #2d3449;\n\t\t\t--surface-border: rgba(255, 255, 255, 0.1);\n\t\t\t--text: #dae2fd;\n\t\t\t--muted: #dfbec5;\n\t\t\t--accent: #ffb1c6;\n\t\t\t--accent-2: #ecc300;\n\t\t\t--accent-cool: #46c2a9;\n\t\t\t--accent-text: #3f001c;\n\t\t\t--danger-bg: rgba(147, 0, 10, 0.28);\n\t\t\t--danger-border: rgba(255, 180, 171, 0.38);\n\t\t\t--danger-text: #ffdad6;\n\t\t\t--font-display: Sora, ui-sans-serif, system-ui, sans-serif;\n\t\t\t--font-body: \"Hanken Grotesk\", Inter, ui-sans-serif, system-ui, sans-serif;\n\t\t\t--font-label: \"JetBrains Mono\", ui-monospace, SFMono-Regular, monospace;\n\t\t\t--radius-card: 1rem;\n\t\t\t--radius-control: 0.75rem;\n\t\t\t--radius-pill: 999px;\n\t\t}\n\t\t* { box-sizing: border-box; }\n\t\t*:focus-visible {\n\t\t\toutline: 2px solid var(--accent);\n\t\t\toutline-offset: 3px;\n\t\t}\n\t\tbody {\n\t\t\tmargin: 0;\n\t\t\tmin-height: 100vh;\n\t\t\tdisplay: grid;\n\t\t\tplace-items: center;\n\t\t\tpadding: 1.5rem;\n\t\t\tfont-family: var(--font-body);\n\t\t\tbackground:\n\t\t\t\tradial-gradient(circle at 16% -10%, rgba(255, 177, 198, 0.17), transparent 34rem),\n\t\t\t\tradial-gradient(circle at 92% 100%, rgba(236, 195, 0, 0.09), transparent 28rem),\n\t\t\t\tvar(--bg);\n\t\t\tcolor: var(--text);\n\t\t}\n\t\t.platform-shell,\n\t\t.platform-card {\n\t\t\twidth: min(100%, 52rem);\n\t\t\tpadding: 2rem;\n\t\t\tborder: 1px solid var(--surface-border);\n\t\t\tborder-radius: var(--radius-card);\n\t\t\tbackground: var(--surface);\n\t\t\tbox-shadow: 0 24px 80px rgba(0, 0, 0, 0.44), 0 0 44px rgba(255, 177, 198, 0.12);\n\t\t\tbackdrop-filter: blur(20px);\n\t\t}\n\t\t.platform-card { max-width: 28rem; }\n\t\t.platform-header {\n\t\t\tdisplay: flex;\n\t\t\talign-items: start;\n\t\t\tjustify-content: space-between;\n\t\t\tgap: 1rem;\n\t\t\tmargin-bottom: 1.5rem;\n\t\t}\n\t\t.platform-actions {\n\t\t\tdisplay: flex;\n\t\t\tflex-wrap: wrap;\n\t\t\talign-items: center;\n\t\t\tjustify-content: flex-end;\n\t\t\tgap: 0.75rem;\n\t\t}\n\t\t.platform-card__header { margin-bottom: 1.5rem; }\n\t\t.platform-logo {\n\t\t\tdisplay: block;\n\t\t\twidth: min(100%, 17rem);\n\t\t\theight: auto;\n\t\t\tmargin: 0 auto 1.75rem;\n\t\t}\n\t\t.platform-page-logo {\n\t\t\tdisplay: block;\n\t\t\twidth: 8rem;\n\t\t\theight: auto;\n\t\t\tmargin-bottom: 1rem;\n\t\t}\n\t\t.platform-eyebrow {\n\t\t\tmargin: 0 0 0.4rem;\n\t\t\tcolor: var(--accent-2);\n\t\t\tfont-family: var(--font-label);\n\t\t\tfont-size: 0.75rem;\n\t\t\tfont-weight: 600;\n\t\t\tletter-spacing: 0.18em;\n\t\t\ttext-transform: uppercase;\n\t\t}\n\t\th1 {\n\t\t\tmargin: 0;\n\t\t\tfont-family: var(--font-display);\n\t\t\tfont-size: clamp(2rem, 7vw, 2.5rem);\n\t\t\tline-height: 1.15;\n\t\t}\n\t\t.platform-copy { margin: 0.5rem 0 0; color: var(--muted); }\n\t\t.platform-alert {\n\t\t\tmargin-bottom: 1rem;\n\t\t\tpadding: 0.9rem 1rem;\n\t\t\tborder: 1px solid var(--danger-border);\n\t\t\tborder-radius: var(--radius-control);\n\t\t\tbackground: var(--danger-bg);\n\t\t\tcolor: var(--danger-text);\n\t\t}\n\t\t.platform-alert--neutral {\n\t\t\tborder-color: rgba(70, 194, 169, 0.36);\n\t\t\tbackground: rgba(70, 194, 169, 0.12);\n\t\t\tcolor: #c8fff3;\n\t\t}\n\t\t.platform-field-status { margin: -0.4rem 0 0; color: var(--muted); font-size: 0.88rem; }\n\t\t.platform-field-status--ok { color: #9af5df; }\n\t\t.platform-field-status--error { color: var(--danger-text); }\n\t\t.platform-form { display: grid; gap: 0.85rem; }\n\t\t.platform-form--inline {\n\t\t\tgrid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;\n\t\t\talign-items: end;\n\t\t\tmargin-bottom: 1.5rem;\n\t\t}\n\t\t.platform-form--artist {\n\t\t\tgrid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;\n\t\t\talign-items: end;\n\t\t\tmargin-bottom: 1.5rem;\n\t\t}\n\t\t.platform-form--inline > label:nth-child(1),\n\t\t.platform-form--artist > label:nth-child(1) {\n\t\t\tgrid-column: 1;\n\t\t\tgrid-row: 1;\n\t\t}\n\t\t.platform-form--inline > input:nth-child(2),\n\t\t.platform-form--artist > input:nth-child(2) {\n\t\t\tgrid-column: 1;\n\t\t\tgrid-row: 2;\n\t\t}\n\t\t.platform-form--inline > label:nth-child(3) {\n\t\t\tgrid-column: 2;\n\t\t\tgrid-row: 1;\n\t\t}\n\t\t.platform-form--inline > select:nth-child(4) {\n\t\t\tgrid-column: 2;\n\t\t\tgrid-row: 2;\n\t\t}\n\t\t.platform-form--inline > button:nth-child(5) {\n\t\t\tgrid-column: 3;\n\t\t\tgrid-row: 2;\n\t\t\tmargin-top: 0;\n\t\t}\n\t\t.platform-form--artist > .platform-form__slug {\n\t\t\tgrid-column: 2;\n\t\t\tgrid-row: 1 / span 2;\n\t\t\tdisplay: grid;\n\t\t\tgap: 0.85rem;\n\t\t\talign-content: start;\n\t\t}\n\t\t.platform-form--artist > .platform-form__slug .platform-field-status { margin-top: -0.4rem; }\n\t\t.platform-form--artist > button:nth-child(4) {\n\t\t\tgrid-column: 3;\n\t\t\tgrid-row: 2;\n\t\t\tmargin-top: 0;\n\t\t}\n\t\t.platform-label {\n\t\t\tfont-family: var(--font-label);\n\t\t\tfont-size: 0.78rem;\n\t\t\tfont-weight: 600;\n\t\t\tletter-spacing: 0.05em;\n\t\t\ttext-transform: uppercase;\n\t\t}\n\t\t.platform-input {\n\t\t\twidth: 100%;\n\t\t\tpadding: 0.9rem 1rem;\n\t\t\tborder: 1px solid var(--surface-border);\n\t\t\tborder-radius: var(--radius-control);\n\t\t\tbackground: rgba(6, 14, 32, 0.88);\n\t\t\tcolor: var(--text);\n\t\t\tfont: inherit;\n\t\t}\n\t\t.platform-input:focus {\n\t\t\tborder-color: var(--accent);\n\t\t\tbox-shadow: 0 0 0 4px rgba(255, 177, 198, 0.12);\n\t\t}\n\t\t.platform-button,\n\t\t.platform-link,\n\t\t.platform-nav a {\n\t\t\tdisplay: inline-flex;\n\t\t\talign-items: center;\n\t\t\tjustify-content: center;\n\t\t\tpadding: 0.95rem 1rem;\n\t\t\tborder: 0;\n\t\t\tborder-radius: var(--radius-pill);\n\t\t\tbackground: linear-gradient(135deg, var(--accent), var(--accent-2));\n\t\t\tcolor: var(--accent-text);\n\t\t\tfont: inherit;\n\t\t\tfont-weight: 800;\n\t\t\ttext-decoration: none;\n\t\t\tcursor: pointer;\n\t\t\tbox-shadow: 0 0 24px rgba(255, 177, 198, 0.22);\n\t\t\ttransition: transform 160ms ease, box-shadow 160ms ease;\n\t\t}\n\t\t.platform-button:hover,\n\t\t.platform-link:hover,\n\t\t.platform-nav a:hover {\n\t\t\ttransform: translateY(-1px);\n\t\t\tbox-shadow: 0 0 38px rgba(255, 177, 198, 0.34);\n\t\t}\n\t\t.platform-nav {\n\t\t\tdisplay: flex;\n\t\t\tflex-wrap: wrap;\n\t\t\tgap: 0.75rem;\n\t\t}\n\t\t.platform-panel { overflow-x: auto; }\n\t\t.platform-table {\n\t\t\twidth: 100%;\n\t\t\tborder-collapse: collapse;\n\t\t\ttable-layout: fixed;\n\t\t}\n\t\t.platform-table th,\n\t\t.platform-table td {\n\t\t\tpadding: 0.85rem;\n\t\t\tborder-top: 1px solid var(--surface-border);\n\t\t\ttext-align: left;\n\t\t\tvertical-align: top;\n\t\t\toverflow-wrap: anywhere;\n\t\t}\n\t\t.platform-table th {\n\t\t\tcolor: var(--muted);\n\t\t\tfont-family: var(--font-label);\n\t\t\tfont-size: 0.75rem;\n\t\t\tfont-weight: 600;\n\t\t\tletter-spacing: 0.05em;\n\t\t\ttext-transform: uppercase;\n\t\t}\n\t\t@media (max-width: 760px) {\n\t\t\tbody { display: block; }\n\t\t\t.platform-shell,\n\t\t\t.platform-card { padding: 1.25rem; }\n\t\t\t.platform-header { display: block; }\n\t\t\t.platform-actions { margin-top: 1rem; justify-content: start; }\n\t\t\t.platform-link { margin-top: 1rem; }\n\t\t\t.platform-form--inline,\n\t\t\t.platform-form--artist { grid-template-columns: 1fr; }\n\t\t\t.platform-form--inline > *,\n\t\t\t.platform-form--artist > * {\n\t\t\t\tgrid-column: auto !important;\n\t\t\t\tgrid-row: auto !important;\n\t\t\t}\n\t\t}\n\t</style>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<style>\n\t\t:root {\n\t\t\tcolor-scheme: dark;\n\t\t\t--bg: #0b1326;\n\t\t\t--surface: rgba(23, 31, 51, 0.84);\n\t\t\t--surface-low: #131b2e;\n\t\t\t--surface-high: #222a3d;\n\t\t\t--surface-highest: #2d3449;\n\t\t\t--surface-border: rgba(255, 255, 255, 0.1);\n\t\t\t--text: #dae2fd;\n\t\t\t--muted: #dfbec5;\n\t\t\t--accent: #ffb1c6;\n\t\t\t--accent-2: #ecc300;\n\t\t\t--accent-cool: #46c2a9;\n\t\t\t--accent-text: #3f001c;\n\t\t\t--danger-bg: rgba(147, 0, 10, 0.28);\n\t\t\t--danger-border: rgba(255, 180, 171, 0.38);\n\t\t\t--danger-text: #ffdad6;\n\t\t\t--font-display: Sora, ui-sans-serif, system-ui, sans-serif;\n\t\t\t--font-body: \"Hanken Grotesk\", Inter, ui-sans-serif, system-ui, sans-serif;\n\t\t\t--font-label: \"JetBrains Mono\", ui-monospace, SFMono-Regular, monospace;\n\t\t\t--radius-card: 1rem;\n\t\t\t--radius-control: 0.75rem;\n\t\t\t--radius-pill: 999px;\n\t\t}\n\t\t* { box-sizing: border-box; }\n\t\t*:focus-visible {\n\t\t\toutline: 2px solid var(--accent);\n\t\t\toutline-offset: 3px;\n\t\t}\n\t\tbody {\n\t\t\tmargin: 0;\n\t\t\tmin-height: 100vh;\n\t\t\tdisplay: grid;\n\t\t\tplace-items: start center;\n\t\t\tpadding: clamp(1.5rem, 5vw, 4rem) 1rem;\n\t\t\tfont-family: var(--font-body);\n\t\t\tbackground:\n\t\t\t\tradial-gradient(circle at 16% -10%, rgba(255, 177, 198, 0.17), transparent 34rem),\n\t\t\t\tradial-gradient(circle at 92% 100%, rgba(236, 195, 0, 0.09), transparent 28rem),\n\t\t\t\tvar(--bg);\n\t\t\tcolor: var(--text);\n\t\t}\n\t\t.platform-shell,\n\t\t.platform-card {\n\t\t\twidth: min(100%, 68rem);\n\t\t\tpadding: clamp(1.5rem, 4vw, 2.75rem);\n\t\t\tborder: 1px solid var(--surface-border);\n\t\t\tborder-radius: var(--radius-card);\n\t\t\tbackground: var(--surface);\n\t\t\tbox-shadow: 0 24px 80px rgba(0, 0, 0, 0.44), 0 0 44px rgba(255, 177, 198, 0.12);\n\t\t\tbackdrop-filter: blur(20px);\n\t\t}\n\t\t.platform-card { max-width: 30rem; }\n\t\t.platform-header {\n\t\t\tdisplay: flex;\n\t\t\talign-items: start;\n\t\t\tjustify-content: space-between;\n\t\t\tgap: 1rem;\n\t\t\tmargin-bottom: 2.25rem;\n\t\t}\n\t\t.platform-actions {\n\t\t\tdisplay: flex;\n\t\t\tflex-wrap: wrap;\n\t\t\talign-items: center;\n\t\t\tjustify-content: flex-end;\n\t\t\tgap: 0.75rem;\n\t\t}\n\t\t.platform-card__header { margin-bottom: 2rem; }\n\t\t.platform-logo {\n\t\t\tdisplay: block;\n\t\t\twidth: min(100%, 17rem);\n\t\t\theight: auto;\n\t\t\tmargin: 0 auto 1.75rem;\n\t\t}\n\t\t.platform-page-logo {\n\t\t\tdisplay: block;\n\t\t\twidth: 8rem;\n\t\t\theight: auto;\n\t\t\tmargin-bottom: 1rem;\n\t\t}\n\t\t.platform-eyebrow {\n\t\t\tmargin: 0 0 0.4rem;\n\t\t\tcolor: var(--accent-2);\n\t\t\tfont-family: var(--font-label);\n\t\t\tfont-size: 0.75rem;\n\t\t\tfont-weight: 600;\n\t\t\tletter-spacing: 0.18em;\n\t\t\ttext-transform: uppercase;\n\t\t}\n\t\th1 {\n\t\t\tmargin: 0;\n\t\t\tfont-family: var(--font-display);\n\t\t\tfont-size: clamp(2rem, 7vw, 2.5rem);\n\t\t\tline-height: 1.15;\n\t\t\tletter-spacing: -0.03em;\n\t\t}\n\t\t.platform-copy { margin: 0.5rem 0 0; color: var(--muted); }\n\t\t.platform-alert {\n\t\t\tmargin-bottom: 1rem;\n\t\t\tpadding: 0.9rem 1rem;\n\t\t\tborder: 1px solid var(--danger-border);\n\t\t\tborder-radius: var(--radius-control);\n\t\t\tbackground: var(--danger-bg);\n\t\t\tcolor: var(--danger-text);\n\t\t}\n\t\t.platform-alert--neutral {\n\t\t\tborder-color: rgba(70, 194, 169, 0.36);\n\t\t\tbackground: rgba(70, 194, 169, 0.12);\n\t\t\tcolor: #c8fff3;\n\t\t}\n\t\t.platform-field-status { margin: -0.4rem 0 0; color: var(--muted); font-size: 0.88rem; }\n\t\t.platform-field-status--ok { color: #9af5df; }\n\t\t.platform-field-status--error { color: var(--danger-text); }\n\t\t.platform-form { display: grid; gap: 0.85rem; }\n\t\t.platform-form > .platform-label:not(:first-child) { margin-top: 0.35rem; }\n\t\t.platform-form--inline {\n\t\t\tgrid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;\n\t\t\talign-items: end;\n\t\t\tmargin-bottom: 1.5rem;\n\t\t}\n\t\t.platform-form--artist {\n\t\t\tgrid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;\n\t\t\talign-items: end;\n\t\t\tmargin-bottom: 1.5rem;\n\t\t}\n\t\t.platform-form--inline > label:nth-child(1),\n\t\t.platform-form--artist > label:nth-child(1) {\n\t\t\tgrid-column: 1;\n\t\t\tgrid-row: 1;\n\t\t}\n\t\t.platform-form--inline > input:nth-child(2),\n\t\t.platform-form--artist > input:nth-child(2) {\n\t\t\tgrid-column: 1;\n\t\t\tgrid-row: 2;\n\t\t}\n\t\t.platform-form--inline > label:nth-child(3) {\n\t\t\tgrid-column: 2;\n\t\t\tgrid-row: 1;\n\t\t}\n\t\t.platform-form--inline > select:nth-child(4) {\n\t\t\tgrid-column: 2;\n\t\t\tgrid-row: 2;\n\t\t}\n\t\t.platform-form--inline > button:nth-child(5) {\n\t\t\tgrid-column: 3;\n\t\t\tgrid-row: 2;\n\t\t\tmargin-top: 0;\n\t\t}\n\t\t.platform-form--artist > .platform-form__slug {\n\t\t\tgrid-column: 2;\n\t\t\tgrid-row: 1 / span 2;\n\t\t\tdisplay: grid;\n\t\t\tgap: 0.85rem;\n\t\t\talign-content: start;\n\t\t}\n\t\t.platform-form--artist > .platform-form__slug .platform-field-status { margin-top: -0.4rem; }\n\t\t.platform-form--artist > button:nth-child(4) {\n\t\t\tgrid-column: 3;\n\t\t\tgrid-row: 2;\n\t\t\tmargin-top: 0;\n\t\t}\n\t\t.platform-label {\n\t\t\tfont-family: var(--font-label);\n\t\t\tfont-size: 0.78rem;\n\t\t\tfont-weight: 600;\n\t\t\tletter-spacing: 0.05em;\n\t\t\ttext-transform: uppercase;\n\t\t}\n\t\t.platform-input {\n\t\t\twidth: 100%;\n\t\t\tpadding: 0.9rem 1rem;\n\t\t\tborder: 1px solid var(--surface-border);\n\t\t\tborder-radius: var(--radius-control);\n\t\t\tbackground: rgba(6, 14, 32, 0.88);\n\t\t\tcolor: var(--text);\n\t\t\tfont: inherit;\n\t\t}\n\t\t.platform-input:focus {\n\t\t\tborder-color: var(--accent);\n\t\t\tbox-shadow: 0 0 0 4px rgba(255, 177, 198, 0.12);\n\t\t}\n\t\t.platform-button,\n\t\t.platform-link,\n\t\t.platform-nav a {\n\t\t\tdisplay: inline-flex;\n\t\t\talign-items: center;\n\t\t\tjustify-content: center;\n\t\t\tpadding: 0.95rem 1rem;\n\t\t\tmin-height: 2.875rem;\n\t\t\tborder: 0;\n\t\t\tborder-radius: var(--radius-pill);\n\t\t\tbackground: linear-gradient(135deg, var(--accent), var(--accent-2));\n\t\t\tcolor: var(--accent-text);\n\t\t\tfont: inherit;\n\t\t\tfont-weight: 800;\n\t\t\ttext-decoration: none;\n\t\t\tcursor: pointer;\n\t\t\tbox-shadow: 0 0 24px rgba(255, 177, 198, 0.22);\n\t\t\ttransition: transform 160ms ease, box-shadow 160ms ease;\n\t\t}\n\t\t.platform-button:hover,\n\t\t.platform-link:hover,\n\t\t.platform-nav a:hover {\n\t\t\ttransform: translateY(-1px);\n\t\t\tbox-shadow: 0 0 38px rgba(255, 177, 198, 0.34);\n\t\t}\n\t\t.platform-nav {\n\t\t\tdisplay: flex;\n\t\t\tflex-wrap: wrap;\n\t\t\tgap: 0.75rem;\n\t\t\tmargin-top: 0.5rem;\n\t\t}\n\t\t.platform-panel { overflow-x: auto; }\n\t\t.platform-table {\n\t\t\twidth: 100%;\n\t\t\tborder-collapse: collapse;\n\t\t\ttable-layout: fixed;\n\t\t}\n\t\t.platform-table th,\n\t\t.platform-table td {\n\t\t\tpadding: 0.85rem;\n\t\t\tborder-top: 1px solid var(--surface-border);\n\t\t\ttext-align: left;\n\t\t\tvertical-align: top;\n\t\t\toverflow-wrap: anywhere;\n\t\t}\n\t\t.platform-table th {\n\t\t\tcolor: var(--muted);\n\t\t\tfont-family: var(--font-label);\n\t\t\tfont-size: 0.75rem;\n\t\t\tfont-weight: 600;\n\t\t\tletter-spacing: 0.05em;\n\t\t\ttext-transform: uppercase;\n\t\t}\n\t\t.platform-panel > .platform-table { margin-top: 1.75rem; }\n\t\t.platform-panel > .platform-form + .platform-table { margin-top: 2.5rem; }\n\t\t@media (max-width: 760px) {\n\t\t\tbody { display: block; padding: 0; }\n\t\t\t.platform-shell,\n\t\t\t.platform-card {\n\t\t\t\twidth: 100%;\n\t\t\t\tpadding: 1.25rem;\n\t\t\t\tborder-radius: 0;\n\t\t\t\tborder-left: 0;\n\t\t\t\tborder-right: 0;\n\t\t\t}\n\t\t\t.platform-header { display: block; }\n\t\t\t.platform-actions { margin-top: 1rem; justify-content: start; }\n\t\t\t.platform-link { margin-top: 1rem; width: 100%; }\n\t\t\t.platform-form--inline,\n\t\t\t.platform-form--artist { grid-template-columns: 1fr; }\n\t\t\t.platform-form--inline > *,\n\t\t\t.platform-form--artist > * {\n\t\t\t\tgrid-column: auto !important;\n\t\t\t\tgrid-row: auto !important;\n\t\t\t}\n\t\t}\n\t</style>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -99,7 +99,7 @@ func LoginCard(view loginView) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(view.Error)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 266, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 278, Col: 56}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -117,7 +117,7 @@ func LoginCard(view loginView) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.Username)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 277, Col: 129}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 289, Col: 129}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 		if templ_7745c5c3_Err != nil {
@@ -216,7 +216,7 @@ func HomePage(view homeView) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(view.Email)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 317, Col: 56}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 331, Col: 56}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -313,7 +313,7 @@ func UsersPanel(view usersView) templ.Component {
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(user.Email)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 375, Col: 23}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 390, Col: 23}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -338,7 +338,7 @@ func UsersPanel(view usersView) templ.Component {
 						var templ_7745c5c3_Var12 string
 						templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(artist.Name)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 382, Col: 29}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 397, Col: 29}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 						if templ_7745c5c3_Err != nil {
@@ -456,7 +456,7 @@ func InvitationsPanel(view invitationsView) templ.Component {
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(view.Message)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 433, Col: 83}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 449, Col: 83}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -474,7 +474,7 @@ func InvitationsPanel(view invitationsView) templ.Component {
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.Email)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 444, Col: 118}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 460, Col: 118}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var16)
 		if templ_7745c5c3_Err != nil {
@@ -493,7 +493,7 @@ func InvitationsPanel(view invitationsView) templ.Component {
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.ResolveAttributeValue(int64String(artist.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 450, Col: 44}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 466, Col: 44}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var17)
 				if templ_7745c5c3_Err != nil {
@@ -506,7 +506,7 @@ func InvitationsPanel(view invitationsView) templ.Component {
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(artist.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 450, Col: 69}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 466, Col: 69}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -524,7 +524,7 @@ func InvitationsPanel(view invitationsView) templ.Component {
 				var templ_7745c5c3_Var19 string
 				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.ResolveAttributeValue(int64String(artist.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 452, Col: 44}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 468, Col: 44}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var19)
 				if templ_7745c5c3_Err != nil {
@@ -537,7 +537,7 @@ func InvitationsPanel(view invitationsView) templ.Component {
 				var templ_7745c5c3_Var20 string
 				templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(artist.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 452, Col: 60}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 468, Col: 60}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 				if templ_7745c5c3_Err != nil {
@@ -562,7 +562,7 @@ func InvitationsPanel(view invitationsView) templ.Component {
 				var templ_7745c5c3_Var21 string
 				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(invitation.Email)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 472, Col: 29}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 488, Col: 29}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 				if templ_7745c5c3_Err != nil {
@@ -575,7 +575,7 @@ func InvitationsPanel(view invitationsView) templ.Component {
 				var templ_7745c5c3_Var22 string
 				templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(invitation.ArtistName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 473, Col: 34}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 489, Col: 34}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 				if templ_7745c5c3_Err != nil {
@@ -588,7 +588,7 @@ func InvitationsPanel(view invitationsView) templ.Component {
 				var templ_7745c5c3_Var23 string
 				templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(invitation.ExpiresAt)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 474, Col: 33}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 490, Col: 33}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 				if templ_7745c5c3_Err != nil {
@@ -601,7 +601,7 @@ func InvitationsPanel(view invitationsView) templ.Component {
 				var templ_7745c5c3_Var24 string
 				templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(invitation.Status)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 475, Col: 30}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 491, Col: 30}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 				if templ_7745c5c3_Err != nil {
@@ -619,7 +619,7 @@ func InvitationsPanel(view invitationsView) templ.Component {
 					var templ_7745c5c3_Var25 templ.SafeURL
 					templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinURLErrs("/platform/admin/invitations/" + int64String(invitation.ID) + "/revoke")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 478, Col: 109}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 494, Col: 109}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 					if templ_7745c5c3_Err != nil {
@@ -632,7 +632,7 @@ func InvitationsPanel(view invitationsView) templ.Component {
 					var templ_7745c5c3_Var26 string
 					templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.ResolveAttributeValue("/platform/admin/invitations/" + int64String(invitation.ID) + "/revoke")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 478, Col: 193}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 494, Col: 193}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var26)
 					if templ_7745c5c3_Err != nil {
@@ -650,7 +650,7 @@ func InvitationsPanel(view invitationsView) templ.Component {
 					var templ_7745c5c3_Var27 string
 					templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(invitation.Status)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 482, Col: 56}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 498, Col: 56}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 					if templ_7745c5c3_Err != nil {
@@ -762,7 +762,7 @@ func ArtistsPanel(view artistsView) templ.Component {
 			var templ_7745c5c3_Var30 string
 			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(view.Message)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 529, Col: 83}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 546, Col: 83}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 			if templ_7745c5c3_Err != nil {
@@ -780,7 +780,7 @@ func ArtistsPanel(view artistsView) templ.Component {
 		var templ_7745c5c3_Var31 string
 		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 540, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 557, Col: 81}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var31)
 		if templ_7745c5c3_Err != nil {
@@ -807,7 +807,7 @@ func ArtistsPanel(view artistsView) templ.Component {
 				var templ_7745c5c3_Var32 string
 				templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(artist.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 555, Col: 24}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 572, Col: 24}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 				if templ_7745c5c3_Err != nil {
@@ -820,7 +820,7 @@ func ArtistsPanel(view artistsView) templ.Component {
 				var templ_7745c5c3_Var33 string
 				templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(artist.Slug)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 556, Col: 24}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 573, Col: 24}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 				if templ_7745c5c3_Err != nil {
@@ -873,7 +873,7 @@ func ArtistSlugFields(view artistsView) templ.Component {
 		var templ_7745c5c3_Var35 string
 		templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.SlugMode)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 571, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 588, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var35)
 		if templ_7745c5c3_Err != nil {
@@ -886,7 +886,7 @@ func ArtistSlugFields(view artistsView) templ.Component {
 		var templ_7745c5c3_Var36 string
 		templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.Slug)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 573, Col: 144}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 590, Col: 144}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var36)
 		if templ_7745c5c3_Err != nil {
@@ -921,7 +921,7 @@ func ArtistSlugFields(view artistsView) templ.Component {
 		var templ_7745c5c3_Var39 string
 		templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(view.SlugStatus.Message)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 574, Col: 147}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/platformadmin/views.templ`, Line: 591, Col: 147}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 		if templ_7745c5c3_Err != nil {
