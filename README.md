@@ -17,9 +17,9 @@ cp .env.example .env
 4. Start the server through `mise`:
 
 ```sh
-mise exec -- go run ./cmd/songdock # listens on :8080
+mise run dev # listens on :8080
 
-PORT=3000 mise exec -- go run ./cmd/songdock # custom port for this invocation
+PORT=3000 mise run dev # custom port for this invocation
 ```
 
 `ADMIN_BACKEND_SECRET` is required, must be at least 32 characters, and is used to hash submitted artist-admin passwords and sign both admin session cookies.
@@ -43,7 +43,7 @@ Artist creation is a platform-admin operation. Artist administrators are created
 ## Building
 
 ```sh
-mise exec -- go build -o songdock ./cmd/songdock
+mise run build
 ```
 
 ## Tests
@@ -51,7 +51,7 @@ mise exec -- go build -o songdock ./cmd/songdock
 Run unit tests:
 
 ```sh
-mise exec -- go test ./...
+mise run test
 ```
 
 ### Acceptance tests
@@ -60,10 +60,10 @@ Acceptance tests run against a live server. Start the server first, then:
 
 ```sh
 # against the default localhost:8080
-mise exec -- go test -tags acceptance ./test/acceptance/...
+mise run acceptance
 
 # against a remote host
-ACCEPTANCE_BASE_URL=https://example.com mise exec -- go test -tags acceptance ./test/acceptance/...
+ACCEPTANCE_BASE_URL=https://example.com mise run acceptance
 ```
 
 `ACCEPTANCE_BASE_URL` controls the target; it defaults to `http://localhost:8080`.

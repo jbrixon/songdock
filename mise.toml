@@ -1,2 +1,14 @@
 [env]
 _.file = ".env"
+
+[tasks.dev]
+run = "go run ./cmd/songdock"
+
+[tasks.build]
+run = "go build -o songdock ./cmd/songdock"
+
+[tasks.test]
+run = "go test ./..."
+
+[tasks.acceptance]
+run = "go test -tags acceptance ./test/acceptance/..."
