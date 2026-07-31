@@ -60,6 +60,7 @@ func migrate(db *sql.DB) error {
 	optional := map[string]string{
 		"description":     "ALTER TABLE songs ADD COLUMN description TEXT NOT NULL DEFAULT ''",
 		"image_url":       "ALTER TABLE songs ADD COLUMN image_url TEXT NOT NULL DEFAULT ''",
+		"artwork_path":    "ALTER TABLE songs ADD COLUMN artwork_path TEXT NOT NULL DEFAULT ''",
 		"youtube_url":     "ALTER TABLE songs ADD COLUMN youtube_url TEXT NOT NULL DEFAULT ''",
 		"spotify_url":     "ALTER TABLE songs ADD COLUMN spotify_url TEXT NOT NULL DEFAULT ''",
 		"apple_music_url": "ALTER TABLE songs ADD COLUMN apple_music_url TEXT NOT NULL DEFAULT ''",

@@ -8,4 +8,5 @@ COPY --chown=nonroot:nonroot docker-data/ /data/
 
 EXPOSE 8080
 VOLUME ["/data"]
+ENV ARTWORK_DIR=/data/uploads/artwork
 ENTRYPOINT ["/songdock"]

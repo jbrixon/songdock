@@ -4,11 +4,13 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
 
 	"github.com/jbrixon/songdock/internal/admin"
+	"github.com/jbrixon/songdock/internal/artwork"
 	"github.com/jbrixon/songdock/internal/platformadmin"
 	"github.com/jbrixon/songdock/internal/store"
 	"github.com/jbrixon/songdock/internal/templates"
@@ -16,13 +18,18 @@ import (
 	static "github.com/jbrixon/songdock/web/static"
 )
 
-const maxAdminRequestBody = 64 << 10
+const maxAdminRequestBody = 11 << 20
 
 func newRouter(songs store.SongRepository, adminRepo admin.Repository, platformRepo platformadmin.Repository, secret []byte, platformUsername, platformPassword string) http.Handler {
+	return newRouterWithArtworkDir(songs, adminRepo, platformRepo, secret, platformUsername, platformPassword, "/data/uploads/artwork")
+}
+
+func newRouterWithArtworkDir(songs store.SongRepository, adminRepo admin.Repository, platformRepo platformadmin.Repository, secret []byte, platformUsername, platformPassword, artworkDir string) http.Handler {
 	r := chi.NewRouter()
 	r.Use(securityHeaders)
 	r.Handle("/static/*", staticAssets(http.StripPrefix("/static/", http.FileServer(http.FS(static.FS)))))
-	a := admin.New(adminRepo, secret)
+	artworkStore := artwork.NewStore(artworkDir)
+	a := admin.NewWithArtworkDir(adminRepo, secret, artworkDir)
 	platform := platformadmin.New(
 		platformRepo,
 		secret,
@@ -53,13 +60,16 @@ func newRouter(songs store.SongRepository, adminRepo admin.Repository, platformR
 			song.ArtistName,
 			song.Title,
 			strings.TrimSpace(song.Description),
-			urlpolicy.SafeExternalURL(song.ImageURL),
+			publicArtworkURL(song.ArtworkPath),
 			urlpolicy.SafeExternalURL(song.YouTubeURL),
 			urlpolicy.SafeExternalURL(song.SpotifyURL),
 			urlpolicy.SafeExternalURL(song.AppleMusicURL),
 		).Render(req.Context(), w); err != nil {
 			log.Printf("render error: %v", err)
 		}
+	})
+	r.Get("/media/artwork/{key}", func(w http.ResponseWriter, req *http.Request) {
+		artworkStore.Serve(w, req, chi.URLParam(req, "key"))
 	})
 
 	r.Route("/admin", func(r chi.Router) {
@@ -75,6 +85,7 @@ func newRouter(songs store.SongRepository, adminRepo admin.Repository, platformR
 		r.Post("/songs", a.HandleCreateSongSubmit)
 		r.Get("/songs/{songSlug}/edit", a.HandleEditSongPage)
 		r.Post("/songs/{songSlug}", a.HandleUpdateSongSubmit)
+		r.Post("/songs/{songSlug}/artwork/delete", a.HandleRemoveArtworkSubmit)
 		r.Post("/songs/{songSlug}/delete", a.HandleDeleteSongSubmit)
 	})
 
@@ -101,6 +112,13 @@ func newRouter(songs store.SongRepository, adminRepo admin.Repository, platformR
 	})
 
 	return r
+}
+
+func publicArtworkURL(key string) string {
+	if key != "" {
+		return "/media/artwork/" + url.PathEscape(key)
+	}
+	return "/static/song_artwork_placeholder.png"
 }
 
 func staticAssets(next http.Handler) http.Handler {

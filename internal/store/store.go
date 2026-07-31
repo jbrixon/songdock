@@ -49,6 +49,7 @@ type Song struct {
 	ArtistName    string
 	Description   string
 	ImageURL      string
+	ArtworkPath   string
 	YouTubeURL    string
 	SpotifyURL    string
 	AppleMusicURL string

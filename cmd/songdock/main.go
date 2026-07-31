@@ -46,7 +46,11 @@ func main() {
 	}
 	defer repo.Close()
 
-	r := newRouter(repo, repo, repo, []byte(adminSecret), platformAdminUsername, platformAdminPassword)
+	artworkDir := "uploads/artwork"
+	if configured := os.Getenv("ARTWORK_DIR"); configured != "" {
+		artworkDir = configured
+	}
+	r := newRouterWithArtworkDir(repo, repo, repo, []byte(adminSecret), platformAdminUsername, platformAdminPassword, artworkDir)
 
 	addr := ":8080"
 	if port := os.Getenv("PORT"); port != "" {

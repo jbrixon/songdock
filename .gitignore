@@ -35,3 +35,6 @@ mise.*.local.toml
 
 # Database files
 songs.db*
+
+# Development artwork uploads
+/uploads/artwork/*

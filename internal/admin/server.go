@@ -13,6 +13,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	"github.com/jbrixon/songdock/internal/artwork"
 	"github.com/jbrixon/songdock/internal/store"
 	songtemplates "github.com/jbrixon/songdock/internal/templates"
 	"github.com/jbrixon/songdock/internal/urlpolicy"
@@ -24,16 +25,22 @@ type Server struct {
 	secret              []byte
 	loginLimiter        *RateLimiter
 	registrationLimiter *RateLimiter
+	artwork             *artwork.Store
 }
 
 // New returns a new Server that uses repo for data access and secret for
 // signing session tokens.
 func New(repo Repository, secret []byte) *Server {
+	return NewWithArtworkDir(repo, secret, "/data/uploads/artwork")
+}
+
+func NewWithArtworkDir(repo Repository, secret []byte, artworkDir string) *Server {
 	return &Server{
 		repo:                repo,
 		secret:              secret,
 		loginLimiter:        NewRateLimiter(5, 15*time.Minute),
 		registrationLimiter: NewRateLimiter(5, 15*time.Minute),
+		artwork:             artwork.NewStore(artworkDir),
 	}
 }
 
@@ -424,7 +431,6 @@ func (s *Server) HandleCreateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		ActiveArtist:  activeArtist,
 		Title:         strings.TrimSpace(r.Form.Get("title")),
 		Description:   strings.TrimSpace(r.Form.Get("description")),
-		ImageURL:      strings.TrimSpace(r.Form.Get("image_url")),
 		YouTubeURL:    strings.TrimSpace(r.Form.Get("youtube_url")),
 		SpotifyURL:    strings.TrimSpace(r.Form.Get("spotify_url")),
 		AppleMusicURL: strings.TrimSpace(r.Form.Get("apple_music_url")),
@@ -444,8 +450,20 @@ func (s *Server) HandleCreateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		s.renderSongFormPage(w, http.StatusBadRequest, view)
 		return
 	}
+	artworkPath, hasArtwork, err := s.uploadArtwork(r)
+	if err != nil {
+		view.Error = err.Error()
+		s.renderSongFormPage(w, http.StatusBadRequest, view)
+		return
+	}
+	if hasArtwork {
+		view.ArtworkPath = artworkPath
+	}
 
 	if _, err := insertSongWithUniqueSlug(s.repo, activeArtist, view); err != nil {
+		if hasArtwork {
+			_ = s.artwork.Remove(artworkPath)
+		}
 		view.Error = err.Error()
 		s.renderSongFormPage(w, http.StatusBadRequest, view)
 		return
@@ -455,7 +473,7 @@ func (s *Server) HandleCreateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		ArtistName:    activeArtist.Name,
 		Title:         view.Title,
 		Description:   view.Description,
-		ImageURL:      view.ImageURL,
+		ArtworkPath:   view.ArtworkPath,
 		YouTubeURL:    view.YouTubeURL,
 		SpotifyURL:    view.SpotifyURL,
 		AppleMusicURL: view.AppleMusicURL,
@@ -474,7 +492,7 @@ func insertSongWithUniqueSlug(repo Repository, activeArtist *store.Artist, view 
 			Title:         view.Title,
 			ArtistName:    activeArtist.Name,
 			Description:   view.Description,
-			ImageURL:      view.ImageURL,
+			ArtworkPath:   view.ArtworkPath,
 			YouTubeURL:    view.YouTubeURL,
 			SpotifyURL:    view.SpotifyURL,
 			AppleMusicURL: view.AppleMusicURL,
@@ -524,18 +542,19 @@ func (s *Server) HandleEditSongPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s.renderSongFormPage(w, http.StatusOK, songFormView{
-		Mode:          "edit",
-		ActiveArtist:  activeArtist,
-		Title:         song.Title,
-		Description:   song.Description,
-		ImageURL:      song.ImageURL,
-		YouTubeURL:    song.YouTubeURL,
-		SpotifyURL:    song.SpotifyURL,
-		AppleMusicURL: song.AppleMusicURL,
-		SongSlug:      song.SongSlug,
-		Action:        "/admin/songs/" + url.PathEscape(song.SongSlug),
-		DeleteAction:  "/admin/songs/" + url.PathEscape(song.SongSlug) + "/delete",
-		SubmitLabel:   "Save Changes",
+		Mode:                "edit",
+		ActiveArtist:        activeArtist,
+		Title:               song.Title,
+		Description:         song.Description,
+		ArtworkPath:         song.ArtworkPath,
+		YouTubeURL:          song.YouTubeURL,
+		SpotifyURL:          song.SpotifyURL,
+		AppleMusicURL:       song.AppleMusicURL,
+		SongSlug:            song.SongSlug,
+		Action:              "/admin/songs/" + url.PathEscape(song.SongSlug),
+		DeleteAction:        "/admin/songs/" + url.PathEscape(song.SongSlug) + "/delete",
+		RemoveArtworkAction: "/admin/songs/" + url.PathEscape(song.SongSlug) + "/artwork/delete",
+		SubmitLabel:         "Save Changes",
 	})
 }
 
@@ -547,7 +566,7 @@ func (s *Server) HandleUpdateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
+	if err := r.ParseMultipartForm(11 << 20); err != nil {
 		s.renderSongFormPage(w, formErrorStatus(err), songFormView{
 			Error: "Invalid form submission.",
 		})
@@ -565,7 +584,6 @@ func (s *Server) HandleUpdateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		ActiveArtist:  activeArtist,
 		Title:         strings.TrimSpace(r.Form.Get("title")),
 		Description:   strings.TrimSpace(r.Form.Get("description")),
-		ImageURL:      strings.TrimSpace(r.Form.Get("image_url")),
 		YouTubeURL:    strings.TrimSpace(r.Form.Get("youtube_url")),
 		SpotifyURL:    strings.TrimSpace(r.Form.Get("spotify_url")),
 		AppleMusicURL: strings.TrimSpace(r.Form.Get("apple_music_url")),
@@ -579,6 +597,16 @@ func (s *Server) HandleUpdateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		s.renderSongFormPage(w, http.StatusForbidden, view)
 		return
 	}
+	oldSong, err := s.repo.FindBySlug(activeArtist.Slug, songSlug)
+	if err != nil {
+		if errors.Is(err, store.ErrNotFound) {
+			http.NotFound(w, r)
+			return
+		}
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	view.ArtworkPath = oldSong.ArtworkPath
 	if view.Title == "" {
 		view.Error = "Title is required."
 		s.renderSongFormPage(w, http.StatusBadRequest, view)
@@ -589,18 +617,30 @@ func (s *Server) HandleUpdateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		s.renderSongFormPage(w, http.StatusBadRequest, view)
 		return
 	}
+	newArtworkPath, hasArtwork, err := s.uploadArtwork(r)
+	if err != nil {
+		view.Error = err.Error()
+		s.renderSongFormPage(w, http.StatusBadRequest, view)
+		return
+	}
+	if hasArtwork {
+		view.ArtworkPath = newArtworkPath
+	}
 
 	if err := s.repo.UpdateSongForArtist(activeArtist.ID, songSlug, store.Song{
 		Title:         view.Title,
 		ArtistName:    activeArtist.Name,
 		Description:   view.Description,
-		ImageURL:      view.ImageURL,
+		ArtworkPath:   view.ArtworkPath,
 		YouTubeURL:    view.YouTubeURL,
 		SpotifyURL:    view.SpotifyURL,
 		AppleMusicURL: view.AppleMusicURL,
 		SongSlug:      songSlug,
 		ArtistSlug:    activeArtist.Slug,
 	}); err != nil {
+		if hasArtwork {
+			_ = s.artwork.Remove(newArtworkPath)
+		}
 		if errors.Is(err, store.ErrNotFound) {
 			http.NotFound(w, r)
 			return
@@ -608,8 +648,59 @@ func (s *Server) HandleUpdateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
+	if hasArtwork && oldSong.ArtworkPath != "" {
+		_ = s.artwork.Remove(oldSong.ArtworkPath)
+	}
 
 	http.Redirect(w, r, "/admin/", http.StatusSeeOther)
+}
+
+// HandleRemoveArtworkSubmit removes the current artwork from an existing song.
+func (s *Server) HandleRemoveArtworkSubmit(w http.ResponseWriter, r *http.Request) {
+	session, ok := s.authenticatedSession(r)
+	if !ok {
+		http.Redirect(w, r, "/admin/login", http.StatusSeeOther)
+		return
+	}
+
+	activeArtist, err := s.resolveActiveArtist(r, session)
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	if activeArtist == nil {
+		http.Error(w, "No artists are assigned to your account.", http.StatusForbidden)
+		return
+	}
+
+	songSlug := strings.TrimSpace(chi.URLParam(r, "songSlug"))
+	song, err := s.repo.FindBySlug(activeArtist.Slug, songSlug)
+	if err != nil {
+		if errors.Is(err, store.ErrNotFound) {
+			http.NotFound(w, r)
+			return
+		}
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	oldArtworkPath := song.ArtworkPath
+	if oldArtworkPath != "" {
+		song.ArtworkPath = ""
+		if err := s.repo.UpdateSongForArtist(activeArtist.ID, songSlug, *song); err != nil {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
+		_ = s.artwork.Remove(oldArtworkPath)
+	}
+
+	editURL := "/admin/songs/" + url.PathEscape(songSlug) + "/edit"
+	if isHTMXRequest(r) {
+		w.Header().Set("Cache-Control", "no-store")
+		w.Header().Set("HX-Redirect", editURL)
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+	http.Redirect(w, r, editURL, http.StatusSeeOther)
 }
 
 // HandleDeleteSongSubmit processes the delete-song form POST.
@@ -787,6 +878,9 @@ func (s *Server) renderSongFormPage(w http.ResponseWriter, status int, view song
 	if view.DeleteAction == "" && view.Mode == "edit" && view.SongSlug != "" {
 		view.DeleteAction = "/admin/songs/" + url.PathEscape(view.SongSlug) + "/delete"
 	}
+	if view.RemoveArtworkAction == "" && view.Mode == "edit" && view.SongSlug != "" {
+		view.RemoveArtworkAction = "/admin/songs/" + url.PathEscape(view.SongSlug) + "/artwork/delete"
+	}
 	if view.SubmitLabel == "" {
 		view.SubmitLabel = "Create Song"
 	}
@@ -796,6 +890,9 @@ func (s *Server) renderSongFormPage(w http.ResponseWriter, status int, view song
 		} else {
 			view.PageTitle = "Create Song"
 		}
+	}
+	if view.ArtworkURL == "" {
+		view.ArtworkURL = artworkURL(view.ArtworkPath)
 	}
 	w.Header().Set("Cache-Control", "no-store")
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -811,7 +908,7 @@ func (s *Server) renderSongPreviewPage(w http.ResponseWriter, r *http.Request, s
 		view.ArtistName,
 		view.Title,
 		strings.TrimSpace(view.Description),
-		urlpolicy.SafeExternalURL(view.ImageURL),
+		artworkURL(view.ArtworkPath),
 		urlpolicy.SafeExternalURL(view.YouTubeURL),
 		urlpolicy.SafeExternalURL(view.SpotifyURL),
 		urlpolicy.SafeExternalURL(view.AppleMusicURL),
@@ -829,6 +926,26 @@ func (s *Server) renderSongPreviewPage(w http.ResponseWriter, r *http.Request, s
 	if _, err := w.Write([]byte(preview)); err != nil {
 		log.Printf("write admin song preview page: %v", err)
 	}
+}
+
+func (s *Server) uploadArtwork(r *http.Request) (string, bool, error) {
+	file, _, err := r.FormFile("artwork")
+	if errors.Is(err, http.ErrMissingFile) {
+		return "", false, nil
+	}
+	if err != nil {
+		return "", false, fmt.Errorf("invalid artwork upload")
+	}
+	defer file.Close()
+	key, err := s.artwork.Save(file)
+	return key, true, err
+}
+
+func artworkURL(path string) string {
+	if path != "" {
+		return "/media/artwork/" + url.PathEscape(path)
+	}
+	return "/static/song_artwork_placeholder.png"
 }
 
 func (s *Server) renderHomePage(w http.ResponseWriter, status int, view homeView) {
@@ -868,7 +985,6 @@ func normalizeSongURLs(view *songFormView) error {
 		name  string
 		value *string
 	}{
-		{name: "Image URL", value: &view.ImageURL},
 		{name: "YouTube URL", value: &view.YouTubeURL},
 		{name: "Spotify URL", value: &view.SpotifyURL},
 		{name: "Apple Music URL", value: &view.AppleMusicURL},

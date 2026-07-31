@@ -9,7 +9,7 @@ import (
 // ErrNotFound if no match exists.
 func (r *SQLiteSongRepository) FindBySlug(artistSlug, songSlug string) (*Song, error) {
 	row := r.db.QueryRow(
-		`SELECT s.title, s.artist_name, s.description, s.image_url, s.youtube_url, s.spotify_url, s.apple_music_url, s.song_slug, a.slug
+		`SELECT s.title, s.artist_name, s.description, s.image_url, s.artwork_path, s.youtube_url, s.spotify_url, s.apple_music_url, s.song_slug, a.slug
 		   FROM songs s
 		   JOIN artists a ON a.id = s.artist_id
 		  WHERE a.slug = ? AND s.song_slug = ?`,
@@ -22,6 +22,7 @@ func (r *SQLiteSongRepository) FindBySlug(artistSlug, songSlug string) (*Song, e
 		&s.ArtistName,
 		&s.Description,
 		&s.ImageURL,
+		&s.ArtworkPath,
 		&s.YouTubeURL,
 		&s.SpotifyURL,
 		&s.AppleMusicURL,
@@ -60,7 +61,7 @@ func (r *SQLiteSongRepository) SongSlugExists(artistID int64, songSlug string) (
 // ListSongsForArtist returns all songs for the given artist.
 func (r *SQLiteSongRepository) ListSongsForArtist(artistID int64) ([]Song, error) {
 	rows, err := r.db.Query(
-		`SELECT s.title, s.artist_name, s.description, s.image_url, s.youtube_url, s.spotify_url, s.apple_music_url, s.song_slug, a.slug
+		`SELECT s.title, s.artist_name, s.description, s.image_url, s.artwork_path, s.youtube_url, s.spotify_url, s.apple_music_url, s.song_slug, a.slug
 		   FROM songs s
 		   JOIN artists a ON a.id = s.artist_id
 		  WHERE s.artist_id = ?
@@ -80,6 +81,7 @@ func (r *SQLiteSongRepository) ListSongsForArtist(artistID int64) ([]Song, error
 			&song.ArtistName,
 			&song.Description,
 			&song.ImageURL,
+			&song.ArtworkPath,
 			&song.YouTubeURL,
 			&song.SpotifyURL,
 			&song.AppleMusicURL,
@@ -101,12 +103,13 @@ func (r *SQLiteSongRepository) ListSongsForArtist(artistID int64) ([]Song, error
 func (r *SQLiteSongRepository) InsertSongForArtist(artistID int64, song Song) error {
 	if _, err := r.db.Exec(
 		`INSERT INTO songs (
-			title, artist_name, description, image_url, youtube_url, spotify_url, apple_music_url, song_slug, artist_id
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+			title, artist_name, description, image_url, artwork_path, youtube_url, spotify_url, apple_music_url, song_slug, artist_id
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		song.Title,
 		song.ArtistName,
 		song.Description,
 		song.ImageURL,
+		song.ArtworkPath,
 		song.YouTubeURL,
 		song.SpotifyURL,
 		song.AppleMusicURL,
@@ -129,7 +132,8 @@ func (r *SQLiteSongRepository) UpdateSongForArtist(artistID int64, songSlug stri
 		    SET title = ?,
 		        artist_name = ?,
 		        description = ?,
-		        image_url = ?,
+			    image_url = ?,
+			    artwork_path = ?,
 		        youtube_url = ?,
 		        spotify_url = ?,
 		        apple_music_url = ?
@@ -138,6 +142,7 @@ func (r *SQLiteSongRepository) UpdateSongForArtist(artistID int64, songSlug stri
 		song.ArtistName,
 		song.Description,
 		song.ImageURL,
+		song.ArtworkPath,
 		song.YouTubeURL,
 		song.SpotifyURL,
 		song.AppleMusicURL,
@@ -206,12 +211,13 @@ func (r *SQLiteSongRepository) Insert(songs ...Song) error {
 
 		if _, err := r.db.Exec(
 			`INSERT OR IGNORE INTO songs (
-				title, artist_name, description, image_url, youtube_url, spotify_url, apple_music_url, song_slug, artist_id
-			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+				title, artist_name, description, image_url, artwork_path, youtube_url, spotify_url, apple_music_url, song_slug, artist_id
+			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 			s.Title,
 			s.ArtistName,
 			s.Description,
 			s.ImageURL,
+			s.ArtworkPath,
 			s.YouTubeURL,
 			s.SpotifyURL,
 			s.AppleMusicURL,

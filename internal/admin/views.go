@@ -27,20 +27,22 @@ type songListItem struct {
 
 // songFormView is the template data for the create/edit song form page.
 type songFormView struct {
-	Mode          string
-	ActiveArtist  *store.Artist
-	Title         string
-	Description   string
-	ImageURL      string
-	YouTubeURL    string
-	SpotifyURL    string
-	AppleMusicURL string
-	SongSlug      string
-	Action        string
-	DeleteAction  string
-	SubmitLabel   string
-	PageTitle     string
-	Error         string
+	Mode                string
+	ActiveArtist        *store.Artist
+	Title               string
+	Description         string
+	ArtworkPath         string
+	ArtworkURL          string
+	YouTubeURL          string
+	SpotifyURL          string
+	AppleMusicURL       string
+	SongSlug            string
+	Action              string
+	DeleteAction        string
+	RemoveArtworkAction string
+	SubmitLabel         string
+	PageTitle           string
+	Error               string
 }
 
 // songPreviewView is the template data for the post-create landing page preview.
@@ -48,7 +50,7 @@ type songPreviewView struct {
 	ArtistName    string
 	Title         string
 	Description   string
-	ImageURL      string
+	ArtworkPath   string
 	YouTubeURL    string
 	SpotifyURL    string
 	AppleMusicURL string

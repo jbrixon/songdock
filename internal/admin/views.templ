@@ -494,6 +494,18 @@ templ HomePage(view homeView) {
 			<title>Admin</title>
 			@htmxScript()
 			@adminBaseStyles()
+			<style>
+				.artwork-preview {
+					width: 8rem;
+					height: 8rem;
+					margin: 0 0 0.75rem;
+					border-radius: 0.75rem;
+					overflow: hidden;
+					background: #222a3d;
+					box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
+				}
+				.artwork-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+			</style>
 		</head>
 		<body>
 			<main>
@@ -590,13 +602,14 @@ templ SongFormPage(view songFormView) {
 				}
 				if view.ActiveArtist != nil {
 					<p>Artist: { view.ActiveArtist.Name }</p>
-					<form class="admin-form" method="post" action={ view.Action }>
+					<form class="admin-form" method="post" enctype="multipart/form-data" action={ view.Action }>
 						<label for="title">Title</label>
 						<input id="title" name="title" required value={ view.Title }/>
 						<label for="description">Description</label>
 						<textarea id="description" name="description">{ view.Description }</textarea>
-						<label for="image_url">Image URL</label>
-						<input id="image_url" name="image_url" value={ view.ImageURL }/>
+						<label for="artwork">Cover artwork</label>
+						<div class="artwork-preview"><img id="artwork-preview" src={ view.ArtworkURL } alt="Artwork preview"/></div>
+						<input id="artwork" name="artwork" type="file" accept="image/jpeg,image/png,image/webp"/>
 						<label for="youtube_url">YouTube URL</label>
 						<input id="youtube_url" name="youtube_url" value={ view.YouTubeURL }/>
 						<label for="spotify_url">Spotify URL</label>
@@ -608,9 +621,25 @@ templ SongFormPage(view songFormView) {
 							<a class="admin-link-button" href="/admin/">Cancel</a>
 						</div>
 					</form>
+					<script>
+						const artworkInput = document.getElementById("artwork");
+						const artworkPreview = document.getElementById("artwork-preview");
+						artworkInput?.addEventListener("change", () => {
+							const file = artworkInput.files?.[0];
+							if (!file) return;
+							const reader = new FileReader();
+							reader.addEventListener("load", () => artworkPreview.src = reader.result);
+							reader.readAsDataURL(file);
+						});
+					</script>
 					if view.Mode == "edit" {
 						<details class="admin-danger-menu">
 							<summary>More options</summary>
+							if view.ArtworkPath != "" {
+								<form method="post" action={ view.RemoveArtworkAction } hx-post={ view.RemoveArtworkAction } hx-confirm="Remove this artwork?" hx-swap="none">
+									<button type="submit">Remove Artwork</button>
+								</form>
+							}
 							<form method="post" action={ view.DeleteAction } hx-post={ view.DeleteAction } hx-confirm="Delete this song? This cannot be undone." hx-swap="none">
 								<button class="admin-danger-button" type="submit">Delete Song</button>
 							</form>
