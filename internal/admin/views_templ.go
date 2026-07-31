@@ -116,7 +116,7 @@ func LoginCard(view loginView) templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<section id=\"login-card\" class=\"admin-card\" aria-labelledby=\"admin-login-title\"><div class=\"admin-card__header\"><img class=\"admin-logo\" src=\"/static/songdock_logo_dark.png\" alt=\"SongDock\"><p class=\"admin-eyebrow\">Admin</p><h1 id=\"admin-login-title\">Log in</h1><p class=\"admin-copy\">Sign in to access admin pages.</p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<section id=\"login-card\" class=\"admin-card\" aria-labelledby=\"admin-login-title\"><div class=\"admin-card__header\"><img class=\"admin-logo\" src=\"/static/songdock_logo_dark.v2.png\" alt=\"SongDock\"><p class=\"admin-eyebrow\">Admin</p><h1 id=\"admin-login-title\">Log in</h1><p class=\"admin-copy\">Sign in to access admin pages.</p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -230,7 +230,7 @@ func RegisterCard(view registerView) templ.Component {
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<section id=\"register-card\" class=\"admin-card\" aria-labelledby=\"admin-register-title\"><div class=\"admin-card__header\"><img class=\"admin-logo\" src=\"/static/songdock_logo_dark.png\" alt=\"SongDock\"><p class=\"admin-eyebrow\">Admin</p><h1 id=\"admin-register-title\">Create account</h1><p class=\"admin-copy\">Enter the invite code you received and choose a password.</p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<section id=\"register-card\" class=\"admin-card\" aria-labelledby=\"admin-register-title\"><div class=\"admin-card__header\"><img class=\"admin-logo\" src=\"/static/songdock_logo_dark.v2.png\" alt=\"SongDock\"><p class=\"admin-eyebrow\">Admin</p><h1 id=\"admin-register-title\">Create account</h1><p class=\"admin-copy\">Enter the invite code you received and choose a password.</p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -356,7 +356,7 @@ func HomePage(view homeView) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</head><body><main><header class=\"admin-section-header\"><div><img class=\"admin-page-logo\" src=\"/static/songdock_logo_dark.png\" alt=\"SongDock\"><h1>Admin</h1><p class=\"admin-meta\">Signed in as ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</head><body><main><header class=\"admin-section-header\"><div><img class=\"admin-page-logo\" src=\"/static/songdock_logo_dark.v2.png\" alt=\"SongDock\"><h1>Admin</h1><p class=\"admin-meta\">Signed in as ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -606,7 +606,7 @@ func SongFormPage(view songFormView) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "</head><body><main style=\"width:min(100%,36rem);\"><header class=\"admin-section-header\"><div><img class=\"admin-page-logo\" src=\"/static/songdock_logo_dark.png\" alt=\"SongDock\"><h1>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "</head><body><main style=\"width:min(100%,36rem);\"><header class=\"admin-section-header\"><div><img class=\"admin-page-logo\" src=\"/static/songdock_logo_dark.v2.png\" alt=\"SongDock\"><h1>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

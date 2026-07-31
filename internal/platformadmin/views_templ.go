@@ -87,7 +87,7 @@ func LoginCard(view loginView) templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section id=\"login-card\" class=\"platform-card\" aria-labelledby=\"platform-login-title\"><div class=\"platform-card__header\"><img class=\"platform-logo\" src=\"/static/songdock_logo_dark.png\" alt=\"SongDock\"><p class=\"platform-eyebrow\">Platform Admin</p><h1 id=\"platform-login-title\">Log in</h1><p class=\"platform-copy\">Sign in to manage platform users.</p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section id=\"login-card\" class=\"platform-card\" aria-labelledby=\"platform-login-title\"><div class=\"platform-card__header\"><img class=\"platform-logo\" src=\"/static/songdock_logo_dark.v2.png\" alt=\"SongDock\"><p class=\"platform-eyebrow\">Platform Admin</p><h1 id=\"platform-login-title\">Log in</h1><p class=\"platform-copy\">Sign in to manage platform users.</p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -209,7 +209,7 @@ func HomePage(view homeView) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</head><body><main class=\"platform-shell\"><header class=\"platform-header\"><div><img class=\"platform-page-logo\" src=\"/static/songdock_logo_dark.png\" alt=\"SongDock\"><p class=\"platform-eyebrow\">Platform Admin</p><h1>Dashboard</h1><p class=\"platform-copy\">Signed in as ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</head><body><main class=\"platform-shell\"><header class=\"platform-header\"><div><img class=\"platform-page-logo\" src=\"/static/songdock_logo_dark.v2.png\" alt=\"SongDock\"><p class=\"platform-eyebrow\">Platform Admin</p><h1>Dashboard</h1><p class=\"platform-copy\">Signed in as ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -263,7 +263,7 @@ func UsersPage(view usersView) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</head><body><main class=\"platform-shell\"><header class=\"platform-header\"><div><img class=\"platform-page-logo\" src=\"/static/songdock_logo_dark.png\" alt=\"SongDock\"><p class=\"platform-eyebrow\">Platform Admin</p><h1>Users</h1><p class=\"platform-copy\">View platform users and their artist assignments.</p></div><div class=\"platform-actions\"><a class=\"platform-link\" href=\"/platform/admin/invitations\">Manage invitations</a> <a class=\"platform-link\" href=\"/platform/admin/\">Dashboard</a></div></header>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</head><body><main class=\"platform-shell\"><header class=\"platform-header\"><div><img class=\"platform-page-logo\" src=\"/static/songdock_logo_dark.v2.png\" alt=\"SongDock\"><p class=\"platform-eyebrow\">Platform Admin</p><h1>Users</h1><p class=\"platform-copy\">View platform users and their artist assignments.</p></div><div class=\"platform-actions\"><a class=\"platform-link\" href=\"/platform/admin/invitations\">Manage invitations</a> <a class=\"platform-link\" href=\"/platform/admin/\">Dashboard</a></div></header>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -407,7 +407,7 @@ func InvitationsPage(view invitationsView) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</head><body><main class=\"platform-shell\"><header class=\"platform-header\"><div><img class=\"platform-page-logo\" src=\"/static/songdock_logo_dark.png\" alt=\"SongDock\"><p class=\"platform-eyebrow\">Platform Admin</p><h1>Invitations</h1><p class=\"platform-copy\">Create and manage invitations for artist administrators.</p></div><div class=\"platform-actions\"><a class=\"platform-link\" href=\"/platform/admin/users\">Manage users</a> <a class=\"platform-link\" href=\"/platform/admin/\">Dashboard</a></div></header>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</head><body><main class=\"platform-shell\"><header class=\"platform-header\"><div><img class=\"platform-page-logo\" src=\"/static/songdock_logo_dark.v2.png\" alt=\"SongDock\"><p class=\"platform-eyebrow\">Platform Admin</p><h1>Invitations</h1><p class=\"platform-copy\">Create and manage invitations for artist administrators.</p></div><div class=\"platform-actions\"><a class=\"platform-link\" href=\"/platform/admin/users\">Manage users</a> <a class=\"platform-link\" href=\"/platform/admin/\">Dashboard</a></div></header>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -713,7 +713,7 @@ func ArtistsPage(view artistsView) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "</head><body><main class=\"platform-shell\"><header class=\"platform-header\"><div><img class=\"platform-page-logo\" src=\"/static/songdock_logo_dark.png\" alt=\"SongDock\"><p class=\"platform-eyebrow\">Platform Admin</p><h1>Artists</h1><p class=\"platform-copy\">Create platform-managed artist tenants.</p></div><div class=\"platform-actions\"><a class=\"platform-link\" href=\"/platform/admin/\">Dashboard</a></div></header>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "</head><body><main class=\"platform-shell\"><header class=\"platform-header\"><div><img class=\"platform-page-logo\" src=\"/static/songdock_logo_dark.v2.png\" alt=\"SongDock\"><p class=\"platform-eyebrow\">Platform Admin</p><h1>Artists</h1><p class=\"platform-copy\">Create platform-managed artist tenants.</p></div><div class=\"platform-actions\"><a class=\"platform-link\" href=\"/platform/admin/\">Dashboard</a></div></header>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

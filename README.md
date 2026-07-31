@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="web/static/songdock_logo_dark.png" alt="SongDock" width="520">
+  <img src="web/static/songdock_logo_dark.v2.png" alt="SongDock" width="520">
 </p>
 
 <p align="center">Self-hosted song landing pages for independent musicians and small labels.</p>
