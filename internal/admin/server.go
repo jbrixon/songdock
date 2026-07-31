@@ -81,6 +81,49 @@ func (s *Server) HandleHome(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// HandleArtistSettingsSubmit updates settings for the authenticated user's active artist.
+func (s *Server) HandleArtistSettingsSubmit(w http.ResponseWriter, r *http.Request) {
+	session, ok := s.authenticatedSession(r)
+	if !ok {
+		http.Redirect(w, r, "/admin/login", http.StatusSeeOther)
+		return
+	}
+	if err := r.ParseForm(); err != nil {
+		s.renderHomePage(w, formErrorStatus(err), homeView{Email: session.Email, Error: "Invalid form submission."})
+		return
+	}
+	artists, err := s.repo.ListArtistsForUser(session.UserID)
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	activeArtist := s.activeArtistFromRequest(r, session, artists)
+	if activeArtist == nil {
+		s.renderHomePage(w, http.StatusForbidden, homeView{Email: session.Email, Artists: artists, Error: "No artists are assigned to your account."})
+		return
+	}
+	pixelID := strings.TrimSpace(r.Form.Get("meta_pixel_id"))
+	if pixelID != "" && !allDigits(pixelID) {
+		s.renderHomePage(w, http.StatusBadRequest, homeView{Email: session.Email, Artists: artists, ActiveArtist: activeArtist, Error: "Meta Pixel ID must contain only numbers."})
+		return
+	}
+	if err := s.repo.UpdateArtistMetaPixelID(activeArtist.ID, pixelID); err != nil {
+		if errors.Is(err, store.ErrArtistNotFound) {
+			http.NotFound(w, r)
+			return
+		}
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	activeArtist.MetaPixelID = pixelID
+	for i := range artists {
+		if artists[i].ID == activeArtist.ID {
+			artists[i].MetaPixelID = pixelID
+		}
+	}
+	s.renderHomePage(w, http.StatusOK, homeView{Email: session.Email, Artists: artists, ActiveArtist: activeArtist, Message: "Meta Pixel settings saved."})
+}
+
 // HandleActiveArtistSubmit stores the user's active artist selection.
 func (s *Server) HandleActiveArtistSubmit(w http.ResponseWriter, r *http.Request) {
 	session, ok := s.authenticatedSession(r)
@@ -431,6 +474,7 @@ func (s *Server) HandleCreateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		ActiveArtist:  activeArtist,
 		Title:         strings.TrimSpace(r.Form.Get("title")),
 		Description:   strings.TrimSpace(r.Form.Get("description")),
+		ImageURL:      strings.TrimSpace(r.Form.Get("image_url")),
 		YouTubeURL:    strings.TrimSpace(r.Form.Get("youtube_url")),
 		SpotifyURL:    strings.TrimSpace(r.Form.Get("spotify_url")),
 		AppleMusicURL: strings.TrimSpace(r.Form.Get("apple_music_url")),
@@ -477,6 +521,7 @@ func (s *Server) HandleCreateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		YouTubeURL:    view.YouTubeURL,
 		SpotifyURL:    view.SpotifyURL,
 		AppleMusicURL: view.AppleMusicURL,
+		MetaPixelID:   activeArtist.MetaPixelID,
 	})
 }
 
@@ -492,6 +537,7 @@ func insertSongWithUniqueSlug(repo Repository, activeArtist *store.Artist, view 
 			Title:         view.Title,
 			ArtistName:    activeArtist.Name,
 			Description:   view.Description,
+			ImageURL:      view.ImageURL,
 			ArtworkPath:   view.ArtworkPath,
 			YouTubeURL:    view.YouTubeURL,
 			SpotifyURL:    view.SpotifyURL,
@@ -550,6 +596,7 @@ func (s *Server) HandleEditSongPage(w http.ResponseWriter, r *http.Request) {
 		YouTubeURL:          song.YouTubeURL,
 		SpotifyURL:          song.SpotifyURL,
 		AppleMusicURL:       song.AppleMusicURL,
+		MetaPixelID:         song.MetaPixelID,
 		SongSlug:            song.SongSlug,
 		Action:              "/admin/songs/" + url.PathEscape(song.SongSlug),
 		DeleteAction:        "/admin/songs/" + url.PathEscape(song.SongSlug) + "/delete",
@@ -584,6 +631,7 @@ func (s *Server) HandleUpdateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		ActiveArtist:  activeArtist,
 		Title:         strings.TrimSpace(r.Form.Get("title")),
 		Description:   strings.TrimSpace(r.Form.Get("description")),
+		ImageURL:      strings.TrimSpace(r.Form.Get("image_url")),
 		YouTubeURL:    strings.TrimSpace(r.Form.Get("youtube_url")),
 		SpotifyURL:    strings.TrimSpace(r.Form.Get("spotify_url")),
 		AppleMusicURL: strings.TrimSpace(r.Form.Get("apple_music_url")),
@@ -631,10 +679,12 @@ func (s *Server) HandleUpdateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		Title:         view.Title,
 		ArtistName:    activeArtist.Name,
 		Description:   view.Description,
+		ImageURL:      view.ImageURL,
 		ArtworkPath:   view.ArtworkPath,
 		YouTubeURL:    view.YouTubeURL,
 		SpotifyURL:    view.SpotifyURL,
 		AppleMusicURL: view.AppleMusicURL,
+		MetaPixelID:   oldSong.MetaPixelID,
 		SongSlug:      songSlug,
 		ArtistSlug:    activeArtist.Slug,
 	}); err != nil {
@@ -912,6 +962,7 @@ func (s *Server) renderSongPreviewPage(w http.ResponseWriter, r *http.Request, s
 		urlpolicy.SafeExternalURL(view.YouTubeURL),
 		urlpolicy.SafeExternalURL(view.SpotifyURL),
 		urlpolicy.SafeExternalURL(view.AppleMusicURL),
+		view.MetaPixelID,
 	).Render(r.Context(), &body); err != nil {
 		log.Printf("render admin song preview body: %v", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
@@ -964,6 +1015,15 @@ func (s *Server) renderHomePage(w http.ResponseWriter, status int, view homeView
 	}
 }
 
+func allDigits(value string) bool {
+	for _, r := range value {
+		if r < '0' || r > '9' {
+			return false
+		}
+	}
+	return value != ""
+}
+
 func (s *Server) renderRegisterResponse(w http.ResponseWriter, r *http.Request, status int, view registerView) {
 	if isHTMXRequest(r) {
 		w.Header().Set("Cache-Control", "no-store")
@@ -992,6 +1052,7 @@ func normalizeSongURLs(view *songFormView) error {
 		name  string
 		value *string
 	}{
+		{name: "Image URL", value: &view.ImageURL},
 		{name: "YouTube URL", value: &view.YouTubeURL},
 		{name: "Spotify URL", value: &view.SpotifyURL},
 		{name: "Apple Music URL", value: &view.AppleMusicURL},

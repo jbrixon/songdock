@@ -60,10 +60,11 @@ func newRouterWithArtworkDir(songs store.SongRepository, adminRepo admin.Reposit
 			song.ArtistName,
 			song.Title,
 			strings.TrimSpace(song.Description),
-			publicArtworkURL(song.ArtworkPath),
+			publicArtworkURL(song.ArtworkPath, song.ImageURL),
 			urlpolicy.SafeExternalURL(song.YouTubeURL),
 			urlpolicy.SafeExternalURL(song.SpotifyURL),
 			urlpolicy.SafeExternalURL(song.AppleMusicURL),
+			song.MetaPixelID,
 		).Render(req.Context(), w); err != nil {
 			log.Printf("render error: %v", err)
 		}
@@ -76,6 +77,7 @@ func newRouterWithArtworkDir(songs store.SongRepository, adminRepo admin.Reposit
 		r.Use(limitAdminRequestBody)
 		r.Get("/", a.HandleHome)
 		r.Post("/active-artist", a.HandleActiveArtistSubmit)
+		r.Post("/artist-settings", a.HandleArtistSettingsSubmit)
 		r.Post("/logout", a.HandleLogoutSubmit)
 		r.Get("/login", a.HandleLoginPage)
 		r.Post("/login", a.HandleLoginSubmit)
@@ -114,9 +116,14 @@ func newRouterWithArtworkDir(songs store.SongRepository, adminRepo admin.Reposit
 	return r
 }
 
-func publicArtworkURL(key string) string {
+func publicArtworkURL(key string, fallback ...string) string {
 	if key != "" {
 		return "/media/artwork/" + url.PathEscape(key)
+	}
+	if len(fallback) > 0 {
+		if imageURL := urlpolicy.SafeExternalURL(fallback[0]); imageURL != "" {
+			return imageURL
+		}
 	}
 	return "/static/song_artwork_placeholder.png"
 }

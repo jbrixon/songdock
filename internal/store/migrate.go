@@ -18,6 +18,15 @@ func migrate(db *sql.DB) error {
 	`); err != nil {
 		return err
 	}
+	artistColumns, err := tableColumns(db, "artists")
+	if err != nil {
+		return err
+	}
+	if _, exists := artistColumns["meta_pixel_id"]; !exists {
+		if _, err := db.Exec(`ALTER TABLE artists ADD COLUMN meta_pixel_id TEXT NOT NULL DEFAULT ''`); err != nil {
+			return err
+		}
+	}
 
 	// users: platform accounts. Artist membership is stored in user_artists.
 	if _, err := db.Exec(`

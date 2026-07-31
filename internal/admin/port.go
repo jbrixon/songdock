@@ -12,6 +12,7 @@ type Repository interface {
 	FindBySlug(artistSlug, songSlug string) (*store.Song, error)
 	ListArtistsForUser(userID int64) ([]store.Artist, error)
 	IsUserAssignedToArtist(userID, artistID int64) (bool, error)
+	UpdateArtistMetaPixelID(artistID int64, pixelID string) error
 	SongSlugExists(artistID int64, songSlug string) (bool, error)
 	ListSongsForArtist(artistID int64) ([]store.Song, error)
 	InsertSongForArtist(artistID int64, song store.Song) error

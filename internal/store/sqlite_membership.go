@@ -8,7 +8,7 @@ import (
 // ListArtistsForUser returns all artists assigned to the given user.
 func (r *SQLiteSongRepository) ListArtistsForUser(userID int64) ([]Artist, error) {
 	rows, err := r.db.Query(
-		`SELECT a.id, a.name, a.slug
+		`SELECT a.id, a.name, a.slug, a.meta_pixel_id
 		   FROM artists a
 		   JOIN user_artists ua ON ua.artist_id = a.id
 		  WHERE ua.user_id = ?
@@ -23,7 +23,7 @@ func (r *SQLiteSongRepository) ListArtistsForUser(userID int64) ([]Artist, error
 	var artists []Artist
 	for rows.Next() {
 		var artist Artist
-		if err := rows.Scan(&artist.ID, &artist.Name, &artist.Slug); err != nil {
+		if err := rows.Scan(&artist.ID, &artist.Name, &artist.Slug, &artist.MetaPixelID); err != nil {
 			return nil, fmt.Errorf("scan user artist: %w", err)
 		}
 		artists = append(artists, artist)
