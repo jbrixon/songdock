@@ -2,7 +2,7 @@
 _.file = ".env"
 
 [tasks.dev]
-run = "go run ./cmd/songdock"
+run = "go run ./cmd/songdock serve"
 
 [tasks.build]
 run = "go build -o songdock ./cmd/songdock"

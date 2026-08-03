@@ -10,3 +10,4 @@ EXPOSE 8080
 VOLUME ["/data"]
 ENV ARTWORK_DIR=/data/uploads/artwork
 ENTRYPOINT ["/songdock"]
+CMD ["serve"]

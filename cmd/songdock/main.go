@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -17,32 +19,62 @@ import (
 const minPlatformAdminPasswordLength = 16
 
 func main() {
-	dbPath := "songs.db"
-	if p := os.Getenv("DB_PATH"); p != "" {
-		dbPath = p
+	if err := run(os.Args[1:]); err != nil {
+		log.Fatal(err)
 	}
+}
+
+func run(args []string) error {
+	switch {
+	case len(args) == 1 && args[0] == "serve":
+		return serve()
+	case len(args) == 2 && args[0] == "migrate" && args[1] == "up":
+		return migrateUp()
+	default:
+		return fmt.Errorf("usage: songdock serve | songdock migrate up")
+	}
+}
+
+func migrateUp() error {
+	if err := store.MigrateSQLiteDatabase(databasePath()); err != nil {
+		return fmt.Errorf("migrate: %w", err)
+	}
+	return nil
+}
+
+func serve() error {
+	shouldMigrate, err := automaticMigrations()
+	if err != nil {
+		return err
+	}
+	if shouldMigrate {
+		if err := store.MigrateSQLiteDatabase(databasePath()); err != nil {
+			return fmt.Errorf("migrate: %w", err)
+		}
+	}
+
 	adminSecret := strings.TrimSpace(os.Getenv("ADMIN_BACKEND_SECRET"))
 	if adminSecret == "" {
-		log.Fatal("ADMIN_BACKEND_SECRET must be set")
+		return errors.New("ADMIN_BACKEND_SECRET must be set")
 	}
 	if len(adminSecret) < 32 {
-		log.Fatal("ADMIN_BACKEND_SECRET must be at least 32 characters")
+		return errors.New("ADMIN_BACKEND_SECRET must be at least 32 characters")
 	}
 	platformAdminUsername := strings.TrimSpace(os.Getenv("PLATFORM_ADMIN_USERNAME"))
 	if platformAdminUsername == "" {
-		log.Fatal("PLATFORM_ADMIN_USERNAME must be set")
+		return errors.New("PLATFORM_ADMIN_USERNAME must be set")
 	}
 	platformAdminPassword := os.Getenv("PLATFORM_ADMIN_PASSWORD")
 	if platformAdminPassword == "" {
-		log.Fatal("PLATFORM_ADMIN_PASSWORD must be set")
+		return errors.New("PLATFORM_ADMIN_PASSWORD must be set")
 	}
 	if len(platformAdminPassword) < minPlatformAdminPasswordLength {
-		log.Fatalf("PLATFORM_ADMIN_PASSWORD must be at least %d characters", minPlatformAdminPasswordLength)
+		return fmt.Errorf("PLATFORM_ADMIN_PASSWORD must be at least %d characters", minPlatformAdminPasswordLength)
 	}
 
-	repo, err := store.NewSQLiteSongRepository(dbPath)
+	repo, err := store.OpenSQLiteSongRepository(databasePath())
 	if err != nil {
-		log.Fatalf("open database: %v", err)
+		return fmt.Errorf("open database: %w", err)
 	}
 	defer repo.Close()
 
@@ -63,8 +95,29 @@ func main() {
 	defer stop()
 
 	if err := serveHTTPServer(ctx, server, server.ListenAndServe); err != nil {
-		log.Fatalf("server failed: %v", err)
+		return fmt.Errorf("server failed: %w", err)
 	}
+	return nil
+}
+
+func databasePath() string {
+	if path := os.Getenv("DB_PATH"); path != "" {
+		return path
+	}
+	return "songs.db"
+}
+
+func automaticMigrations() (bool, error) {
+	value := strings.TrimSpace(os.Getenv("SONGDOCK_AUTO_MIGRATE"))
+	if value == "" {
+		return true, nil
+	}
+
+	parsed, err := strconv.ParseBool(value)
+	if err != nil {
+		return false, fmt.Errorf("SONGDOCK_AUTO_MIGRATE must be a boolean: %w", err)
+	}
+	return parsed, nil
 }
 
 func newHTTPServer(addr string, handler http.Handler) *http.Server {

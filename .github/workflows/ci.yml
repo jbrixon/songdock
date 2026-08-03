@@ -38,7 +38,7 @@ jobs:
           DB_PATH: ${{ runner.temp }}/songdock-ci.db
           PORT: 8080
         run: |
-          "$RUNNER_TEMP/songdock" > "$RUNNER_TEMP/songdock.log" 2>&1 &
+          "$RUNNER_TEMP/songdock" serve > "$RUNNER_TEMP/songdock.log" 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid"' EXIT
 

@@ -97,6 +97,22 @@ the [first-run setup](#first-run-setup) below.
 To expose SongDock on another host port, change the first port in `-p`, for
 example `-p 3000:8080`.
 
+### Run migrations separately
+
+The server command is `songdock serve`. Database migrations can be run without
+starting the server:
+
+```sh
+docker run --rm \
+  --env DB_PATH=/data/songs.db \
+  -v songdock_data:/data \
+  ghcr.io/jbrixon/songdock:latest migrate up
+```
+
+For multiple SongDock instances sharing one database, run `migrate up` once
+before starting the instances and set `SONGDOCK_AUTO_MIGRATE=false` on each
+server. Run migrations as a single process during upgrades.
+
 ## First-run setup
 
 SongDock separates platform administration from artist administration. The platform administrator creates artist workspaces and invites the people who manage them.
@@ -124,6 +140,7 @@ SongDock reads environment variables from `.env` when started through `mise`. In
 | `PLATFORM_ADMIN_PASSWORD` | Yes | — | Initial platform administrator password; at least 16 characters. |
 | `DB_PATH` | No | `songs.db` | Path to the SQLite database file. |
 | `PORT` | No | `8080` | HTTP port inside the process. |
+| `SONGDOCK_AUTO_MIGRATE` | No | `true` | Whether `serve` runs database migrations during startup. Set to `false` when migrations run separately. |
 | `ACCEPTANCE_BASE_URL` | Tests only | `http://localhost:8080` | Base URL used by acceptance tests. |
 
 Keep `ADMIN_BACKEND_SECRET` stable after creating users. Changing it invalidates existing admin sessions and prevents existing password hashes from being verified correctly.

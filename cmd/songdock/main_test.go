@@ -1803,6 +1803,94 @@ func TestServeHTTPServerShutsDownGracefully(t *testing.T) {
 	}
 }
 
+func TestRunRejectsMissingOrUnknownCommand(t *testing.T) {
+	for _, args := range [][]string{nil, {"migrate"}, {"unknown"}} {
+		if err := run(args); err == nil {
+			t.Fatalf("run(%v): expected error", args)
+		}
+	}
+}
+
+func TestMigrateUpNeedsOnlyDatabasePath(t *testing.T) {
+	dbPath := filepath.Join(t.TempDir(), "songs.db")
+	t.Setenv("DB_PATH", dbPath)
+	t.Setenv("ADMIN_BACKEND_SECRET", "")
+	t.Setenv("PLATFORM_ADMIN_USERNAME", "")
+	t.Setenv("PLATFORM_ADMIN_PASSWORD", "")
+
+	if err := run([]string{"migrate", "up"}); err != nil {
+		t.Fatalf("migrate up: %v", err)
+	}
+
+	db, err := sql.Open("sqlite", dbPath)
+	if err != nil {
+		t.Fatalf("open migrated db: %v", err)
+	}
+	defer db.Close()
+
+	var tables int
+	if err := db.QueryRow(`SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = 'songs'`).Scan(&tables); err != nil {
+		t.Fatalf("check migrated schema: %v", err)
+	}
+	if tables != 1 {
+		t.Fatalf("expected songs table after migration, got %d matches", tables)
+	}
+}
+
+func TestAutomaticMigrations(t *testing.T) {
+	tests := []struct {
+		name  string
+		value string
+		want  bool
+	}{
+		{name: "default", want: true},
+		{name: "true", value: "true", want: true},
+		{name: "false", value: "false", want: false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Setenv("SONGDOCK_AUTO_MIGRATE", tt.value)
+			got, err := automaticMigrations()
+			if err != nil {
+				t.Fatalf("automaticMigrations: %v", err)
+			}
+			if got != tt.want {
+				t.Fatalf("automaticMigrations: got %t, want %t", got, tt.want)
+			}
+		})
+	}
+
+	t.Run("invalid", func(t *testing.T) {
+		t.Setenv("SONGDOCK_AUTO_MIGRATE", "sometimes")
+		if _, err := automaticMigrations(); err == nil {
+			t.Fatal("automaticMigrations: expected invalid value error")
+		}
+	})
+}
+
+func TestSQLiteRepositoryCanOpenWithoutMigration(t *testing.T) {
+	dbPath := filepath.Join(t.TempDir(), "songs.db")
+	repo, err := store.OpenSQLiteSongRepository(dbPath)
+	if err != nil {
+		t.Fatalf("open repository without migration: %v", err)
+	}
+	defer repo.Close()
+
+	db, err := sql.Open("sqlite", dbPath)
+	if err != nil {
+		t.Fatalf("reopen database: %v", err)
+	}
+	defer db.Close()
+
+	var tables int
+	if err := db.QueryRow(`SELECT COUNT(*) FROM sqlite_master WHERE type = 'table'`).Scan(&tables); err != nil {
+		t.Fatalf("check schema: %v", err)
+	}
+	if tables != 0 {
+		t.Fatalf("expected no tables without migration, got %d", tables)
+	}
+}
+
 func TestMigrateRemovesLegacyUsersArtistIDAndBackfillsMemberships(t *testing.T) {
 	dbPath := filepath.Join(t.TempDir(), "legacy.db")
 	db, err := sql.Open("sqlite", dbPath)
