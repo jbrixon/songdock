@@ -55,6 +55,7 @@ type Song struct {
 	AppleMusicURL string
 	SongSlug      string
 	ArtistSlug    string
+	MetaPixelID   string
 }
 
 // User holds the subset of user data needed for authentication.
@@ -93,9 +94,10 @@ type UserInvitation struct {
 
 // Artist holds the subset of artist data needed for admin actions.
 type Artist struct {
-	ID   int64
-	Name string
-	Slug string
+	ID          int64
+	Name        string
+	Slug        string
+	MetaPixelID string
 }
 
 // SongRepository is the port that any song datastore adapter must implement.

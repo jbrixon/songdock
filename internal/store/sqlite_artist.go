@@ -9,14 +9,14 @@ import (
 // ErrArtistNotFound if no match exists.
 func (r *SQLiteSongRepository) FindArtistBySlug(slug string) (*Artist, error) {
 	row := r.db.QueryRow(
-		`SELECT id, name, slug
+		`SELECT id, name, slug, meta_pixel_id
 		   FROM artists
 		  WHERE slug = ?`,
 		slug,
 	)
 
 	var artist Artist
-	if err := row.Scan(&artist.ID, &artist.Name, &artist.Slug); err != nil {
+	if err := row.Scan(&artist.ID, &artist.Name, &artist.Slug, &artist.MetaPixelID); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrArtistNotFound
 		}
@@ -24,6 +24,22 @@ func (r *SQLiteSongRepository) FindArtistBySlug(slug string) (*Artist, error) {
 	}
 
 	return &artist, nil
+}
+
+// UpdateArtistMetaPixelID updates the Meta Pixel ID for an artist.
+func (r *SQLiteSongRepository) UpdateArtistMetaPixelID(artistID int64, pixelID string) error {
+	result, err := r.db.Exec(`UPDATE artists SET meta_pixel_id = ? WHERE id = ?`, pixelID, artistID)
+	if err != nil {
+		return fmt.Errorf("update artist Meta Pixel ID: %w", err)
+	}
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("get updated artist row count: %w", err)
+	}
+	if affected == 0 {
+		return ErrArtistNotFound
+	}
+	return nil
 }
 
 // ListArtists returns all artists.

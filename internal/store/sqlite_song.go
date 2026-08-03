@@ -9,7 +9,7 @@ import (
 // ErrNotFound if no match exists.
 func (r *SQLiteSongRepository) FindBySlug(artistSlug, songSlug string) (*Song, error) {
 	row := r.db.QueryRow(
-		`SELECT s.title, s.artist_name, s.description, s.image_url, s.artwork_path, s.youtube_url, s.spotify_url, s.apple_music_url, s.song_slug, a.slug
+		`SELECT s.title, s.artist_name, s.description, s.image_url, s.artwork_path, s.youtube_url, s.spotify_url, s.apple_music_url, s.song_slug, a.slug, a.meta_pixel_id
 		   FROM songs s
 		   JOIN artists a ON a.id = s.artist_id
 		  WHERE a.slug = ? AND s.song_slug = ?`,
@@ -28,6 +28,7 @@ func (r *SQLiteSongRepository) FindBySlug(artistSlug, songSlug string) (*Song, e
 		&s.AppleMusicURL,
 		&s.SongSlug,
 		&s.ArtistSlug,
+		&s.MetaPixelID,
 	); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrNotFound

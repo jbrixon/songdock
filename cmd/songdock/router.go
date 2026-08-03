@@ -64,6 +64,7 @@ func newRouterWithArtworkDir(songs store.SongRepository, adminRepo admin.Reposit
 			urlpolicy.SafeExternalURL(song.YouTubeURL),
 			urlpolicy.SafeExternalURL(song.SpotifyURL),
 			urlpolicy.SafeExternalURL(song.AppleMusicURL),
+			song.MetaPixelID,
 		).Render(req.Context(), w); err != nil {
 			log.Printf("render error: %v", err)
 		}
@@ -76,6 +77,7 @@ func newRouterWithArtworkDir(songs store.SongRepository, adminRepo admin.Reposit
 		r.Use(limitAdminRequestBody)
 		r.Get("/", a.HandleHome)
 		r.Post("/active-artist", a.HandleActiveArtistSubmit)
+		r.Post("/artist-settings", a.HandleArtistSettingsSubmit)
 		r.Post("/logout", a.HandleLogoutSubmit)
 		r.Get("/login", a.HandleLoginPage)
 		r.Post("/login", a.HandleLoginSubmit)
@@ -140,7 +142,7 @@ func limitAdminRequestBody(next http.Handler) http.Handler {
 func securityHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		headers := w.Header()
-		headers.Set("Content-Security-Policy", "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; connect-src 'self'")
+		headers.Set("Content-Security-Policy", "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; connect-src 'self' https://www.facebook.com https://connect.facebook.net")
 		headers.Set("Referrer-Policy", "strict-origin-when-cross-origin")
 		headers.Set("X-Content-Type-Options", "nosniff")
 		headers.Set("X-Frame-Options", "DENY")

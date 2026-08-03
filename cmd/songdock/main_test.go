@@ -1002,6 +1002,77 @@ func TestAdminEditSongUpdatesExistingSong(t *testing.T) {
 	}
 }
 
+func TestAdminArtistMetaPixelAppliesToSongPages(t *testing.T) {
+	router, cleanup := testRouter(t)
+	defer cleanup()
+
+	token, err := admin.NewToken([]byte(testAdminSecret), 1, "admin@example.com", time.Now().UTC())
+	if err != nil {
+		t.Fatalf("create token: %v", err)
+	}
+
+	req := httptest.NewRequest(http.MethodPost, "/admin/artist-settings", strings.NewReader(url.Values{
+		"meta_pixel_id": {"123456789"},
+	}.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.AddCookie(&http.Cookie{Name: admin.SessionCookieName, Value: token})
+	rec := httptest.NewRecorder()
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("POST /admin/artist-settings: expected status 200, got %d", rec.Code)
+	}
+	if !strings.Contains(rec.Body.String(), "Meta Pixel settings saved.") {
+		t.Fatal("POST /admin/artist-settings: expected success message")
+	}
+
+	pageReq := httptest.NewRequest(http.MethodGet, "/s/bluetooth-pony/seed-song", nil)
+	pageRec := httptest.NewRecorder()
+	router.ServeHTTP(pageRec, pageReq)
+	if pageRec.Code != http.StatusOK {
+		t.Fatalf("GET song page with pixel: expected status 200, got %d", pageRec.Code)
+	}
+	pageBody := pageRec.Body.String()
+	pixel := "fbq('init', '123456789');"
+	if !strings.Contains(pageBody, pixel) {
+		t.Fatalf("GET song page with pixel: body missing %q", pixel)
+	}
+	if strings.Index(pageBody, pixel) > strings.Index(pageBody, "</head>") {
+		t.Fatal("Meta Pixel script must be inside the page head")
+	}
+
+	clearReq := httptest.NewRequest(http.MethodPost, "/admin/artist-settings", strings.NewReader(url.Values{
+		"meta_pixel_id": {""},
+	}.Encode()))
+	clearReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	clearReq.AddCookie(&http.Cookie{Name: admin.SessionCookieName, Value: token})
+	clearRec := httptest.NewRecorder()
+	router.ServeHTTP(clearRec, clearReq)
+	if clearRec.Code != http.StatusOK {
+		t.Fatalf("clear Meta Pixel: expected status 200, got %d", clearRec.Code)
+	}
+
+	pageRec = httptest.NewRecorder()
+	router.ServeHTTP(pageRec, pageReq)
+	if strings.Contains(pageRec.Body.String(), "fbq('init'") {
+		t.Fatal("GET song page after clearing pixel: did not expect Meta Pixel code")
+	}
+
+	invalidReq := httptest.NewRequest(http.MethodPost, "/admin/artist-settings", strings.NewReader(url.Values{
+		"meta_pixel_id": {"123abc"},
+	}.Encode()))
+	invalidReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	invalidReq.AddCookie(&http.Cookie{Name: admin.SessionCookieName, Value: token})
+	invalidRec := httptest.NewRecorder()
+	router.ServeHTTP(invalidRec, invalidReq)
+	if invalidRec.Code != http.StatusBadRequest {
+		t.Fatalf("invalid Meta Pixel ID: expected status 400, got %d", invalidRec.Code)
+	}
+	if !strings.Contains(invalidRec.Body.String(), "Meta Pixel ID must contain only numbers.") {
+		t.Fatal("invalid Meta Pixel ID: expected validation message")
+	}
+}
+
 func TestAdminDeleteSongRemovesExistingSong(t *testing.T) {
 	router, cleanup := testRouter(t)
 	defer cleanup()

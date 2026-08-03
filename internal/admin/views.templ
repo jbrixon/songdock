@@ -324,6 +324,11 @@ templ adminBaseStyles() {
 			background: var(--danger-bg);
 			color: var(--danger-text);
 		}
+		.admin-alert--success {
+			border-color: rgba(70, 194, 169, 0.36);
+			background: rgba(70, 194, 169, 0.12);
+			color: #c8fff3;
+		}
 		input,
 		textarea {
 			width: 100%;
@@ -522,6 +527,9 @@ templ HomePage(view homeView) {
 				if view.Error != "" {
 					<p class="admin-alert" role="alert">{ view.Error }</p>
 				}
+				if view.Message != "" {
+					<p class="admin-alert admin-alert--success" role="status">{ view.Message }</p>
+				}
 				if len(view.Artists) > 0 {
 					<form method="post" action="/admin/active-artist" hx-post="/admin/active-artist" hx-trigger="change from:#artist_slug" hx-swap="none">
 						<label for="artist_slug">Active artist</label>
@@ -540,6 +548,15 @@ templ HomePage(view homeView) {
 					<p>No artists are assigned to your account.</p>
 				}
 				if view.ActiveArtist != nil {
+					<section aria-labelledby="artist-settings-title">
+						<h2 id="artist-settings-title">Artist settings</h2>
+						<form class="admin-form" method="post" action="/admin/artist-settings">
+							<label for="meta_pixel_id">Meta Pixel ID</label>
+							<input id="meta_pixel_id" name="meta_pixel_id" inputmode="numeric" pattern="[0-9]*" value={ view.ActiveArtist.MetaPixelID } aria-describedby="meta-pixel-help"/>
+							<p id="meta-pixel-help">Enter the numeric ID from Meta Events Manager. Leave blank to disable the pixel for this artist.</p>
+							<button type="submit">Save settings</button>
+						</form>
+					</section>
 					<section aria-labelledby="songs-title">
 						<div class="admin-section-header">
 						<h2 id="songs-title">Songs</h2>

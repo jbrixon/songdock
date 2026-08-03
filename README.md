@@ -31,11 +31,13 @@ SongDock gives independent artists and small labels a simple alternative:
 ## Features
 
 - Public, mobile-friendly release pages at `/s/{artist}/{song}`.
+- Upload a unique cover artwork for each release.
 - Links for Spotify, Apple Music, YouTube, and other safe external URLs.
 - Multiple artist workspaces managed from one installation.
 - Platform administration for creating artists and inviting artist administrators.
 - Invite-only artist-admin registration and session-based authentication.
 - Song creation, editing, and deletion for assigned artists.
+- Optional per-artist Meta Pixel tracking for public song-page views.
 - Small, self-hosted SQLite database with a single persistent file.
 - Docker image published to GitHub Container Registry.
 - Reverse-proxy friendly: bring your own domain, TLS, backups, and infrastructure.
@@ -105,8 +107,9 @@ SongDock separates platform administration from artist administration. The platf
 4. Open **Manage invitations**, enter the artist administrator's email address, select the artist, and create the invitation.
 5. Copy the generated invitation code and give it to the invited administrator through a secure channel.
 6. The invited administrator opens [http://localhost:8080/admin/register](http://localhost:8080/admin/register), enters the invitation code, and chooses a password.
-7. The new artist administrator signs in at `/admin/login`, creates a song, and adds its streaming links.
-8. Share the resulting public URL, for example `/s/example-artist/my-first-release`.
+7. The new artist administrator signs in at `/admin/login`, creates a song, uploads its cover artwork, and adds its streaming links.
+8. To enable Meta Pixel tracking, open **Artist settings**, enter the numeric Pixel ID, and save it. Clear the ID to disable tracking.
+9. Share the resulting public URL, for example `/s/example-artist/my-first-release`.
 
 Platform administrators can manage artists, users, and invitations. Artist administrators can manage songs for their assigned artists, but cannot create additional artists or platform users.
 

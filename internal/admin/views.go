@@ -15,6 +15,7 @@ type homeView struct {
 	ActiveArtist *store.Artist
 	Songs        []songListItem
 	Error        string
+	Message      string
 }
 
 // songListItem is the template data for a song listed on the admin dashboard.
@@ -36,6 +37,7 @@ type songFormView struct {
 	YouTubeURL          string
 	SpotifyURL          string
 	AppleMusicURL       string
+	MetaPixelID         string
 	SongSlug            string
 	Action              string
 	DeleteAction        string
@@ -54,6 +56,7 @@ type songPreviewView struct {
 	YouTubeURL    string
 	SpotifyURL    string
 	AppleMusicURL string
+	MetaPixelID   string
 }
 
 // registerView is the template data for the registration page and card.
