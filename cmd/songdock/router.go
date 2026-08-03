@@ -60,7 +60,7 @@ func newRouterWithArtworkDir(songs store.SongRepository, adminRepo admin.Reposit
 			song.ArtistName,
 			song.Title,
 			strings.TrimSpace(song.Description),
-			publicArtworkURL(song.ArtworkPath, song.ImageURL),
+			publicArtworkURL(song.ArtworkPath),
 			urlpolicy.SafeExternalURL(song.YouTubeURL),
 			urlpolicy.SafeExternalURL(song.SpotifyURL),
 			urlpolicy.SafeExternalURL(song.AppleMusicURL),
@@ -116,14 +116,9 @@ func newRouterWithArtworkDir(songs store.SongRepository, adminRepo admin.Reposit
 	return r
 }
 
-func publicArtworkURL(key string, fallback ...string) string {
+func publicArtworkURL(key string) string {
 	if key != "" {
 		return "/media/artwork/" + url.PathEscape(key)
-	}
-	if len(fallback) > 0 {
-		if imageURL := urlpolicy.SafeExternalURL(fallback[0]); imageURL != "" {
-			return imageURL
-		}
 	}
 	return "/static/song_artwork_placeholder.png"
 }
@@ -147,7 +142,7 @@ func limitAdminRequestBody(next http.Handler) http.Handler {
 func securityHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		headers := w.Header()
-		headers.Set("Content-Security-Policy", "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; connect-src 'self'")
+		headers.Set("Content-Security-Policy", "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; connect-src 'self' https://www.facebook.com https://connect.facebook.net")
 		headers.Set("Referrer-Policy", "strict-origin-when-cross-origin")
 		headers.Set("X-Content-Type-Options", "nosniff")
 		headers.Set("X-Frame-Options", "DENY")

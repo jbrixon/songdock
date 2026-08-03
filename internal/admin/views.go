@@ -32,7 +32,6 @@ type songFormView struct {
 	ActiveArtist        *store.Artist
 	Title               string
 	Description         string
-	ImageURL            string
 	ArtworkPath         string
 	ArtworkURL          string
 	YouTubeURL          string

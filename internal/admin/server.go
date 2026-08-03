@@ -474,7 +474,6 @@ func (s *Server) HandleCreateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		ActiveArtist:  activeArtist,
 		Title:         strings.TrimSpace(r.Form.Get("title")),
 		Description:   strings.TrimSpace(r.Form.Get("description")),
-		ImageURL:      strings.TrimSpace(r.Form.Get("image_url")),
 		YouTubeURL:    strings.TrimSpace(r.Form.Get("youtube_url")),
 		SpotifyURL:    strings.TrimSpace(r.Form.Get("spotify_url")),
 		AppleMusicURL: strings.TrimSpace(r.Form.Get("apple_music_url")),
@@ -537,7 +536,6 @@ func insertSongWithUniqueSlug(repo Repository, activeArtist *store.Artist, view 
 			Title:         view.Title,
 			ArtistName:    activeArtist.Name,
 			Description:   view.Description,
-			ImageURL:      view.ImageURL,
 			ArtworkPath:   view.ArtworkPath,
 			YouTubeURL:    view.YouTubeURL,
 			SpotifyURL:    view.SpotifyURL,
@@ -631,7 +629,6 @@ func (s *Server) HandleUpdateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		ActiveArtist:  activeArtist,
 		Title:         strings.TrimSpace(r.Form.Get("title")),
 		Description:   strings.TrimSpace(r.Form.Get("description")),
-		ImageURL:      strings.TrimSpace(r.Form.Get("image_url")),
 		YouTubeURL:    strings.TrimSpace(r.Form.Get("youtube_url")),
 		SpotifyURL:    strings.TrimSpace(r.Form.Get("spotify_url")),
 		AppleMusicURL: strings.TrimSpace(r.Form.Get("apple_music_url")),
@@ -679,7 +676,6 @@ func (s *Server) HandleUpdateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		Title:         view.Title,
 		ArtistName:    activeArtist.Name,
 		Description:   view.Description,
-		ImageURL:      view.ImageURL,
 		ArtworkPath:   view.ArtworkPath,
 		YouTubeURL:    view.YouTubeURL,
 		SpotifyURL:    view.SpotifyURL,
@@ -1052,7 +1048,6 @@ func normalizeSongURLs(view *songFormView) error {
 		name  string
 		value *string
 	}{
-		{name: "Image URL", value: &view.ImageURL},
 		{name: "YouTube URL", value: &view.YouTubeURL},
 		{name: "Spotify URL", value: &view.SpotifyURL},
 		{name: "Apple Music URL", value: &view.AppleMusicURL},
