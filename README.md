@@ -139,6 +139,7 @@ SongDock reads environment variables from `.env` when started through `mise`. In
 | `PLATFORM_ADMIN_USERNAME` | Yes | — | Initial platform administrator username. |
 | `PLATFORM_ADMIN_PASSWORD` | Yes | — | Initial platform administrator password; at least 16 characters. |
 | `DB_PATH` | No | `songs.db` | Path to the SQLite database file. |
+| `ARTWORK_DIR` | No | `uploads/artwork` | Filesystem directory used for uploaded artwork. In container deployments, point this to a persistent mounted path such as `/data/uploads/artwork`. |
 | `PORT` | No | `8080` | HTTP port inside the process. |
 | `SONGDOCK_AUTO_MIGRATE` | No | `true` | Whether `serve` runs database migrations during startup. Set to `false` when migrations run separately. |
 | `ACCEPTANCE_BASE_URL` | Tests only | `http://localhost:8080` | Base URL used by acceptance tests. |
