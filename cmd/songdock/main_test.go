@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"errors"
 	"fmt"
+	"mime/multipart"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -872,8 +874,7 @@ func TestAdminCreateSongUsesActiveArtistCookie(t *testing.T) {
 		"title":       {"Active Artist Song"},
 		"description": {"Created for the selected artist."},
 	}
-	req := httptest.NewRequest(http.MethodPost, "/admin/songs", strings.NewReader(form.Encode()))
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req := newSongFormRequest(t, http.MethodPost, "/admin/songs", form)
 	req.AddCookie(&http.Cookie{Name: admin.SessionCookieName, Value: token})
 	req.AddCookie(&http.Cookie{Name: admin.ActiveArtistCookieName, Value: activeArtistToken})
 	rec := httptest.NewRecorder()
@@ -908,11 +909,10 @@ func TestAdminCreateSongRejectsInvalidExternalURL(t *testing.T) {
 	}
 
 	form := url.Values{
-		"title":     {"Bad URL Song"},
-		"image_url": {"javascript:alert(1)"},
+		"title":       {"Bad URL Song"},
+		"youtube_url": {"javascript:alert(1)"},
 	}
-	req := httptest.NewRequest(http.MethodPost, "/admin/songs", strings.NewReader(form.Encode()))
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req := newSongFormRequest(t, http.MethodPost, "/admin/songs", form)
 	req.AddCookie(&http.Cookie{Name: admin.SessionCookieName, Value: token})
 	rec := httptest.NewRecorder()
 
@@ -921,7 +921,7 @@ func TestAdminCreateSongRejectsInvalidExternalURL(t *testing.T) {
 	if rec.Code != http.StatusBadRequest {
 		t.Fatalf("POST /admin/songs invalid URL: expected status 400, got %d", rec.Code)
 	}
-	if !strings.Contains(rec.Body.String(), "Image URL must use http or https.") {
+	if !strings.Contains(rec.Body.String(), "YouTube URL must use http or https.") {
 		t.Fatalf("POST /admin/songs invalid URL: expected validation message, got %s", rec.Body.String())
 	}
 }
@@ -971,8 +971,7 @@ func TestAdminEditSongUpdatesExistingSong(t *testing.T) {
 		"spotify_url":     {"https://open.spotify.com/track/updated-seed"},
 		"apple_music_url": {"https://music.apple.com/us/song/updated-seed/123"},
 	}
-	postReq := httptest.NewRequest(http.MethodPost, "/admin/songs/seed-song", strings.NewReader(form.Encode()))
-	postReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	postReq := newSongFormRequest(t, http.MethodPost, "/admin/songs/seed-song", form)
 	postReq.AddCookie(&http.Cookie{Name: admin.SessionCookieName, Value: token})
 	postRec := httptest.NewRecorder()
 
@@ -1815,4 +1814,23 @@ func TestMigrateRemovesLegacyUsersArtistIDAndBackfillsMemberships(t *testing.T) 
 	if memberships != 1 {
 		t.Fatalf("expected 1 backfilled membership, got %d", memberships)
 	}
+}
+
+func newSongFormRequest(t *testing.T, method, target string, form url.Values) *http.Request {
+	t.Helper()
+	var body bytes.Buffer
+	writer := multipart.NewWriter(&body)
+	for key, values := range form {
+		for _, value := range values {
+			if err := writer.WriteField(key, value); err != nil {
+				t.Fatalf("write form field %q: %v", key, err)
+			}
+		}
+	}
+	if err := writer.Close(); err != nil {
+		t.Fatalf("close multipart form: %v", err)
+	}
+	req := httptest.NewRequest(method, target, &body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	return req
 }

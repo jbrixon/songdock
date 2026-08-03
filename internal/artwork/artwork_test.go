@@ -2,9 +2,7 @@ package artwork
 
 import (
 	"bytes"
-	"image"
-	"image/color"
-	"image/jpeg"
+	_ "embed"
 	"mime/multipart"
 	"net/http/httptest"
 	"os"
@@ -12,11 +10,14 @@ import (
 	"testing"
 )
 
+//go:embed testdata/single-color-test-image.png
+var singleColorTestImage []byte
+
 func TestStoreSaveReplaceAndServe(t *testing.T) {
 	dir := t.TempDir()
 	s := NewStore(dir)
-	first := jpegBytes(t, color.RGBA{R: 255, A: 255})
-	second := jpegBytes(t, color.RGBA{B: 255, A: 255})
+	first := singleColorTestImage
+	second := append([]byte(nil), singleColorTestImage...)
 
 	key1 := saveBytes(t, s, first)
 	key2 := saveBytes(t, s, second)
@@ -69,12 +70,4 @@ func file(t *testing.T, data []byte) multipart.File {
 		t.Fatal(err)
 	}
 	return f
-}
-func jpegBytes(t *testing.T, c color.RGBA) []byte {
-	t.Helper()
-	var b bytes.Buffer
-	if err := jpeg.Encode(&b, image.NewUniform(c), nil); err != nil {
-		t.Fatal(err)
-	}
-	return b.Bytes()
 }
