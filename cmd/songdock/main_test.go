@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/jbrixon/songdock/internal/admin"
+	"github.com/jbrixon/songdock/internal/artwork"
 	"github.com/jbrixon/songdock/internal/platformadmin"
 	"github.com/jbrixon/songdock/internal/store"
 	_ "modernc.org/sqlite"
@@ -1834,6 +1835,19 @@ func TestMigrateUpNeedsOnlyDatabasePath(t *testing.T) {
 	}
 	if tables != 1 {
 		t.Fatalf("expected songs table after migration, got %d matches", tables)
+	}
+}
+
+func TestDatabasePathDefaultRemainsSongsDB(t *testing.T) {
+	t.Setenv("DB_PATH", "")
+	if got := databasePath(); got != "songs.db" {
+		t.Fatalf("databasePath() = %q, want songs.db", got)
+	}
+}
+
+func TestNewArtworkStoreDefaultsEmptyDriverToFilesystem(t *testing.T) {
+	if _, err := newArtworkStore(context.Background(), artwork.Config{Dir: t.TempDir()}); err != nil {
+		t.Fatalf("newArtworkStore with empty driver: %v", err)
 	}
 }
 

@@ -2,6 +2,7 @@ package artwork
 
 import (
 	"bytes"
+	"context"
 	"crypto/rand"
 	"encoding/binary"
 	"encoding/hex"
@@ -12,6 +13,7 @@ import (
 	_ "image/png"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 )
@@ -23,17 +25,23 @@ var ErrInvalid = errors.New("artwork must be a valid JPEG, PNG, or WebP image no
 // Storage is the port used by the artwork application service. Adapters can
 // implement it for local files, object storage, or any other backing store.
 type Storage interface {
-	Put(key string, data []byte) error
-	Delete(key string) error
-	Open(key string) (io.ReadSeekCloser, error)
-	ModTime(key string) (time.Time, error)
+	Put(context.Context, string, []byte, string) error
+	Delete(context.Context, string) error
+	Open(context.Context, string) (Object, error)
+	PublicURL(string) string
+}
+
+type Object struct {
+	io.ReadSeekCloser
+	ModTime     time.Time
+	ContentType string
 }
 
 type Store struct{ storage Storage }
 
 func NewStore(storage Storage) *Store { return &Store{storage: storage} }
 
-func (s *Store) Save(file io.Reader) (string, error) {
+func (s *Store) Save(ctx context.Context, file io.Reader) (string, error) {
 	data, err := io.ReadAll(io.LimitReader(file, MaxSize+1))
 	if err != nil || len(data) > MaxSize || !valid(data) {
 		return "", ErrInvalid
@@ -44,23 +52,36 @@ func (s *Store) Save(file io.Reader) (string, error) {
 		return "", fmt.Errorf("generate artwork name: %w", err)
 	}
 	ext := ".webp"
+	contentType := "image/webp"
 	if len(data) >= 8 && bytes.Equal(data[:8], []byte("\x89PNG\r\n\x1a\n")) {
 		ext = ".png"
+		contentType = "image/png"
 	} else if len(data) >= 2 && bytes.Equal(data[:2], []byte("\xff\xd8")) {
 		ext = ".jpg"
+		contentType = "image/jpeg"
 	}
 	name := hex.EncodeToString(nameBytes[:]) + ext
-	if err := s.storage.Put(name, data); err != nil {
+	if err := s.storage.Put(ctx, name, data, contentType); err != nil {
 		return "", fmt.Errorf("store artwork: %w", err)
 	}
 	return name, nil
 }
 
-func (s *Store) Remove(key string) error {
+func (s *Store) Remove(ctx context.Context, key string) error {
 	if !safeKey(key) {
 		return nil
 	}
-	return s.storage.Delete(key)
+	return s.storage.Delete(ctx, key)
+}
+
+func (s *Store) URL(key string) string {
+	if key == "" {
+		return "/static/song_artwork_placeholder.png"
+	}
+	if publicURL := s.storage.PublicURL(key); publicURL != "" {
+		return publicURL
+	}
+	return "/media/artwork/" + url.PathEscape(key)
 }
 
 func (s *Store) Serve(w http.ResponseWriter, r *http.Request, key string) {
@@ -68,18 +89,24 @@ func (s *Store) Serve(w http.ResponseWriter, r *http.Request, key string) {
 		http.NotFound(w, r)
 		return
 	}
-	f, err := s.storage.Open(key)
+	object, err := s.storage.Open(r.Context(), key)
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
-	defer f.Close()
+	defer object.Close()
 	w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
-	modTime, _ := s.storage.ModTime(key)
-	http.ServeContent(w, r, key, modTime, f)
+	if object.ContentType != "" {
+		w.Header().Set("Content-Type", object.ContentType)
+	}
+	http.ServeContent(w, r, key, object.ModTime, object)
 }
 
 func safeKey(key string) bool {
+	return ValidKey(key)
+}
+
+func ValidKey(key string) bool {
 	return key != "" && !strings.ContainsAny(key, `/\\`) && key != "." && key != ".."
 }
 

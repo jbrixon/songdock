@@ -63,6 +63,9 @@ Create `.env` with the following values, replacing the example credentials:
 ADMIN_BACKEND_SECRET=replace-with-a-random-secret
 PLATFORM_ADMIN_USERNAME=platform-root
 PLATFORM_ADMIN_PASSWORD=replace-with-a-strong-password
+DB_PATH=/data/songs.db
+ARTWORK_STORAGE_DRIVER=filesystem
+ARTWORK_DIR=/data/uploads/artwork
 ```
 
 Generate a strong value for `ADMIN_BACKEND_SECRET` with:
@@ -133,13 +136,54 @@ Platform administrators can manage artists, users, and invitations. Artist admin
 
 SongDock reads environment variables from `.env` when started through `mise`. In a container, provide the same variables with `env_file`, `docker run --env-file`, or your deployment platform's secret manager.
 
+Database storage and artwork storage are configured independently. `DB_PATH`
+continues to control only SQLite and defaults to `songs.db`. Artwork uses the
+filesystem by default and stores files in `ARTWORK_DIR`, which defaults to
+`/data/uploads/artwork` for the server. `ARTWORK_DIR` is ignored when the S3
+driver is selected.
+
+For local filesystem artwork storage:
+
+```dotenv
+ARTWORK_STORAGE_DRIVER=filesystem
+ARTWORK_DIR=/data/uploads/artwork
+```
+
+For S3-compatible artwork storage:
+
+```dotenv
+ARTWORK_STORAGE_DRIVER=s3
+S3_ENDPOINT=https://example-object-storage.invalid
+S3_REGION=eu-central-1
+S3_BUCKET=songdock-artwork
+S3_ACCESS_KEY_ID=replace-me
+S3_SECRET_ACCESS_KEY=replace-me
+S3_PREFIX=artwork
+S3_PUBLIC_URL=https://assets.example.com
+S3_FORCE_PATH_STYLE=false
+```
+
+`S3_ENDPOINT` may point to AWS S3 or a compatible provider such as MinIO,
+Cloudflare R2, Backblaze B2, or Hetzner Object Storage. If `S3_PUBLIC_URL` is
+empty, SongDock serves private objects through the application instead of
+assuming the bucket is publicly readable.
+
 | Variable | Required | Default | Description |
 | --- | --- | --- | --- |
 | `ADMIN_BACKEND_SECRET` | Yes | — | At least 32 characters. Used to hash artist-admin passwords and sign admin sessions. |
 | `PLATFORM_ADMIN_USERNAME` | Yes | — | Initial platform administrator username. |
 | `PLATFORM_ADMIN_PASSWORD` | Yes | — | Initial platform administrator password; at least 16 characters. |
 | `DB_PATH` | No | `songs.db` | Path to the SQLite database file. |
-| `ARTWORK_DIR` | No | `uploads/artwork` | Filesystem directory used for uploaded artwork. In container deployments, point this to a persistent mounted path such as `/data/uploads/artwork`. |
+| `ARTWORK_STORAGE_DRIVER` | No | `filesystem` | Artwork storage driver. Supported values are `filesystem` and `s3`; it does not affect SQLite. |
+| `ARTWORK_DIR` | No | `/data/uploads/artwork` | Filesystem artwork directory. Ignored when `ARTWORK_STORAGE_DRIVER=s3`. |
+| `S3_ENDPOINT` | S3 only | — | Optional custom S3-compatible endpoint. |
+| `S3_REGION` | S3 only | `us-east-1` | S3 signing region. |
+| `S3_BUCKET` | S3 only | — | Required S3 bucket name. |
+| `S3_ACCESS_KEY_ID` | S3 only | — | Required S3 access key. |
+| `S3_SECRET_ACCESS_KEY` | S3 only | — | Required S3 secret key. |
+| `S3_PREFIX` | S3 only | — | Optional prefix for artwork object keys. |
+| `S3_PUBLIC_URL` | S3 only | — | Optional public base URL for artwork. Empty values use application serving. |
+| `S3_FORCE_PATH_STYLE` | S3 only | `false` | Use path-style S3 addressing, useful for some compatible providers. |
 | `PORT` | No | `8080` | HTTP port inside the process. |
 | `SONGDOCK_AUTO_MIGRATE` | No | `true` | Whether `serve` runs database migrations during startup. Set to `false` when migrations run separately. |
 | `ACCEPTANCE_BASE_URL` | Tests only | `http://localhost:8080` | Base URL used by acceptance tests. |
@@ -158,6 +202,9 @@ Create a deployment directory containing `.env`, `compose.yaml`, and `Caddyfile`
 ADMIN_BACKEND_SECRET=replace-with-a-random-secret-at-least-32-characters
 PLATFORM_ADMIN_USERNAME=platform-root
 PLATFORM_ADMIN_PASSWORD=replace-with-a-strong-password
+DB_PATH=/data/songs.db
+ARTWORK_STORAGE_DRIVER=filesystem
+ARTWORK_DIR=/data/uploads/artwork
 ```
 
 `compose.yaml`:
@@ -170,6 +217,8 @@ services:
     env_file: .env
     environment:
       DB_PATH: /data/songs.db
+      ARTWORK_STORAGE_DRIVER: filesystem
+      ARTWORK_DIR: /data/uploads/artwork
       PORT: 8080
     expose:
       - "8080"
@@ -193,6 +242,22 @@ volumes:
   songdock_data:
   caddy_data:
   caddy_config:
+```
+
+To use S3-compatible artwork storage instead, replace the artwork settings in
+`.env` or `compose.yaml` with the following values. The SQLite database remains
+on the `/data` volume and is unaffected:
+
+```dotenv
+ARTWORK_STORAGE_DRIVER=s3
+S3_ENDPOINT=https://example-object-storage.invalid
+S3_REGION=eu-central-1
+S3_BUCKET=songdock-artwork
+S3_ACCESS_KEY_ID=replace-me
+S3_SECRET_ACCESS_KEY=replace-me
+S3_PREFIX=artwork
+S3_PUBLIC_URL=https://assets.example.com
+S3_FORCE_PATH_STYLE=false
 ```
 
 `Caddyfile`:

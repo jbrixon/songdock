@@ -32,7 +32,7 @@ type Server struct {
 // New returns a new Server that uses repo for data access and secret for
 // signing session tokens.
 func New(repo Repository, secret []byte) *Server {
-	return NewWithArtworkDir(repo, secret, "/data/uploads/artwork")
+	return NewWithArtworkDir(repo, secret, artwork.DefaultDir)
 }
 
 func NewWithArtwork(repo Repository, secret []byte, artworkStore *artwork.Store) *Server {
@@ -510,7 +510,7 @@ func (s *Server) HandleCreateSongSubmit(w http.ResponseWriter, r *http.Request) 
 
 	if _, err := insertSongWithUniqueSlug(s.repo, activeArtist, view); err != nil {
 		if hasArtwork {
-			_ = s.artwork.Remove(artworkPath)
+			s.removeArtwork(r.Context(), artworkPath)
 		}
 		view.Error = err.Error()
 		s.renderSongFormPage(w, http.StatusBadRequest, view)
@@ -690,7 +690,7 @@ func (s *Server) HandleUpdateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		ArtistSlug:    activeArtist.Slug,
 	}); err != nil {
 		if hasArtwork {
-			_ = s.artwork.Remove(newArtworkPath)
+			s.removeArtwork(r.Context(), newArtworkPath)
 		}
 		if errors.Is(err, store.ErrNotFound) {
 			http.NotFound(w, r)
@@ -700,7 +700,7 @@ func (s *Server) HandleUpdateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	if hasArtwork && oldSong.ArtworkPath != "" {
-		_ = s.artwork.Remove(oldSong.ArtworkPath)
+		s.removeArtwork(r.Context(), oldSong.ArtworkPath)
 	}
 
 	http.Redirect(w, r, "/admin/", http.StatusSeeOther)
@@ -741,7 +741,7 @@ func (s *Server) HandleRemoveArtworkSubmit(w http.ResponseWriter, r *http.Reques
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 			return
 		}
-		_ = s.artwork.Remove(oldArtworkPath)
+		s.removeArtwork(r.Context(), oldArtworkPath)
 	}
 
 	editURL := "/admin/songs/" + url.PathEscape(songSlug) + "/edit"
@@ -773,6 +773,15 @@ func (s *Server) HandleDeleteSongSubmit(w http.ResponseWriter, r *http.Request) 
 	}
 
 	songSlug := strings.TrimSpace(chi.URLParam(r, "songSlug"))
+	song, err := s.repo.FindBySlug(activeArtist.Slug, songSlug)
+	if err != nil {
+		if errors.Is(err, store.ErrNotFound) {
+			http.NotFound(w, r)
+			return
+		}
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
 	if err := s.repo.DeleteSongForArtist(activeArtist.ID, songSlug); err != nil {
 		if errors.Is(err, store.ErrNotFound) {
 			http.NotFound(w, r)
@@ -780,6 +789,9 @@ func (s *Server) HandleDeleteSongSubmit(w http.ResponseWriter, r *http.Request) 
 		}
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
+	}
+	if song.ArtworkPath != "" {
+		s.removeArtwork(r.Context(), song.ArtworkPath)
 	}
 
 	if isHTMXRequest(r) {
@@ -943,7 +955,7 @@ func (s *Server) renderSongFormPage(w http.ResponseWriter, status int, view song
 		}
 	}
 	if view.ArtworkURL == "" {
-		view.ArtworkURL = artworkURL(view.ArtworkPath)
+		view.ArtworkURL = s.artwork.URL(view.ArtworkPath)
 	}
 	w.Header().Set("Cache-Control", "no-store")
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -959,7 +971,7 @@ func (s *Server) renderSongPreviewPage(w http.ResponseWriter, r *http.Request, s
 		view.ArtistName,
 		view.Title,
 		strings.TrimSpace(view.Description),
-		artworkURL(view.ArtworkPath),
+		s.artwork.URL(view.ArtworkPath),
 		urlpolicy.SafeExternalURL(view.YouTubeURL),
 		urlpolicy.SafeExternalURL(view.SpotifyURL),
 		urlpolicy.SafeExternalURL(view.AppleMusicURL),
@@ -996,15 +1008,14 @@ func (s *Server) uploadArtwork(r *http.Request) (string, bool, error) {
 		return "", false, fmt.Errorf("invalid artwork upload")
 	}
 	defer file.Close()
-	key, err := s.artwork.Save(file)
+	key, err := s.artwork.Save(r.Context(), file)
 	return key, true, err
 }
 
-func artworkURL(path string) string {
-	if path != "" {
-		return "/media/artwork/" + url.PathEscape(path)
+func (s *Server) removeArtwork(ctx context.Context, key string) {
+	if err := s.artwork.Remove(ctx, key); err != nil {
+		log.Printf("remove artwork %q: %v", key, err)
 	}
-	return "/static/song_artwork_placeholder.png"
 }
 
 func (s *Server) renderHomePage(w http.ResponseWriter, status int, view homeView) {

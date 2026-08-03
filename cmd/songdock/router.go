@@ -4,7 +4,6 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"net/url"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
@@ -26,10 +25,13 @@ func newRouter(songs store.SongRepository, adminRepo admin.Repository, platformR
 }
 
 func newRouterWithArtworkDir(songs store.SongRepository, adminRepo admin.Repository, platformRepo platformadmin.Repository, secret []byte, platformUsername, platformPassword, artworkDir string) http.Handler {
+	return newRouterWithArtworkStore(songs, adminRepo, platformRepo, secret, platformUsername, platformPassword, artwork.NewStore(artworkfilesystem.New(artworkDir)))
+}
+
+func newRouterWithArtworkStore(songs store.SongRepository, adminRepo admin.Repository, platformRepo platformadmin.Repository, secret []byte, platformUsername, platformPassword string, artworkStore *artwork.Store) http.Handler {
 	r := chi.NewRouter()
 	r.Use(securityHeaders)
 	r.Handle("/static/*", staticAssets(http.StripPrefix("/static/", http.FileServer(http.FS(static.FS)))))
-	artworkStore := artwork.NewStore(artworkfilesystem.New(artworkDir))
 	a := admin.NewWithArtwork(adminRepo, secret, artworkStore)
 	platform := platformadmin.New(
 		platformRepo,
@@ -61,7 +63,7 @@ func newRouterWithArtworkDir(songs store.SongRepository, adminRepo admin.Reposit
 			song.ArtistName,
 			song.Title,
 			strings.TrimSpace(song.Description),
-			publicArtworkURL(song.ArtworkPath),
+			artworkStore.URL(song.ArtworkPath),
 			urlpolicy.SafeExternalURL(song.YouTubeURL),
 			urlpolicy.SafeExternalURL(song.SpotifyURL),
 			urlpolicy.SafeExternalURL(song.AppleMusicURL),
@@ -115,13 +117,6 @@ func newRouterWithArtworkDir(songs store.SongRepository, adminRepo admin.Reposit
 	})
 
 	return r
-}
-
-func publicArtworkURL(key string) string {
-	if key != "" {
-		return "/media/artwork/" + url.PathEscape(key)
-	}
-	return "/static/song_artwork_placeholder.png"
 }
 
 func staticAssets(next http.Handler) http.Handler {

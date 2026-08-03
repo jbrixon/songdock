@@ -1,19 +1,26 @@
 package filesystem
 
 import (
+	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
-	"time"
+
+	"github.com/jbrixon/songdock/internal/artwork"
 )
 
 type Storage struct{ dir string }
 
 func New(dir string) *Storage { return &Storage{dir: dir} }
 
-func (s *Storage) Put(key string, data []byte) error {
+func (s *Storage) Put(ctx context.Context, key string, data []byte, _ string) error {
+	if !artwork.ValidKey(key) {
+		return fmt.Errorf("invalid artwork key %q", key)
+	}
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	if err := os.MkdirAll(s.dir, 0o755); err != nil {
 		return fmtError("create artwork directory", err)
 	}
@@ -36,7 +43,13 @@ func (s *Storage) Put(key string, data []byte) error {
 	return nil
 }
 
-func (s *Storage) Delete(key string) error {
+func (s *Storage) Delete(ctx context.Context, key string) error {
+	if !artwork.ValidKey(key) {
+		return fmt.Errorf("invalid artwork key %q", key)
+	}
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	err := os.Remove(filepath.Join(s.dir, key))
 	if errors.Is(err, os.ErrNotExist) {
 		return nil
@@ -44,17 +57,26 @@ func (s *Storage) Delete(key string) error {
 	return err
 }
 
-func (s *Storage) Open(key string) (io.ReadSeekCloser, error) {
-	return os.Open(filepath.Join(s.dir, key))
+func (s *Storage) Open(ctx context.Context, key string) (artwork.Object, error) {
+	if !artwork.ValidKey(key) {
+		return artwork.Object{}, fmt.Errorf("invalid artwork key %q", key)
+	}
+	if err := ctx.Err(); err != nil {
+		return artwork.Object{}, err
+	}
+	f, err := os.Open(filepath.Join(s.dir, key))
+	if err != nil {
+		return artwork.Object{}, err
+	}
+	info, err := f.Stat()
+	if err != nil {
+		f.Close()
+		return artwork.Object{}, err
+	}
+	return artwork.Object{ReadSeekCloser: f, ModTime: info.ModTime()}, nil
 }
 
-func (s *Storage) ModTime(key string) (t time.Time, err error) {
-	info, err := os.Stat(filepath.Join(s.dir, key))
-	if err != nil {
-		return time.Time{}, err
-	}
-	return info.ModTime(), nil
-}
+func (s *Storage) PublicURL(string) string { return "" }
 
 func fmtError(operation string, err error) error {
 	return fmt.Errorf("%s: %w", operation, err)

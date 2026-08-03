@@ -13,6 +13,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/jbrixon/songdock/internal/artwork"
+	artworkfilesystem "github.com/jbrixon/songdock/internal/artwork/filesystem"
+	artworks3 "github.com/jbrixon/songdock/internal/artwork/s3"
 	"github.com/jbrixon/songdock/internal/store"
 )
 
@@ -43,6 +46,15 @@ func migrateUp() error {
 }
 
 func serve() error {
+	artworkConfig, err := artwork.LoadConfig()
+	if err != nil {
+		return err
+	}
+	artworkStore, err := newArtworkStore(context.Background(), artworkConfig)
+	if err != nil {
+		return fmt.Errorf("configure artwork storage: %w", err)
+	}
+
 	shouldMigrate, err := automaticMigrations()
 	if err != nil {
 		return err
@@ -78,11 +90,7 @@ func serve() error {
 	}
 	defer repo.Close()
 
-	artworkDir := "uploads/artwork"
-	if configured := os.Getenv("ARTWORK_DIR"); configured != "" {
-		artworkDir = configured
-	}
-	r := newRouterWithArtworkDir(repo, repo, repo, []byte(adminSecret), platformAdminUsername, platformAdminPassword, artworkDir)
+	r := newRouterWithArtworkStore(repo, repo, repo, []byte(adminSecret), platformAdminUsername, platformAdminPassword, artworkStore)
 
 	addr := ":8080"
 	if port := os.Getenv("PORT"); port != "" {
@@ -98,6 +106,21 @@ func serve() error {
 		return fmt.Errorf("server failed: %w", err)
 	}
 	return nil
+}
+
+func newArtworkStore(ctx context.Context, cfg artwork.Config) (*artwork.Store, error) {
+	switch cfg.Driver {
+	case "", "filesystem":
+		return artwork.NewStore(artworkfilesystem.New(cfg.Dir)), nil
+	case "s3":
+		storage, err := artworks3.New(ctx, cfg)
+		if err != nil {
+			return nil, err
+		}
+		return artwork.NewStore(storage), nil
+	default:
+		return nil, fmt.Errorf("unsupported artwork storage driver %q", cfg.Driver)
+	}
 }
 
 func databasePath() string {
