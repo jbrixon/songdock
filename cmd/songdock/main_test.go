@@ -966,7 +966,6 @@ func TestAdminEditSongUpdatesExistingSong(t *testing.T) {
 	form := url.Values{
 		"title":           {"Updated Seed Song"},
 		"description":     {"Updated description."},
-		"image_url":       {"https://cdn.example.com/art/updated-seed.jpg"},
 		"youtube_url":     {"https://www.youtube.com/watch?v=updated-seed"},
 		"spotify_url":     {"https://open.spotify.com/track/updated-seed"},
 		"apple_music_url": {"https://music.apple.com/us/song/updated-seed/123"},
@@ -996,7 +995,6 @@ func TestAdminEditSongUpdatesExistingSong(t *testing.T) {
 	for _, want := range []string{
 		`<title>Updated Seed Song — Bluetooth Pony</title>`,
 		`<meta name="description" content="Updated description.">`,
-		`https://cdn.example.com/art/updated-seed.jpg`,
 	} {
 		if !strings.Contains(pageBody, want) {
 			t.Fatalf("GET /s/bluetooth-pony/seed-song: body missing %q", want)

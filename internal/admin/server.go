@@ -415,7 +415,7 @@ func (s *Server) HandleCreateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
+	if err := r.ParseMultipartForm(11 << 20); err != nil {
 		s.renderSongFormPage(w, formErrorStatus(err), songFormView{
 			Error: "Invalid form submission.",
 		})
