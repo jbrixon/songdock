@@ -3,11 +3,12 @@ package artwork
 import (
 	"bytes"
 	_ "embed"
-	"mime/multipart"
+	"io"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 //go:embed testdata/single-color-test-image.png
@@ -15,7 +16,7 @@ var singleColorTestImage []byte
 
 func TestStoreSaveReplaceAndServe(t *testing.T) {
 	dir := t.TempDir()
-	s := NewStore(dir)
+	s := NewStore(fileStorage{dir: dir})
 	first := singleColorTestImage
 	second := append([]byte(nil), singleColorTestImage...)
 
@@ -40,13 +41,30 @@ func TestStoreSaveReplaceAndServe(t *testing.T) {
 }
 
 func TestStoreRejectsInvalidAndOversizedArtwork(t *testing.T) {
-	s := NewStore(t.TempDir())
+	s := NewStore(fileStorage{dir: t.TempDir()})
 	if _, err := s.Save(file(t, []byte("not an image"))); err != ErrInvalid {
 		t.Fatalf("invalid artwork error = %v", err)
 	}
 	if _, err := s.Save(file(t, bytes.Repeat([]byte("x"), MaxSize+1))); err != ErrInvalid {
 		t.Fatalf("oversized artwork error = %v", err)
 	}
+}
+
+type fileStorage struct{ dir string }
+
+func (s fileStorage) Put(key string, data []byte) error {
+	return os.WriteFile(filepath.Join(s.dir, key), data, 0o600)
+}
+func (s fileStorage) Delete(key string) error { return os.Remove(filepath.Join(s.dir, key)) }
+func (s fileStorage) Open(key string) (io.ReadSeekCloser, error) {
+	return os.Open(filepath.Join(s.dir, key))
+}
+func (s fileStorage) ModTime(key string) (time.Time, error) {
+	info, err := os.Stat(filepath.Join(s.dir, key))
+	if err != nil {
+		return time.Time{}, err
+	}
+	return info.ModTime(), nil
 }
 
 func saveBytes(t *testing.T, s *Store, data []byte) string {
@@ -57,7 +75,7 @@ func saveBytes(t *testing.T, s *Store, data []byte) string {
 	}
 	return key
 }
-func file(t *testing.T, data []byte) multipart.File {
+func file(t *testing.T, data []byte) io.Reader {
 	t.Helper()
 	f, err := os.CreateTemp(t.TempDir(), "upload")
 	if err != nil {

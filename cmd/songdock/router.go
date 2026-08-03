@@ -11,6 +11,7 @@ import (
 
 	"github.com/jbrixon/songdock/internal/admin"
 	"github.com/jbrixon/songdock/internal/artwork"
+	artworkfilesystem "github.com/jbrixon/songdock/internal/artwork/filesystem"
 	"github.com/jbrixon/songdock/internal/platformadmin"
 	"github.com/jbrixon/songdock/internal/store"
 	"github.com/jbrixon/songdock/internal/templates"
@@ -28,8 +29,8 @@ func newRouterWithArtworkDir(songs store.SongRepository, adminRepo admin.Reposit
 	r := chi.NewRouter()
 	r.Use(securityHeaders)
 	r.Handle("/static/*", staticAssets(http.StripPrefix("/static/", http.FileServer(http.FS(static.FS)))))
-	artworkStore := artwork.NewStore(artworkDir)
-	a := admin.NewWithArtworkDir(adminRepo, secret, artworkDir)
+	artworkStore := artwork.NewStore(artworkfilesystem.New(artworkDir))
+	a := admin.NewWithArtwork(adminRepo, secret, artworkStore)
 	platform := platformadmin.New(
 		platformRepo,
 		secret,

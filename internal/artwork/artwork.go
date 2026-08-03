@@ -11,10 +11,7 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 	"io"
-	"mime/multipart"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strings"
 	"time"
 )
@@ -23,19 +20,25 @@ const MaxSize = 10 << 20
 
 var ErrInvalid = errors.New("artwork must be a valid JPEG, PNG, or WebP image no larger than 10 MB")
 
-type Store struct{ dir string }
+// Storage is the port used by the artwork application service. Adapters can
+// implement it for local files, object storage, or any other backing store.
+type Storage interface {
+	Put(key string, data []byte) error
+	Delete(key string) error
+	Open(key string) (io.ReadSeekCloser, error)
+	ModTime(key string) (time.Time, error)
+}
 
-func NewStore(dir string) *Store { return &Store{dir: dir} }
+type Store struct{ storage Storage }
 
-func (s *Store) Save(file multipart.File) (string, error) {
+func NewStore(storage Storage) *Store { return &Store{storage: storage} }
+
+func (s *Store) Save(file io.Reader) (string, error) {
 	data, err := io.ReadAll(io.LimitReader(file, MaxSize+1))
 	if err != nil || len(data) > MaxSize || !valid(data) {
 		return "", ErrInvalid
 	}
 
-	if err := os.MkdirAll(s.dir, 0o755); err != nil {
-		return "", fmt.Errorf("create artwork directory: %w", err)
-	}
 	var nameBytes [16]byte
 	if _, err := rand.Read(nameBytes[:]); err != nil {
 		return "", fmt.Errorf("generate artwork name: %w", err)
@@ -47,20 +50,7 @@ func (s *Store) Save(file multipart.File) (string, error) {
 		ext = ".jpg"
 	}
 	name := hex.EncodeToString(nameBytes[:]) + ext
-	tmp, err := os.CreateTemp(s.dir, ".upload-*")
-	if err != nil {
-		return "", fmt.Errorf("create artwork temp file: %w", err)
-	}
-	tmpName := tmp.Name()
-	defer os.Remove(tmpName)
-	if _, err := tmp.Write(data); err != nil {
-		tmp.Close()
-		return "", fmt.Errorf("write artwork: %w", err)
-	}
-	if err := tmp.Close(); err != nil {
-		return "", fmt.Errorf("close artwork: %w", err)
-	}
-	if err := os.Rename(tmpName, filepath.Join(s.dir, name)); err != nil {
+	if err := s.storage.Put(name, data); err != nil {
 		return "", fmt.Errorf("store artwork: %w", err)
 	}
 	return name, nil
@@ -70,11 +60,7 @@ func (s *Store) Remove(key string) error {
 	if !safeKey(key) {
 		return nil
 	}
-	err := os.Remove(filepath.Join(s.dir, key))
-	if errors.Is(err, os.ErrNotExist) {
-		return nil
-	}
-	return err
+	return s.storage.Delete(key)
 }
 
 func (s *Store) Serve(w http.ResponseWriter, r *http.Request, key string) {
@@ -82,26 +68,19 @@ func (s *Store) Serve(w http.ResponseWriter, r *http.Request, key string) {
 		http.NotFound(w, r)
 		return
 	}
-	f, err := os.Open(filepath.Join(s.dir, key))
+	f, err := s.storage.Open(key)
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
 	defer f.Close()
 	w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
-	http.ServeContent(w, r, key, fileModTime(f), f)
-}
-
-func fileModTime(f *os.File) (t time.Time) {
-	info, _ := f.Stat()
-	if info != nil {
-		return info.ModTime()
-	}
-	return
+	modTime, _ := s.storage.ModTime(key)
+	http.ServeContent(w, r, key, modTime, f)
 }
 
 func safeKey(key string) bool {
-	return key != "" && filepath.Base(key) == key && !strings.Contains(key, "\\")
+	return key != "" && !strings.ContainsAny(key, `/\\`) && key != "." && key != ".."
 }
 
 func valid(data []byte) bool {

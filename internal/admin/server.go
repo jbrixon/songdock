@@ -14,6 +14,7 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/jbrixon/songdock/internal/artwork"
+	artworkfilesystem "github.com/jbrixon/songdock/internal/artwork/filesystem"
 	"github.com/jbrixon/songdock/internal/store"
 	songtemplates "github.com/jbrixon/songdock/internal/templates"
 	"github.com/jbrixon/songdock/internal/urlpolicy"
@@ -34,14 +35,18 @@ func New(repo Repository, secret []byte) *Server {
 	return NewWithArtworkDir(repo, secret, "/data/uploads/artwork")
 }
 
-func NewWithArtworkDir(repo Repository, secret []byte, artworkDir string) *Server {
+func NewWithArtwork(repo Repository, secret []byte, artworkStore *artwork.Store) *Server {
 	return &Server{
 		repo:                repo,
 		secret:              secret,
 		loginLimiter:        NewRateLimiter(5, 15*time.Minute),
 		registrationLimiter: NewRateLimiter(5, 15*time.Minute),
-		artwork:             artwork.NewStore(artworkDir),
+		artwork:             artworkStore,
 	}
+}
+
+func NewWithArtworkDir(repo Repository, secret []byte, artworkDir string) *Server {
+	return NewWithArtwork(repo, secret, artwork.NewStore(artworkfilesystem.New(artworkDir)))
 }
 
 // HandleHome renders the admin home page. Unauthenticated requests are
