@@ -415,7 +415,7 @@ func (s *Server) HandleCreateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if err := r.ParseMultipartForm(11 << 20); err != nil {
+	if err := parseSongForm(r); err != nil {
 		s.renderSongFormPage(w, formErrorStatus(err), songFormView{
 			Error: "Invalid form submission.",
 		})
@@ -566,7 +566,7 @@ func (s *Server) HandleUpdateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if err := r.ParseMultipartForm(11 << 20); err != nil {
+	if err := parseSongForm(r); err != nil {
 		s.renderSongFormPage(w, formErrorStatus(err), songFormView{
 			Error: "Invalid form submission.",
 		})
@@ -928,9 +928,16 @@ func (s *Server) renderSongPreviewPage(w http.ResponseWriter, r *http.Request, s
 	}
 }
 
+func parseSongForm(r *http.Request) error {
+	if strings.HasPrefix(strings.ToLower(r.Header.Get("Content-Type")), "multipart/form-data") {
+		return r.ParseMultipartForm(11 << 20)
+	}
+	return r.ParseForm()
+}
+
 func (s *Server) uploadArtwork(r *http.Request) (string, bool, error) {
 	file, _, err := r.FormFile("artwork")
-	if errors.Is(err, http.ErrMissingFile) {
+	if errors.Is(err, http.ErrMissingFile) || errors.Is(err, http.ErrNotMultipart) {
 		return "", false, nil
 	}
 	if err != nil {
