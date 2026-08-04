@@ -579,6 +579,7 @@ templ ArtistsPanel(view artistsView) {
 				<tr>
 					<th scope="col">Artist</th>
 					<th scope="col">Slug</th>
+					<th scope="col">Action</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -587,11 +588,16 @@ templ ArtistsPanel(view artistsView) {
 						<tr>
 							<td>{ artist.Name }</td>
 							<td>{ artist.Slug }</td>
+							<td>
+								<form method="post" action={ "/platform/admin/artists/" + int64String(artist.ID) + "/delete" } hx-post={ "/platform/admin/artists/" + int64String(artist.ID) + "/delete" } hx-target="#artists-panel" hx-swap="outerHTML" hx-confirm="Delete this artist and all of its songs and artwork? This cannot be undone.">
+									<button class="platform-button platform-button--danger" type="submit">Delete</button>
+								</form>
+							</td>
 						</tr>
 					}
 				} else {
 					<tr>
-						<td colspan="2">No artists yet.</td>
+						<td colspan="3">No artists yet.</td>
 					</tr>
 				}
 			</tbody>

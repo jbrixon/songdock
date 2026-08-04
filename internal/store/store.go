@@ -16,6 +16,9 @@ var ErrUserNotFound = errors.New("user not found")
 // ErrArtistNotFound is returned when an artist cannot be found.
 var ErrArtistNotFound = errors.New("artist not found")
 
+// ErrArtistHasAdmins is returned when an artist still has assigned admins.
+var ErrArtistHasAdmins = errors.New("artist has assigned admins")
+
 // ErrArtistAlreadyExists is returned when creating a duplicate artist.
 var ErrArtistAlreadyExists = errors.New("artist already exists")
 

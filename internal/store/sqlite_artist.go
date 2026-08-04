@@ -90,3 +90,78 @@ func (r *SQLiteSongRepository) CreateArtist(name, slug string) (*Artist, error) 
 
 	return &Artist{ID: artistID, Name: name, Slug: slug}, nil
 }
+
+// DeleteArtist permanently removes an artist, its songs, memberships, and
+// invitations. It returns the artwork keys that must be removed from storage.
+func (r *SQLiteSongRepository) DeleteArtist(artistID int64) ([]string, error) {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return nil, fmt.Errorf("begin delete artist transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	var exists int
+	if err := tx.QueryRow(`SELECT 1 FROM artists WHERE id = ?`, artistID).Scan(&exists); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrArtistNotFound
+		}
+		return nil, fmt.Errorf("query artist for deletion: %w", err)
+	}
+
+	var admins int
+	if err := tx.QueryRow(`SELECT COUNT(*) FROM user_artists WHERE artist_id = ?`, artistID).Scan(&admins); err != nil {
+		return nil, fmt.Errorf("count artist admins: %w", err)
+	}
+	if admins > 0 {
+		return nil, ErrArtistHasAdmins
+	}
+
+	rows, err := tx.Query(
+		`SELECT DISTINCT artwork_path
+		   FROM songs
+		  WHERE artist_id = ?
+		    AND artwork_path IS NOT NULL
+		    AND artwork_path != ''
+		    AND NOT EXISTS (
+				SELECT 1 FROM songs other
+				 WHERE other.artist_id != songs.artist_id
+				   AND other.artwork_path = songs.artwork_path
+			)`,
+		artistID,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("query artist artwork: %w", err)
+	}
+	var artworkPaths []string
+	for rows.Next() {
+		var path string
+		if err := rows.Scan(&path); err != nil {
+			rows.Close()
+			return nil, fmt.Errorf("scan artist artwork: %w", err)
+		}
+		artworkPaths = append(artworkPaths, path)
+	}
+	if err := rows.Err(); err != nil {
+		rows.Close()
+		return nil, fmt.Errorf("iterate artist artwork: %w", err)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, fmt.Errorf("close artist artwork rows: %w", err)
+	}
+
+	for _, statement := range []string{
+		`DELETE FROM user_invitations WHERE artist_id = ?`,
+		`DELETE FROM user_artists WHERE artist_id = ?`,
+		`DELETE FROM songs WHERE artist_id = ?`,
+		`DELETE FROM artists WHERE id = ?`,
+	} {
+		if _, err := tx.Exec(statement, artistID); err != nil {
+			return nil, fmt.Errorf("delete artist data: %w", err)
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, fmt.Errorf("commit delete artist transaction: %w", err)
+	}
+	return artworkPaths, nil
+}

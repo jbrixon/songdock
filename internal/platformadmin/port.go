@@ -13,4 +13,5 @@ type Repository interface {
 	RevokeInvitation(invitationID int64) error
 	FindArtistBySlug(slug string) (*store.Artist, error)
 	CreateArtist(name, slug string) (*store.Artist, error)
+	DeleteArtist(artistID int64) ([]string, error)
 }

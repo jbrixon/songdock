@@ -16,6 +16,7 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/jbrixon/songdock/internal/admin"
+	"github.com/jbrixon/songdock/internal/artwork"
 	"github.com/jbrixon/songdock/internal/store"
 )
 
@@ -28,16 +29,24 @@ type Server struct {
 	secret       []byte
 	username     string
 	password     string
+	artwork      *artwork.Store
 	loginLimiter *admin.RateLimiter
 }
 
 // New returns a platform admin server.
 func New(repo Repository, secret []byte, username, password string) *Server {
+	return NewWithArtwork(repo, secret, username, password, nil)
+}
+
+// NewWithArtwork returns a platform admin server that also removes stored
+// artwork when an artist is deleted.
+func NewWithArtwork(repo Repository, secret []byte, username, password string, artworkStore *artwork.Store) *Server {
 	return &Server{
 		repo:         repo,
 		secret:       secret,
 		username:     strings.TrimSpace(username),
 		password:     password,
+		artwork:      artworkStore,
 		loginLimiter: admin.NewRateLimiter(5, 15*time.Minute),
 	}
 }
@@ -405,6 +414,42 @@ func (s *Server) HandleCreateArtistSubmit(w http.ResponseWriter, r *http.Request
 	}
 
 	s.renderArtistsResponse(w, r, http.StatusOK, fmt.Sprintf("Artist created: %s", artist.Name), "", "")
+}
+
+// HandleDeleteArtistSubmit permanently deletes an artist and its content.
+func (s *Server) HandleDeleteArtistSubmit(w http.ResponseWriter, r *http.Request) {
+	if _, ok := s.authenticatedSession(r); !ok {
+		http.Redirect(w, r, "/platform/admin/login", http.StatusSeeOther)
+		return
+	}
+
+	artistID, err := strconv.ParseInt(strings.TrimSpace(chi.URLParam(r, "artistID")), 10, 64)
+	if err != nil || artistID <= 0 {
+		s.renderArtistsResponse(w, r, http.StatusBadRequest, "Choose an existing artist.", "", "")
+		return
+	}
+
+	artworkPaths, err := s.repo.DeleteArtist(artistID)
+	if err != nil {
+		switch {
+		case errors.Is(err, store.ErrArtistNotFound):
+			s.renderArtistsResponse(w, r, http.StatusNotFound, "Artist not found.", "", "")
+		case errors.Is(err, store.ErrArtistHasAdmins):
+			s.renderArtistsResponse(w, r, http.StatusConflict, "Remove all assigned artist admins before deleting this artist.", "", "")
+		default:
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	if s.artwork != nil {
+		for _, path := range artworkPaths {
+			if err := s.artwork.Remove(r.Context(), path); err != nil {
+				log.Printf("remove artist artwork %q: %v", path, err)
+			}
+		}
+	}
+	s.renderArtistsResponse(w, r, http.StatusOK, "Artist deleted.", "", "")
 }
 
 func (s *Server) authenticatedSession(r *http.Request) (admin.Session, bool) {

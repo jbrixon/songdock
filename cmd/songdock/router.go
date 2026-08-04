@@ -33,11 +33,12 @@ func newRouterWithArtworkStore(songs store.SongRepository, adminRepo admin.Repos
 	r.Use(securityHeaders)
 	r.Handle("/static/*", staticAssets(http.StripPrefix("/static/", http.FileServer(http.FS(static.FS)))))
 	a := admin.NewWithArtwork(adminRepo, secret, artworkStore)
-	platform := platformadmin.New(
+	platform := platformadmin.NewWithArtwork(
 		platformRepo,
 		secret,
 		platformUsername,
 		platformPassword,
+		artworkStore,
 	)
 
 	r.Get("/", func(w http.ResponseWriter, req *http.Request) {
@@ -111,6 +112,7 @@ func newRouterWithArtworkStore(songs store.SongRepository, adminRepo admin.Repos
 		r.Get("/artists", platform.HandleArtists)
 		r.Get("/artists/slug/{mode}", platform.HandleArtistSlugAvailability)
 		r.Post("/artists", platform.HandleCreateArtistSubmit)
+		r.Post("/artists/{artistID}/delete", platform.HandleDeleteArtistSubmit)
 	})
 
 	r.NotFound(func(w http.ResponseWriter, req *http.Request) {

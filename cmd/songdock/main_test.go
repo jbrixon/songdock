@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -532,6 +533,113 @@ func TestPlatformAdminCanCreateArtistWithoutInitialAdmin(t *testing.T) {
 	adminBody := rec.Body.String()
 	if strings.Contains(adminBody, `value="edited-new-artist"`) || strings.Contains(adminBody, `>New Artist</option>`) {
 		t.Fatalf("GET /admin/: did not expect artist creator membership, body: %s", adminBody)
+	}
+}
+
+func TestPlatformAdminCanDeleteArtistAndAssociatedContent(t *testing.T) {
+	dbPath := filepath.Join(t.TempDir(), "test.db")
+	artworkDir := filepath.Join(t.TempDir(), "artwork")
+	repo, err := store.NewSQLiteSongRepository(dbPath)
+	if err != nil {
+		t.Fatalf("open repo: %v", err)
+	}
+	defer repo.Close()
+
+	artist, err := repo.CreateArtist("Delete Artist", "delete-artist")
+	if err != nil {
+		t.Fatalf("create artist: %v", err)
+	}
+	if err := repo.InsertSongForArtist(artist.ID, store.Song{
+		Title:       "Delete Release",
+		ArtistName:  artist.Name,
+		SongSlug:    "delete-release",
+		ArtworkPath: "delete-artwork.png",
+	}); err != nil {
+		t.Fatalf("insert artist song: %v", err)
+	}
+	if err := repo.CreateUserInvitation("delete-admin@example.com", "delete-invitation-hash", artist.ID); err != nil {
+		t.Fatalf("create artist invitation: %v", err)
+	}
+	if err := os.MkdirAll(artworkDir, 0o755); err != nil {
+		t.Fatalf("create artwork directory: %v", err)
+	}
+	artworkPath := filepath.Join(artworkDir, "delete-artwork.png")
+	if err := os.WriteFile(artworkPath, []byte("artwork"), 0o644); err != nil {
+		t.Fatalf("write artwork: %v", err)
+	}
+
+	router := newRouterWithArtworkDir(repo, repo, repo, []byte(testAdminSecret), testPlatformAdminUsername, testPlatformAdminPassword, artworkDir)
+	platformCookie := platformAdminSessionCookie(t, router)
+	req := httptest.NewRequest(http.MethodPost, "/platform/admin/artists/"+strconv.FormatInt(artist.ID, 10)+"/delete", nil)
+	req.AddCookie(platformCookie)
+	rec := httptest.NewRecorder()
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("POST artist delete: expected status 200, got %d; body: %s", rec.Code, rec.Body.String())
+	}
+	if !strings.Contains(rec.Body.String(), "Artist deleted.") {
+		t.Fatalf("POST artist delete: expected success message, got %s", rec.Body.String())
+	}
+	if _, err := os.Stat(artworkPath); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("artist artwork: expected deleted file, got %v", err)
+	}
+
+	db, err := sql.Open("sqlite", dbPath)
+	if err != nil {
+		t.Fatalf("open database: %v", err)
+	}
+	defer db.Close()
+	for _, query := range []string{
+		`SELECT COUNT(*) FROM artists WHERE id = ?`,
+		`SELECT COUNT(*) FROM songs WHERE artist_id = ?`,
+		`SELECT COUNT(*) FROM user_invitations WHERE artist_id = ?`,
+	} {
+		var count int
+		if err := db.QueryRow(query, artist.ID).Scan(&count); err != nil {
+			t.Fatalf("query deleted artist data: %v", err)
+		}
+		if count != 0 {
+			t.Fatalf("%s: expected 0 rows, got %d", query, count)
+		}
+	}
+
+	publicReq := httptest.NewRequest(http.MethodGet, "/s/delete-artist/delete-release", nil)
+	publicRec := httptest.NewRecorder()
+	router.ServeHTTP(publicRec, publicReq)
+	if publicRec.Code != http.StatusNotFound {
+		t.Fatalf("GET deleted artist page: expected status 404, got %d", publicRec.Code)
+	}
+}
+
+func TestPlatformAdminCannotDeleteArtistWithAssignedAdmin(t *testing.T) {
+	router, dbPath, cleanup := testRouterWithDBPath(t)
+	defer cleanup()
+
+	platformCookie := platformAdminSessionCookie(t, router)
+	req := httptest.NewRequest(http.MethodPost, "/platform/admin/artists/1/delete", nil)
+	req.AddCookie(platformCookie)
+	rec := httptest.NewRecorder()
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusConflict {
+		t.Fatalf("POST assigned artist delete: expected status 409, got %d; body: %s", rec.Code, rec.Body.String())
+	}
+	if !strings.Contains(rec.Body.String(), "Remove all assigned artist admins before deleting this artist.") {
+		t.Fatalf("POST assigned artist delete: expected guard message, got %s", rec.Body.String())
+	}
+
+	db, err := sql.Open("sqlite", dbPath)
+	if err != nil {
+		t.Fatalf("open database: %v", err)
+	}
+	defer db.Close()
+	var count int
+	if err := db.QueryRow(`SELECT COUNT(*) FROM artists WHERE id = 1`).Scan(&count); err != nil {
+		t.Fatalf("count guarded artist: %v", err)
+	}
+	if count != 1 {
+		t.Fatalf("guarded artist: expected row to remain, got %d", count)
 	}
 }
 
