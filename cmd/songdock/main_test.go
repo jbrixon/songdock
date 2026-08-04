@@ -1206,6 +1206,68 @@ func TestPlatformAdminCanCreateArtistAdminUser(t *testing.T) {
 	}
 }
 
+func TestPlatformAdminCanDeleteUserAndOrphanArtists(t *testing.T) {
+	router, dbPath, cleanup := testRouterWithDBPath(t)
+	defer cleanup()
+
+	userToken, err := admin.NewToken([]byte(testAdminSecret), 1, "admin@example.com", time.Now().UTC())
+	if err != nil {
+		t.Fatalf("create user token: %v", err)
+	}
+	platformCookie := platformAdminSessionCookie(t, router)
+
+	req := httptest.NewRequest(http.MethodPost, "/platform/admin/users/1/delete", nil)
+	req.AddCookie(platformCookie)
+	rec := httptest.NewRecorder()
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("POST /platform/admin/users/1/delete: expected status 200, got %d", rec.Code)
+	}
+	if !strings.Contains(rec.Body.String(), "User deleted.") {
+		t.Fatal("POST /platform/admin/users/1/delete: expected success message")
+	}
+
+	db, err := sql.Open("sqlite", dbPath)
+	if err != nil {
+		t.Fatalf("open database: %v", err)
+	}
+	defer db.Close()
+
+	for _, query := range []string{
+		`SELECT COUNT(*) FROM users WHERE id = 1`,
+		`SELECT COUNT(*) FROM user_artists WHERE user_id = 1`,
+		`SELECT COUNT(*) FROM user_invitations WHERE email = 'admin@example.com'`,
+	} {
+		var count int
+		if err := db.QueryRow(query).Scan(&count); err != nil {
+			t.Fatalf("query deleted user data: %v", err)
+		}
+		if count != 0 {
+			t.Fatalf("%s: expected 0 rows, got %d", query, count)
+		}
+	}
+
+	var artists, songs int
+	if err := db.QueryRow(`SELECT COUNT(*) FROM artists`).Scan(&artists); err != nil {
+		t.Fatalf("count artists: %v", err)
+	}
+	if err := db.QueryRow(`SELECT COUNT(*) FROM songs`).Scan(&songs); err != nil {
+		t.Fatalf("count songs: %v", err)
+	}
+	if artists != 2 || songs != 1 {
+		t.Fatalf("expected orphaned artists and songs to remain, got %d artists and %d songs", artists, songs)
+	}
+
+	adminReq := httptest.NewRequest(http.MethodGet, "/admin/", nil)
+	adminReq.AddCookie(&http.Cookie{Name: admin.SessionCookieName, Value: userToken})
+	adminRec := httptest.NewRecorder()
+	router.ServeHTTP(adminRec, adminReq)
+	if adminRec.Code != http.StatusSeeOther {
+		t.Fatalf("GET /admin/ with deleted user's token: expected redirect, got %d", adminRec.Code)
+	}
+}
+
 func TestPlatformAdminLogoutClearsCookie(t *testing.T) {
 	router, cleanup := testRouter(t)
 	defer cleanup()

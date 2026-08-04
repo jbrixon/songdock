@@ -208,6 +208,11 @@ templ platformStyles() {
 			transform: translateY(-1px);
 			box-shadow: 0 0 38px rgba(255, 177, 198, 0.34);
 		}
+		.platform-button--danger {
+			background: var(--danger-bg);
+			color: var(--danger-text);
+			box-shadow: none;
+		}
 		.platform-nav {
 			display: flex;
 			flex-wrap: wrap;
@@ -381,9 +386,15 @@ templ UsersPanel(view usersView) {
 				<tr>
 					<th scope="col">Email</th>
 					<th scope="col">Artists</th>
+					<th scope="col">Action</th>
 				</tr>
 			</thead>
 			<tbody>
+				if view.Message != "" {
+					<tr>
+						<td colspan="3"><div class="platform-alert platform-alert--neutral" role="status">{ view.Message }</div></td>
+					</tr>
+				}
 				if len(view.Users) > 0 {
 					for _, user := range view.Users {
 						<tr>
@@ -394,17 +405,22 @@ templ UsersPanel(view usersView) {
 										if i > 0 {
 											<span>, </span>
 										}
-										<span>{ artist.Name }</span>
+											<span>{ artist.Name }</span>
+										}
+									} else {
+										<span>Unassigned</span>
 									}
-								} else {
-									<span>Unassigned</span>
-								}
+							</td>
+							<td>
+								<form method="post" action={ "/platform/admin/users/" + int64String(user.ID) + "/delete" } hx-post={ "/platform/admin/users/" + int64String(user.ID) + "/delete" } hx-target="#users-panel" hx-swap="outerHTML" onsubmit="return confirm('Permanently delete this user?')">
+									<button class="platform-button platform-button--danger" type="submit">Delete</button>
+								</form>
 							</td>
 						</tr>
 					}
 				} else {
 					<tr>
-						<td colspan="2">No users yet.</td>
+						<td colspan="3">No users yet.</td>
 					</tr>
 				}
 			</tbody>

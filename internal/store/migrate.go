@@ -38,6 +38,14 @@ func migrate(db *sql.DB) error {
 	`); err != nil {
 		return err
 	}
+	if _, err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS user_token_revocations (
+			user_id    INTEGER PRIMARY KEY,
+			revoked_at INTEGER NOT NULL
+		)
+	`); err != nil {
+		return err
+	}
 
 	// songs: for new databases the artist_slug column is omitted and
 	// artist_id (FK → artists) is used instead.

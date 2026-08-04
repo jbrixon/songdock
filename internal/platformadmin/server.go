@@ -161,6 +161,30 @@ func (s *Server) HandleUsers(w http.ResponseWriter, r *http.Request) {
 	s.renderUsersPage(w, http.StatusOK, view)
 }
 
+// HandleDeleteUserSubmit permanently deletes a user and their artist memberships.
+func (s *Server) HandleDeleteUserSubmit(w http.ResponseWriter, r *http.Request) {
+	if _, ok := s.authenticatedSession(r); !ok {
+		http.Redirect(w, r, "/platform/admin/login", http.StatusSeeOther)
+		return
+	}
+
+	userID, err := strconv.ParseInt(strings.TrimSpace(chi.URLParam(r, "userID")), 10, 64)
+	if err != nil || userID <= 0 {
+		s.renderUsersResponse(w, r, http.StatusBadRequest, "Choose an existing user.")
+		return
+	}
+	if err := s.repo.DeleteUser(userID); err != nil {
+		if errors.Is(err, store.ErrUserNotFound) {
+			s.renderUsersResponse(w, r, http.StatusNotFound, "User not found.")
+			return
+		}
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	s.renderUsersResponse(w, r, http.StatusOK, "User deleted.")
+}
+
 // HandleInvitations renders invitation management.
 func (s *Server) HandleInvitations(w http.ResponseWriter, r *http.Request) {
 	if _, ok := s.authenticatedSession(r); !ok {
@@ -493,6 +517,25 @@ func (s *Server) renderUsersPage(w http.ResponseWriter, status int, view usersVi
 	if err := UsersPage(view).Render(context.Background(), w); err != nil {
 		log.Printf("render platform admin users page: %v", err)
 	}
+}
+
+func (s *Server) renderUsersResponse(w http.ResponseWriter, r *http.Request, status int, message string) {
+	view, err := s.usersView()
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	view.Message = message
+	if isHTMXRequest(r) {
+		w.Header().Set("Cache-Control", "no-store")
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.WriteHeader(status)
+		if err := UsersPanel(view).Render(r.Context(), w); err != nil {
+			log.Printf("render platform admin users panel: %v", err)
+		}
+		return
+	}
+	s.renderUsersPage(w, status, view)
 }
 
 func (s *Server) renderInvitationsPage(w http.ResponseWriter, status int, view invitationsView) {

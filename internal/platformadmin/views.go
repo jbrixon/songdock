@@ -16,7 +16,8 @@ type loginView struct {
 }
 
 type usersView struct {
-	Users []store.UserWithArtists
+	Users   []store.UserWithArtists
+	Message string
 }
 
 type invitationsView struct {

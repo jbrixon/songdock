@@ -101,6 +101,7 @@ func newRouterWithArtworkStore(songs store.SongRepository, adminRepo admin.Repos
 		r.Get("/login", platform.HandleLoginPage)
 		r.Post("/login", platform.HandleLoginSubmit)
 		r.Get("/users", platform.HandleUsers)
+		r.Post("/users/{userID}/delete", platform.HandleDeleteUserSubmit)
 		// Keep the old submit endpoint compatible with existing clients; the form
 		// itself now lives on the invitations page.
 		r.Post("/users", platform.HandleCreateInvitationSubmit)

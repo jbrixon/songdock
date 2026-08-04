@@ -8,6 +8,7 @@ import "github.com/jbrixon/songdock/internal/store"
 // Any adapter (e.g. SQLite) that satisfies this interface can be plugged in.
 type Repository interface {
 	FindUserByEmail(email string) (*store.User, error)
+	IsUserTokenRevoked(userID int64) (bool, error)
 	FindArtistBySlug(slug string) (*store.Artist, error)
 	FindBySlug(artistSlug, songSlug string) (*store.Song, error)
 	ListArtistsForUser(userID int64) ([]store.Artist, error)

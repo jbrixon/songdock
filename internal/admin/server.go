@@ -815,6 +815,10 @@ func (s *Server) authenticatedSession(r *http.Request) (Session, bool) {
 	if err != nil {
 		return Session{}, false
 	}
+	revoked, err := s.repo.IsUserTokenRevoked(session.UserID)
+	if err != nil || revoked {
+		return Session{}, false
+	}
 
 	return session, true
 }

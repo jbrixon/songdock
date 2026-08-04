@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 )
 
 // FindUserByEmail returns the user matching the given email address, or
@@ -102,4 +103,62 @@ func (r *SQLiteSongRepository) CreateUser(email, passwordHash string) (int64, er
 		return 0, fmt.Errorf("get inserted user id: %w", err)
 	}
 	return id, nil
+}
+
+// IsUserTokenRevoked reports whether tokens for a user were revoked.
+// Revocations remain after the user row is hard-deleted.
+func (r *SQLiteSongRepository) IsUserTokenRevoked(userID int64) (bool, error) {
+	var revokedAt int64
+	err := r.db.QueryRow(
+		`SELECT revoked_at FROM user_token_revocations WHERE user_id = ?`,
+		userID,
+	).Scan(&revokedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+		return false, fmt.Errorf("query user token revocation: %w", err)
+	}
+	return revokedAt > 0, nil
+}
+
+// DeleteUser permanently removes a user, their artist memberships, and any
+// invitations associated with their email. Artists and their songs remain.
+func (r *SQLiteSongRepository) DeleteUser(userID int64) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return fmt.Errorf("begin delete user transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	var email string
+	if err := tx.QueryRow(`SELECT email FROM users WHERE id = ?`, userID).Scan(&email); err != nil {
+		if err == sql.ErrNoRows {
+			return ErrUserNotFound
+		}
+		return fmt.Errorf("query user for deletion: %w", err)
+	}
+
+	if _, err := tx.Exec(
+		`INSERT INTO user_token_revocations (user_id, revoked_at) VALUES (?, ?)
+		 ON CONFLICT(user_id) DO UPDATE SET revoked_at = excluded.revoked_at`,
+		userID,
+		time.Now().UTC().Unix(),
+	); err != nil {
+		return fmt.Errorf("revoke user tokens: %w", err)
+	}
+	if _, err := tx.Exec(`DELETE FROM user_artists WHERE user_id = ?`, userID); err != nil {
+		return fmt.Errorf("delete user artist memberships: %w", err)
+	}
+	if _, err := tx.Exec(`DELETE FROM user_invitations WHERE email = ?`, email); err != nil {
+		return fmt.Errorf("delete user invitations: %w", err)
+	}
+	if _, err := tx.Exec(`DELETE FROM users WHERE id = ?`, userID); err != nil {
+		return fmt.Errorf("delete user: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("commit delete user transaction: %w", err)
+	}
+	return nil
 }
