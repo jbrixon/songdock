@@ -802,7 +802,7 @@ func TestRedeemInvitationMembershipFailureDoesNotCreatePartialUser(t *testing.T)
 		t.Fatalf("delete invitation artist: %v", err)
 	}
 
-	if _, err := repo.RedeemInvitation(1, "partial@example.com", "hash"); err == nil {
+	if _, err := repo.RedeemInvitation(1, "partial-hash", "partial@example.com", "hash"); err == nil {
 		t.Fatal("RedeemInvitation with missing artist: expected error")
 	}
 
@@ -1765,6 +1765,228 @@ func TestAdminRegisterExpiredInviteReturnsError(t *testing.T) {
 	}
 }
 
+func TestPlatformAdminCanReissueRevokedInvitation(t *testing.T) {
+	router, dbPath, cleanup := testRouterWithDBPath(t)
+	defer cleanup()
+
+	oldCode, err := seedTestInvitation(t, router)
+	if err != nil {
+		t.Fatalf("seed test invitation: %v", err)
+	}
+	invitationID := invitationIDForEmail(t, dbPath, "newartist@example.com")
+	platformCookie := platformAdminSessionCookie(t, router)
+
+	activeReissueForm := url.Values{"artist_id": {"2"}}
+	activeReissueReq := httptest.NewRequest(http.MethodPost, "/platform/admin/invitations/"+strconv.FormatInt(invitationID, 10)+"/reissue", strings.NewReader(activeReissueForm.Encode()))
+	activeReissueReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	activeReissueReq.Header.Set("HX-Request", "true")
+	activeReissueReq.AddCookie(platformCookie)
+	activeReissueRec := httptest.NewRecorder()
+	router.ServeHTTP(activeReissueRec, activeReissueReq)
+	if activeReissueRec.Code != http.StatusConflict || !strings.Contains(activeReissueRec.Body.String(), "Only expired or revoked invitations can be reissued.") {
+		t.Fatalf("active reissue: status %d, body %s", activeReissueRec.Code, activeReissueRec.Body.String())
+	}
+
+	revokeReq := httptest.NewRequest(http.MethodPost, "/platform/admin/invitations/"+strconv.FormatInt(invitationID, 10)+"/revoke", nil)
+	revokeReq.Header.Set("HX-Request", "true")
+	revokeReq.AddCookie(platformCookie)
+	revokeRec := httptest.NewRecorder()
+	router.ServeHTTP(revokeRec, revokeReq)
+	if revokeRec.Code != http.StatusOK {
+		t.Fatalf("revoke invitation: expected status 200, got %d; body: %s", revokeRec.Code, revokeRec.Body.String())
+	}
+
+	invitationsReq := httptest.NewRequest(http.MethodGet, "/platform/admin/invitations", nil)
+	invitationsReq.AddCookie(platformCookie)
+	invitationsRec := httptest.NewRecorder()
+	router.ServeHTTP(invitationsRec, invitationsReq)
+	if invitationsRec.Code != http.StatusOK || !strings.Contains(invitationsRec.Body.String(), "/reissue\"") || !strings.Contains(invitationsRec.Body.String(), "Reissue as artist") {
+		t.Fatalf("revoked invitation page: status %d, body %s", invitationsRec.Code, invitationsRec.Body.String())
+	}
+
+	form := url.Values{"artist_id": {"2"}}
+	reissueReq := httptest.NewRequest(http.MethodPost, "/platform/admin/invitations/"+strconv.FormatInt(invitationID, 10)+"/reissue", strings.NewReader(form.Encode()))
+	reissueReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	reissueReq.Header.Set("HX-Request", "true")
+	reissueReq.AddCookie(platformCookie)
+	reissueRec := httptest.NewRecorder()
+	router.ServeHTTP(reissueRec, reissueReq)
+	if reissueRec.Code != http.StatusOK {
+		t.Fatalf("reissue invitation: expected status 200, got %d; body: %s", reissueRec.Code, reissueRec.Body.String())
+	}
+	newCode := invitationCodeFromBody(t, reissueRec.Body.String(), "Invitation reissued. Code: ")
+	if newCode == oldCode {
+		t.Fatal("reissue returned the old invitation code")
+	}
+
+	db, err := sql.Open("sqlite", dbPath)
+	if err != nil {
+		t.Fatalf("open db: %v", err)
+	}
+	defer db.Close()
+	var invitationHash, revokedAt, expiresAt string
+	var artistID int64
+	if err := db.QueryRow(
+		`SELECT invitation_code_hash, artist_id, COALESCE(revoked_at, ''), expires_at FROM user_invitations WHERE id = ?`, invitationID,
+	).Scan(&invitationHash, &artistID, &revokedAt, &expiresAt); err != nil {
+		t.Fatalf("query reissued invitation: %v", err)
+	}
+	if invitationHash != platformadmin.HashInvitationCode([]byte(testAdminSecret), newCode) || artistID != 2 || revokedAt != "" || expiresAt == "" {
+		t.Fatalf("reissued invitation = hash %q, artist %d, revoked %q, expires %q", invitationHash, artistID, revokedAt, expiresAt)
+	}
+
+	oldRegister := postForm(router, "/admin/register", url.Values{
+		"invite_code":      {oldCode},
+		"password":         {"newpassword123"},
+		"password_confirm": {"newpassword123"},
+	})
+	if oldRegister.Code != http.StatusBadRequest || !strings.Contains(oldRegister.Body.String(), "Invalid invite code.") {
+		t.Fatalf("old invitation redemption: status %d, body %s", oldRegister.Code, oldRegister.Body.String())
+	}
+
+	newRegister := postForm(router, "/admin/register", url.Values{
+		"invite_code":      {newCode},
+		"password":         {"newpassword123"},
+		"password_confirm": {"newpassword123"},
+	})
+	if newRegister.Code != http.StatusSeeOther {
+		t.Fatalf("new invitation redemption: expected status 303, got %d; body %s", newRegister.Code, newRegister.Body.String())
+	}
+}
+
+func TestPlatformAdminCanReissueExpiredInvitation(t *testing.T) {
+	router, dbPath, cleanup := testRouterWithDBPath(t)
+	defer cleanup()
+
+	oldCode, err := seedTestInvitation(t, router)
+	if err != nil {
+		t.Fatalf("seed test invitation: %v", err)
+	}
+	invitationID := invitationIDForEmail(t, dbPath, "newartist@example.com")
+	db, err := sql.Open("sqlite", dbPath)
+	if err != nil {
+		t.Fatalf("open db: %v", err)
+	}
+	if _, err := db.Exec(`UPDATE user_invitations SET expires_at = ? WHERE id = ?`, "2000-01-01 00:00:00", invitationID); err != nil {
+		db.Close()
+		t.Fatalf("expire invitation: %v", err)
+	}
+	db.Close()
+
+	platformCookie := platformAdminSessionCookie(t, router)
+	form := url.Values{"artist_id": {"2"}}
+	reissueReq := httptest.NewRequest(http.MethodPost, "/platform/admin/invitations/"+strconv.FormatInt(invitationID, 10)+"/reissue", strings.NewReader(form.Encode()))
+	reissueReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	reissueReq.Header.Set("HX-Request", "true")
+	reissueReq.AddCookie(platformCookie)
+	reissueRec := httptest.NewRecorder()
+	router.ServeHTTP(reissueRec, reissueReq)
+	if reissueRec.Code != http.StatusOK {
+		t.Fatalf("reissue expired invitation: expected status 200, got %d; body: %s", reissueRec.Code, reissueRec.Body.String())
+	}
+	newCode := invitationCodeFromBody(t, reissueRec.Body.String(), "Invitation reissued. Code: ")
+
+	oldRegister := postForm(router, "/admin/register", url.Values{
+		"invite_code":      {oldCode},
+		"password":         {"newpassword123"},
+		"password_confirm": {"newpassword123"},
+	})
+	if oldRegister.Code != http.StatusBadRequest || !strings.Contains(oldRegister.Body.String(), "Invalid invite code.") {
+		t.Fatalf("old expired invitation redemption: status %d, body %s", oldRegister.Code, oldRegister.Body.String())
+	}
+	if newCode == oldCode {
+		t.Fatal("expired reissue returned the old invitation code")
+	}
+}
+
+func TestPlatformAdminCanAssignExistingUserToArtist(t *testing.T) {
+	router, dbPath, cleanup := testRouterWithDBPath(t)
+	defer cleanup()
+
+	db, err := sql.Open("sqlite", dbPath)
+	if err != nil {
+		t.Fatalf("open db: %v", err)
+	}
+	defer db.Close()
+	if _, err := db.Exec(`INSERT INTO artists (name, slug) VALUES (?, ?)`, "Third Artist", "third-artist"); err != nil {
+		t.Fatalf("create third artist: %v", err)
+	}
+	result, err := db.Exec(`INSERT INTO users (email, password_hash) VALUES (?, ?)`, "assign@example.com", "password-hash")
+	if err != nil {
+		t.Fatalf("create assignment user: %v", err)
+	}
+	userID, err := result.LastInsertId()
+	if err != nil {
+		t.Fatalf("get assignment user id: %v", err)
+	}
+	if _, err := db.Exec(`INSERT INTO user_artists (user_id, artist_id) SELECT ?, id FROM artists WHERE slug = ?`, userID, "bluetooth-pony"); err != nil {
+		t.Fatalf("assign initial artist: %v", err)
+	}
+
+	unauthenticated := httptest.NewRequest(http.MethodPost, "/platform/admin/users/"+strconv.FormatInt(userID, 10)+"/artists", nil)
+	unauthenticatedRec := httptest.NewRecorder()
+	router.ServeHTTP(unauthenticatedRec, unauthenticated)
+	if unauthenticatedRec.Code != http.StatusSeeOther || unauthenticatedRec.Header().Get("Location") != "/platform/admin/login" {
+		t.Fatalf("unauthenticated assignment: status %d, location %q", unauthenticatedRec.Code, unauthenticatedRec.Header().Get("Location"))
+	}
+
+	platformCookie := platformAdminSessionCookie(t, router)
+	usersReq := httptest.NewRequest(http.MethodGet, "/platform/admin/users", nil)
+	usersReq.AddCookie(platformCookie)
+	usersRec := httptest.NewRecorder()
+	router.ServeHTTP(usersRec, usersReq)
+	if usersRec.Code != http.StatusOK || !strings.Contains(usersRec.Body.String(), "/artists\"") || !strings.Contains(usersRec.Body.String(), `name="artist_slug"`) {
+		t.Fatalf("users assignment form: status %d, body %s", usersRec.Code, usersRec.Body.String())
+	}
+
+	form := url.Values{"artist_slug": {"hey-sis"}}
+	assignReq := httptest.NewRequest(http.MethodPost, "/platform/admin/users/"+strconv.FormatInt(userID, 10)+"/artists", strings.NewReader(form.Encode()))
+	assignReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	assignReq.Header.Set("HX-Request", "true")
+	assignReq.AddCookie(platformCookie)
+	assignRec := httptest.NewRecorder()
+	router.ServeHTTP(assignRec, assignReq)
+	if assignRec.Code != http.StatusOK || !strings.Contains(assignRec.Body.String(), "User assigned to artist.") {
+		t.Fatalf("assign existing user: status %d, body %s", assignRec.Code, assignRec.Body.String())
+	}
+
+	duplicateReq := httptest.NewRequest(http.MethodPost, "/platform/admin/users/"+strconv.FormatInt(userID, 10)+"/artists", strings.NewReader(form.Encode()))
+	duplicateReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	duplicateReq.Header.Set("HX-Request", "true")
+	duplicateReq.AddCookie(platformCookie)
+	duplicateRec := httptest.NewRecorder()
+	router.ServeHTTP(duplicateRec, duplicateReq)
+	if duplicateRec.Code != http.StatusOK {
+		t.Fatalf("duplicate assignment: expected status 200, got %d; body %s", duplicateRec.Code, duplicateRec.Body.String())
+	}
+
+	var assignedCount, thirdArtistMembership int
+	if err := db.QueryRow(`SELECT COUNT(*) FROM user_artists WHERE user_id = ?`, userID).Scan(&assignedCount); err != nil {
+		t.Fatalf("count assignments: %v", err)
+	}
+	if err := db.QueryRow(`SELECT COUNT(*) FROM user_artists ua JOIN artists a ON a.id = ua.artist_id WHERE ua.user_id = ? AND a.slug = ?`, userID, "third-artist").Scan(&thirdArtistMembership); err != nil {
+		t.Fatalf("query unassigned artist: %v", err)
+	}
+	if assignedCount != 2 || thirdArtistMembership != 0 {
+		t.Fatalf("assignments = %d, third-artist membership = %d; want exactly two without third artist", assignedCount, thirdArtistMembership)
+	}
+
+	token, err := admin.NewToken([]byte(testAdminSecret), userID, "assign@example.com", time.Now().UTC())
+	if err != nil {
+		t.Fatalf("create user token: %v", err)
+	}
+	adminReq := httptest.NewRequest(http.MethodGet, "/admin/", nil)
+	adminReq.AddCookie(&http.Cookie{Name: admin.SessionCookieName, Value: token})
+	adminRec := httptest.NewRecorder()
+	router.ServeHTTP(adminRec, adminReq)
+	if adminRec.Code != http.StatusOK {
+		t.Fatalf("GET /admin/ assigned user: expected status 200, got %d; body %s", adminRec.Code, adminRec.Body.String())
+	}
+	if strings.Contains(adminRec.Body.String(), "Third Artist") {
+		t.Fatal("assigned user can see an unassigned artist")
+	}
+}
+
 // seedTestInvitation creates a platform admin invitation and returns the
 // plain-text invite code.
 func seedTestInvitation(t *testing.T, router http.Handler) (string, error) {
@@ -1809,6 +2031,34 @@ func seedTestInvitation(t *testing.T, router http.Handler) (string, error) {
 		return body[codeStart:], nil
 	}
 	return body[codeStart : codeStart+codeEnd], nil
+}
+
+func invitationCodeFromBody(t *testing.T, body, prefix string) string {
+	t.Helper()
+	idx := strings.Index(body, prefix)
+	if idx == -1 {
+		t.Fatalf("body missing invitation code prefix %q: %s", prefix, body)
+	}
+	codeStart := idx + len(prefix)
+	codeEnd := strings.IndexAny(body[codeStart:], " \n\r<")
+	if codeEnd == -1 {
+		return body[codeStart:]
+	}
+	return body[codeStart : codeStart+codeEnd]
+}
+
+func invitationIDForEmail(t *testing.T, dbPath, email string) int64 {
+	t.Helper()
+	db, err := sql.Open("sqlite", dbPath)
+	if err != nil {
+		t.Fatalf("open db: %v", err)
+	}
+	defer db.Close()
+	var invitationID int64
+	if err := db.QueryRow(`SELECT id FROM user_invitations WHERE email = ?`, email).Scan(&invitationID); err != nil {
+		t.Fatalf("query invitation id: %v", err)
+	}
+	return invitationID
 }
 
 func platformAdminSessionCookie(t *testing.T, router http.Handler) *http.Cookie {

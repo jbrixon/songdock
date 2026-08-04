@@ -57,6 +57,64 @@ func (r *SQLiteSongRepository) CreateUserInvitation(email, invitationCodeHash st
 	return nil
 }
 
+// ReissueUserInvitation replaces an expired or revoked invitation in place.
+func (r *SQLiteSongRepository) ReissueUserInvitation(invitationID int64, invitationCodeHash string, artistID int64) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return fmt.Errorf("begin reissue user invitation transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	var artistExists int64
+	if err := tx.QueryRow(`SELECT id FROM artists WHERE id = ?`, artistID).Scan(&artistExists); err != nil {
+		if err == sql.ErrNoRows {
+			return ErrArtistNotFound
+		}
+		return fmt.Errorf("query reissue invitation artist: %w", err)
+	}
+
+	var inv UserInvitation
+	err = tx.QueryRow(
+		`SELECT COALESCE(accepted_at, ''), COALESCE(expires_at, ''), COALESCE(revoked_at, '')
+		   FROM user_invitations WHERE id = ?`,
+		invitationID,
+	).Scan(&inv.AcceptedAt, &inv.ExpiresAt, &inv.RevokedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return ErrInvitationNotFound
+		}
+		return fmt.Errorf("query invitation for reissue: %w", err)
+	}
+	if err := invitationReissueStatus(inv, time.Now().UTC()); err != nil {
+		return err
+	}
+
+	now := time.Now().UTC()
+	result, err := tx.Exec(
+		`UPDATE user_invitations
+		    SET artist_id = ?, invitation_code_hash = ?, created_at = ?, expires_at = ?, revoked_at = NULL
+		  WHERE id = ? AND accepted_at IS NULL`,
+		artistID,
+		invitationCodeHash,
+		sqliteTimestamp(now),
+		sqliteTimestamp(now.Add(InvitationLifetime)),
+		invitationID,
+	)
+	if err != nil {
+		return fmt.Errorf("update invitation for reissue: %w", err)
+	}
+	if rows, err := result.RowsAffected(); err != nil {
+		return fmt.Errorf("check reissued invitation: %w", err)
+	} else if rows != 1 {
+		return ErrInvitationAlreadyAccepted
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("commit reissue user invitation transaction: %w", err)
+	}
+	return nil
+}
+
 // FindInvitationByCodeHash returns the invitation whose stored hash matches
 // codeHash, or ErrInvitationNotFound if no such record exists.
 func (r *SQLiteSongRepository) FindInvitationByCodeHash(codeHash string) (*UserInvitation, error) {
@@ -94,7 +152,7 @@ func (r *SQLiteSongRepository) FindInvitationByCodeHash(codeHash string) (*UserI
 
 // RedeemInvitation atomically marks the invitation as accepted and creates the
 // user account. It returns the new user's ID on success.
-func (r *SQLiteSongRepository) RedeemInvitation(invitationID int64, email, passwordHash string) (int64, error) {
+func (r *SQLiteSongRepository) RedeemInvitation(invitationID int64, invitationCodeHash, email, passwordHash string) (int64, error) {
 	email = NormalizeEmail(email)
 	tx, err := r.db.Begin()
 	if err != nil {
@@ -107,7 +165,9 @@ func (r *SQLiteSongRepository) RedeemInvitation(invitationID int64, email, passw
 	var revokedAt sql.NullString
 	var artistID sql.NullInt64
 	err = tx.QueryRow(
-		`SELECT accepted_at, expires_at, revoked_at, artist_id FROM user_invitations WHERE id = ?`, invitationID,
+		`SELECT accepted_at, expires_at, revoked_at, artist_id
+		   FROM user_invitations
+		  WHERE id = ? AND invitation_code_hash = ?`, invitationID, invitationCodeHash,
 	).Scan(&acceptedAt, &expiresAt, &revokedAt, &artistID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -148,11 +208,20 @@ func (r *SQLiteSongRepository) RedeemInvitation(invitationID int64, email, passw
 		return 0, fmt.Errorf("assign redeemed user to artist: %w", err)
 	}
 
-	if _, err := tx.Exec(
-		`UPDATE user_invitations SET accepted_at = CURRENT_TIMESTAMP WHERE id = ?`,
+	result, err = tx.Exec(
+		`UPDATE user_invitations
+		    SET accepted_at = CURRENT_TIMESTAMP
+		  WHERE id = ? AND invitation_code_hash = ? AND accepted_at IS NULL`,
 		invitationID,
-	); err != nil {
+		invitationCodeHash,
+	)
+	if err != nil {
 		return 0, fmt.Errorf("mark invitation accepted: %w", err)
+	}
+	if rows, err := result.RowsAffected(); err != nil {
+		return 0, fmt.Errorf("check accepted invitation: %w", err)
+	} else if rows != 1 {
+		return 0, ErrInvitationNotFound
 	}
 
 	if err := tx.Commit(); err != nil {

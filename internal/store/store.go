@@ -34,6 +34,9 @@ var ErrInvitationNotFound = errors.New("invitation not found")
 // ErrInvitationAlreadyAccepted is returned when an invitation has already been redeemed.
 var ErrInvitationAlreadyAccepted = errors.New("invitation already accepted")
 
+// ErrInvitationStillActive is returned when an active invitation is reissued.
+var ErrInvitationStillActive = errors.New("invitation is still active")
+
 // ErrInvitationExpired is returned when an invitation has expired.
 var ErrInvitationExpired = errors.New("invitation expired")
 

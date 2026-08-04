@@ -49,7 +49,8 @@ type Repository interface {
 
 	CreateUserInvitation(email, invitationCodeHash string, artistID int64) error
 	FindInvitationByCodeHash(codeHash string) (*UserInvitation, error)
-	RedeemInvitation(invitationID int64, email, passwordHash string) (int64, error)
+	ReissueUserInvitation(invitationID int64, invitationCodeHash string, artistID int64) error
+	RedeemInvitation(invitationID int64, invitationCodeHash, email, passwordHash string) (int64, error)
 	ListPendingInvitations() ([]UserInvitation, error)
 	RevokeInvitation(invitationID int64) error
 }

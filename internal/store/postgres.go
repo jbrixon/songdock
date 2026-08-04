@@ -279,6 +279,14 @@ func (r *PostgresSongRepository) ListArtistsForUser(userID int64) ([]Artist, err
 }
 
 func (r *PostgresSongRepository) AssignUserToArtist(userID int64, artistSlug string) error {
+	var one int
+	if err := r.db.QueryRow(`SELECT 1 FROM users WHERE id = $1`, userID).Scan(&one); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrUserNotFound
+		}
+		return fmt.Errorf("query user for assignment: %w", err)
+	}
+
 	artist, err := r.FindArtistBySlug(artistSlug)
 	if err != nil {
 		return err
@@ -623,6 +631,67 @@ func (r *PostgresSongRepository) CreateUserInvitation(email, invitationCodeHash 
 	return nil
 }
 
+func (r *PostgresSongRepository) ReissueUserInvitation(invitationID int64, invitationCodeHash string, artistID int64) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return fmt.Errorf("begin reissue user invitation transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	var artistExists int64
+	if err := tx.QueryRow(`SELECT id FROM artists WHERE id = $1`, artistID).Scan(&artistExists); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrArtistNotFound
+		}
+		return fmt.Errorf("query reissue invitation artist: %w", err)
+	}
+
+	var acceptedAt, expiresAt, revokedAt sql.NullTime
+	err = tx.QueryRow(
+		`SELECT accepted_at, expires_at, revoked_at
+		   FROM user_invitations WHERE id = $1 FOR UPDATE`,
+		invitationID,
+	).Scan(&acceptedAt, &expiresAt, &revokedAt)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrInvitationNotFound
+		}
+		return fmt.Errorf("query invitation for reissue: %w", err)
+	}
+	if err := invitationReissueStatus(UserInvitation{
+		AcceptedAt: postgresTimestamp(acceptedAt),
+		ExpiresAt:  postgresTimestamp(expiresAt),
+		RevokedAt:  postgresTimestamp(revokedAt),
+	}, time.Now().UTC()); err != nil {
+		return err
+	}
+
+	now := time.Now().UTC()
+	result, err := tx.Exec(
+		`UPDATE user_invitations
+		    SET artist_id = $1, invitation_code_hash = $2, created_at = $3, expires_at = $4, revoked_at = NULL
+		  WHERE id = $5 AND accepted_at IS NULL`,
+		artistID,
+		invitationCodeHash,
+		now,
+		now.Add(InvitationLifetime),
+		invitationID,
+	)
+	if err != nil {
+		return fmt.Errorf("update invitation for reissue: %w", err)
+	}
+	if rows, err := result.RowsAffected(); err != nil {
+		return fmt.Errorf("check reissued invitation: %w", err)
+	} else if rows != 1 {
+		return ErrInvitationAlreadyAccepted
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("commit reissue user invitation transaction: %w", err)
+	}
+	return nil
+}
+
 func (r *PostgresSongRepository) FindInvitationByCodeHash(codeHash string) (*UserInvitation, error) {
 	var invitation UserInvitation
 	err := r.db.QueryRow(
@@ -651,7 +720,7 @@ func (r *PostgresSongRepository) FindInvitationByCodeHash(codeHash string) (*Use
 	return &invitation, nil
 }
 
-func (r *PostgresSongRepository) RedeemInvitation(invitationID int64, email, passwordHash string) (int64, error) {
+func (r *PostgresSongRepository) RedeemInvitation(invitationID int64, invitationCodeHash, email, passwordHash string) (int64, error) {
 	email = NormalizeEmail(email)
 	tx, err := r.db.Begin()
 	if err != nil {
@@ -663,7 +732,8 @@ func (r *PostgresSongRepository) RedeemInvitation(invitationID int64, email, pas
 	var artistID sql.NullInt64
 	err = tx.QueryRow(
 		`SELECT accepted_at, expires_at, revoked_at, artist_id
-		   FROM user_invitations WHERE id = $1 FOR UPDATE`, invitationID,
+		   FROM user_invitations
+		  WHERE id = $1 AND invitation_code_hash = $2 FOR UPDATE`, invitationID, invitationCodeHash,
 	).Scan(&acceptedAt, &expiresAt, &revokedAt, &artistID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -690,8 +760,20 @@ func (r *PostgresSongRepository) RedeemInvitation(invitationID int64, email, pas
 	if _, err := tx.Exec(`INSERT INTO user_artists (user_id, artist_id) VALUES ($1, $2)`, userID, artistID.Int64); err != nil {
 		return 0, fmt.Errorf("assign redeemed user to artist: %w", err)
 	}
-	if _, err := tx.Exec(`UPDATE user_invitations SET accepted_at = CURRENT_TIMESTAMP WHERE id = $1`, invitationID); err != nil {
+	result, err := tx.Exec(
+		`UPDATE user_invitations
+		    SET accepted_at = CURRENT_TIMESTAMP
+		  WHERE id = $1 AND invitation_code_hash = $2 AND accepted_at IS NULL`,
+		invitationID,
+		invitationCodeHash,
+	)
+	if err != nil {
 		return 0, fmt.Errorf("mark invitation accepted: %w", err)
+	}
+	if rows, err := result.RowsAffected(); err != nil {
+		return 0, fmt.Errorf("check accepted invitation: %w", err)
+	} else if rows != 1 {
+		return 0, ErrInvitationNotFound
 	}
 	if err := tx.Commit(); err != nil {
 		return 0, fmt.Errorf("commit redeem invitation transaction: %w", err)

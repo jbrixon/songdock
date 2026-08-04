@@ -10,7 +10,9 @@ type Repository interface {
 	ListArtists() ([]store.Artist, error)
 	ListPendingInvitations() ([]store.UserInvitation, error)
 	CreateUserInvitation(email, invitationCodeHash string, artistID int64) error
+	ReissueUserInvitation(invitationID int64, invitationCodeHash string, artistID int64) error
 	RevokeInvitation(invitationID int64) error
+	AssignUserToArtist(userID int64, artistSlug string) error
 	FindArtistBySlug(slug string) (*store.Artist, error)
 	CreateArtist(name, slug string) (*store.Artist, error)
 	DeleteArtist(artistID int64) ([]string, error)

@@ -93,10 +93,30 @@ func TestPostgresRepositoryIntegration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("find invitation: %v", err)
 	}
-	if _, err := repo.RedeemInvitation(invitation.ID, invitationEmail, "invite-password-hash"); err != nil {
+	reissueEmail := "reissue-" + suffix + "@example.com"
+	if err := repo.CreateUserInvitation(reissueEmail, "reissue-old-hash-"+suffix, artist.ID); err != nil {
+		t.Fatalf("create reissue invitation: %v", err)
+	}
+	reissueInvitation, err := repo.FindInvitationByCodeHash("reissue-old-hash-" + suffix)
+	if err != nil {
+		t.Fatalf("find reissue invitation: %v", err)
+	}
+	if err := repo.RevokeInvitation(reissueInvitation.ID); err != nil {
+		t.Fatalf("revoke reissue invitation: %v", err)
+	}
+	if err := repo.ReissueUserInvitation(reissueInvitation.ID, "reissue-new-hash-"+suffix, artist.ID); err != nil {
+		t.Fatalf("reissue invitation: %v", err)
+	}
+	if _, err := repo.FindInvitationByCodeHash("reissue-old-hash-" + suffix); !errors.Is(err, ErrInvitationNotFound) {
+		t.Fatalf("old reissue invitation lookup error = %v, want ErrInvitationNotFound", err)
+	}
+	if _, err := repo.FindInvitationByCodeHash("reissue-new-hash-" + suffix); err != nil {
+		t.Fatalf("find new reissue invitation: %v", err)
+	}
+	if _, err := repo.RedeemInvitation(invitation.ID, "hash-"+suffix, invitationEmail, "invite-password-hash"); err != nil {
 		t.Fatalf("redeem invitation: %v", err)
 	}
-	if _, err := repo.RedeemInvitation(invitation.ID, invitationEmail, "invite-password-hash"); !errors.Is(err, ErrInvitationAlreadyAccepted) {
+	if _, err := repo.RedeemInvitation(invitation.ID, "hash-"+suffix, invitationEmail, "invite-password-hash"); !errors.Is(err, ErrInvitationAlreadyAccepted) {
 		t.Fatalf("second redemption error = %v, want ErrInvitationAlreadyAccepted", err)
 	}
 

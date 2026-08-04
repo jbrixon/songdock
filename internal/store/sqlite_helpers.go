@@ -26,3 +26,13 @@ func invitationStatus(inv UserInvitation, now time.Time) error {
 	}
 	return nil
 }
+
+func invitationReissueStatus(inv UserInvitation, now time.Time) error {
+	if inv.AcceptedAt != "" {
+		return ErrInvitationAlreadyAccepted
+	}
+	if inv.RevokedAt != "" || (inv.ExpiresAt != "" && inv.ExpiresAt <= sqliteTimestamp(now)) {
+		return nil
+	}
+	return ErrInvitationStillActive
+}

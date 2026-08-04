@@ -194,6 +194,43 @@ func (s *Server) HandleDeleteUserSubmit(w http.ResponseWriter, r *http.Request) 
 	s.renderUsersResponse(w, r, http.StatusOK, "User deleted.")
 }
 
+// HandleAssignUserToArtistSubmit assigns an existing user to an artist.
+func (s *Server) HandleAssignUserToArtistSubmit(w http.ResponseWriter, r *http.Request) {
+	if _, ok := s.authenticatedSession(r); !ok {
+		http.Redirect(w, r, "/platform/admin/login", http.StatusSeeOther)
+		return
+	}
+
+	userID, err := strconv.ParseInt(strings.TrimSpace(chi.URLParam(r, "userID")), 10, 64)
+	if err != nil || userID <= 0 {
+		s.renderUsersResponse(w, r, http.StatusBadRequest, "Choose an existing user.")
+		return
+	}
+	if err := r.ParseForm(); err != nil {
+		s.renderUsersResponse(w, r, formErrorStatus(err), "Invalid form submission.")
+		return
+	}
+	artistSlug := strings.TrimSpace(r.Form.Get("artist_slug"))
+	if artistSlug == "" {
+		s.renderUsersResponse(w, r, http.StatusBadRequest, "Choose an artist to assign.")
+		return
+	}
+
+	if err := s.repo.AssignUserToArtist(userID, artistSlug); err != nil {
+		switch {
+		case errors.Is(err, store.ErrUserNotFound):
+			s.renderUsersResponse(w, r, http.StatusNotFound, "User not found.")
+		case errors.Is(err, store.ErrArtistNotFound):
+			s.renderUsersResponse(w, r, http.StatusBadRequest, "Choose an existing artist to assign.")
+		default:
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	s.renderUsersResponse(w, r, http.StatusOK, "User assigned to artist.")
+}
+
 // HandleInvitations renders invitation management.
 func (s *Server) HandleInvitations(w http.ResponseWriter, r *http.Request) {
 	if _, ok := s.authenticatedSession(r); !ok {
@@ -348,6 +385,52 @@ func (s *Server) HandleCreateInvitationSubmit(w http.ResponseWriter, r *http.Req
 	s.renderInvitationsResponse(w, r, http.StatusOK, fmt.Sprintf("Invitation created for %s. Code: %s", email, invitationCode), "", 0)
 }
 
+// HandleReissueInvitationSubmit reissues an expired or revoked invitation.
+func (s *Server) HandleReissueInvitationSubmit(w http.ResponseWriter, r *http.Request) {
+	if _, ok := s.authenticatedSession(r); !ok {
+		http.Redirect(w, r, "/platform/admin/login", http.StatusSeeOther)
+		return
+	}
+
+	invitationID, err := strconv.ParseInt(strings.TrimSpace(chi.URLParam(r, "invitationID")), 10, 64)
+	if err != nil || invitationID <= 0 {
+		s.renderInvitationsResponse(w, r, http.StatusBadRequest, "Choose an existing invitation.", "", 0)
+		return
+	}
+	if err := r.ParseForm(); err != nil {
+		s.renderInvitationsResponse(w, r, formErrorStatus(err), "Invalid form submission.", "", 0)
+		return
+	}
+	artistID, err := strconv.ParseInt(strings.TrimSpace(r.Form.Get("artist_id")), 10, 64)
+	if err != nil || artistID <= 0 {
+		s.renderInvitationsResponse(w, r, http.StatusBadRequest, "Choose an artist for this invitation.", "", 0)
+		return
+	}
+
+	invitationCode, err := newInvitationCode()
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	if err := s.repo.ReissueUserInvitation(invitationID, HashInvitationCode(s.secret, invitationCode), artistID); err != nil {
+		switch {
+		case errors.Is(err, store.ErrInvitationNotFound):
+			s.renderInvitationsResponse(w, r, http.StatusNotFound, "Invitation not found.", "", 0)
+		case errors.Is(err, store.ErrInvitationAlreadyAccepted):
+			s.renderInvitationsResponse(w, r, http.StatusConflict, "Invitation has already been accepted.", "", 0)
+		case errors.Is(err, store.ErrInvitationStillActive):
+			s.renderInvitationsResponse(w, r, http.StatusConflict, "Only expired or revoked invitations can be reissued.", "", artistID)
+		case errors.Is(err, store.ErrArtistNotFound):
+			s.renderInvitationsResponse(w, r, http.StatusBadRequest, "Choose an existing artist for this invitation.", "", artistID)
+		default:
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	s.renderInvitationsResponse(w, r, http.StatusOK, fmt.Sprintf("Invitation reissued. Code: %s", invitationCode), "", 0)
+}
+
 // HandleRevokeInvitationSubmit revokes a pending invitation.
 func (s *Server) HandleRevokeInvitationSubmit(w http.ResponseWriter, r *http.Request) {
 	if _, ok := s.authenticatedSession(r); !ok {
@@ -478,7 +561,11 @@ func (s *Server) usersView() (usersView, error) {
 	if err != nil {
 		return usersView{}, err
 	}
-	return usersView{Users: users}, nil
+	artists, err := s.repo.ListArtists()
+	if err != nil {
+		return usersView{}, err
+	}
+	return usersView{Users: users, Artists: artists}, nil
 }
 
 func (s *Server) invitationsView(message, email string, artistID int64) (invitationsView, error) {

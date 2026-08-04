@@ -20,5 +20,5 @@ type Repository interface {
 	UpdateSongForArtist(artistID int64, songSlug string, song store.Song) error
 	DeleteSongForArtist(artistID int64, songSlug string) error
 	FindInvitationByCodeHash(codeHash string) (*store.UserInvitation, error)
-	RedeemInvitation(invitationID int64, email, passwordHash string) (int64, error)
+	RedeemInvitation(invitationID int64, invitationCodeHash, email, passwordHash string) (int64, error)
 }

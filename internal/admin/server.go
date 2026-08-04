@@ -378,8 +378,15 @@ func (s *Server) HandleRegisterSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, err := s.repo.RedeemInvitation(invitation.ID, invitation.Email, passwordHash)
+	userID, err := s.repo.RedeemInvitation(invitation.ID, codeHash, invitation.Email, passwordHash)
 	if err != nil {
+		if errors.Is(err, store.ErrInvitationNotFound) {
+			s.renderRegisterResponse(w, r, http.StatusBadRequest, registerView{
+				InviteCode: inviteCode,
+				Error:      "Invalid invite code.",
+			})
+			return
+		}
 		if errors.Is(err, store.ErrInvitationAlreadyAccepted) {
 			s.renderRegisterResponse(w, r, http.StatusBadRequest, registerView{
 				InviteCode: inviteCode,
