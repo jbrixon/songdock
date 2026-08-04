@@ -3,6 +3,8 @@ package store
 import (
 	"database/sql"
 	"fmt"
+	"net/url"
+	"strings"
 
 	_ "modernc.org/sqlite"
 )
@@ -44,24 +46,23 @@ func MigrateSQLiteDatabase(path string) error {
 }
 
 func openSQLite(path string) (*sql.DB, error) {
-	db, err := sql.Open("sqlite", path)
+	db, err := sql.Open("sqlite", sqliteDSN(path))
 	if err != nil {
 		return nil, fmt.Errorf("open sqlite db: %w", err)
 	}
-
-	pragmas := []string{
-		`PRAGMA journal_mode = WAL`,
-		`PRAGMA foreign_keys = ON`,
-		`PRAGMA busy_timeout = 5000`,
-	}
-	for _, p := range pragmas {
-		if _, err := db.Exec(p); err != nil {
-			db.Close()
-			return nil, fmt.Errorf("exec %q: %w", p, err)
-		}
-	}
-
 	return db, nil
+}
+
+func sqliteDSN(path string) string {
+	pragmas := url.Values{}
+	pragmas.Add("_pragma", "journal_mode(WAL)")
+	pragmas.Add("_pragma", "foreign_keys(ON)")
+	pragmas.Add("_pragma", "busy_timeout(5000)")
+	separator := "?"
+	if strings.ContainsRune(path, '?') {
+		separator = "&"
+	}
+	return path + separator + pragmas.Encode()
 }
 
 // Close releases the underlying database connection.
