@@ -363,9 +363,18 @@ func TestAdminCanCreateSongWithUniqueSlug(t *testing.T) {
 		"description": {"A newly added acceptance test song."},
 	}, sessionCookie)
 
-	body := readBody(t, createResp)
-	if createResp.StatusCode != http.StatusOK {
-		t.Fatalf("POST /admin/songs: expected status 200, got %d", createResp.StatusCode)
+	createResp.Body.Close()
+	if createResp.StatusCode != http.StatusSeeOther {
+		t.Fatalf("POST /admin/songs: expected status 303, got %d", createResp.StatusCode)
+	}
+	previewPath := createResp.Header.Get("Location")
+	if previewPath == "" {
+		t.Fatal("POST /admin/songs: expected preview redirect")
+	}
+	previewResp := getNoRedirect(t, previewPath, sessionCookie)
+	body := readBody(t, previewResp)
+	if previewResp.StatusCode != http.StatusOK {
+		t.Fatalf("GET %s: expected status 200, got %d", previewPath, previewResp.StatusCode)
 	}
 	for _, want := range []string{
 		`class="admin-preview-banner"`,

@@ -508,7 +508,8 @@ func (s *Server) HandleCreateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		view.ArtworkPath = artworkPath
 	}
 
-	if _, err := insertSongWithUniqueSlug(s.repo, activeArtist, view); err != nil {
+	songSlug, err := insertSongWithUniqueSlug(s.repo, activeArtist, view)
+	if err != nil {
 		if hasArtwork {
 			s.removeArtwork(r.Context(), artworkPath)
 		}
@@ -517,16 +518,7 @@ func (s *Server) HandleCreateSongSubmit(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	s.renderSongPreviewPage(w, r, http.StatusOK, songPreviewView{
-		ArtistName:    activeArtist.Name,
-		Title:         view.Title,
-		Description:   view.Description,
-		ArtworkPath:   view.ArtworkPath,
-		YouTubeURL:    view.YouTubeURL,
-		SpotifyURL:    view.SpotifyURL,
-		AppleMusicURL: view.AppleMusicURL,
-		MetaPixelID:   activeArtist.MetaPixelID,
-	})
+	http.Redirect(w, r, "/admin/songs/"+url.PathEscape(songSlug)+"/preview", http.StatusSeeOther)
 }
 
 func insertSongWithUniqueSlug(repo Repository, activeArtist *store.Artist, view songFormView) (string, error) {
@@ -557,6 +549,47 @@ func insertSongWithUniqueSlug(repo Repository, activeArtist *store.Artist, view 
 		return slug, nil
 	}
 	return "", errors.New("could not generate a unique slug")
+}
+
+// HandleSongPreviewPage renders the public song page with an admin return link.
+func (s *Server) HandleSongPreviewPage(w http.ResponseWriter, r *http.Request) {
+	session, ok := s.authenticatedSession(r)
+	if !ok {
+		http.Redirect(w, r, "/admin/login", http.StatusSeeOther)
+		return
+	}
+
+	activeArtist, err := s.resolveActiveArtist(r, session)
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	if activeArtist == nil {
+		http.Error(w, "No artists are assigned to your account.", http.StatusForbidden)
+		return
+	}
+
+	songSlug := strings.TrimSpace(chi.URLParam(r, "songSlug"))
+	song, err := s.repo.FindBySlug(activeArtist.Slug, songSlug)
+	if err != nil {
+		if errors.Is(err, store.ErrNotFound) {
+			http.NotFound(w, r)
+			return
+		}
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	s.renderSongPreviewPage(w, r, http.StatusOK, songPreviewView{
+		ArtistName:    song.ArtistName,
+		Title:         song.Title,
+		Description:   song.Description,
+		ArtworkPath:   song.ArtworkPath,
+		YouTubeURL:    song.YouTubeURL,
+		SpotifyURL:    song.SpotifyURL,
+		AppleMusicURL: song.AppleMusicURL,
+		MetaPixelID:   song.MetaPixelID,
+	})
 }
 
 // HandleEditSongPage renders the edit-song form for an existing song.

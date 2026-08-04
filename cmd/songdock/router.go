@@ -89,6 +89,7 @@ func newRouterWithArtworkStore(songs store.SongRepository, adminRepo admin.Repos
 		r.Post("/register", a.HandleRegisterSubmit)
 		r.Get("/songs/new", a.HandleNewSongPage)
 		r.Post("/songs", a.HandleCreateSongSubmit)
+		r.Get("/songs/{songSlug}/preview", a.HandleSongPreviewPage)
 		r.Get("/songs/{songSlug}/edit", a.HandleEditSongPage)
 		r.Post("/songs/{songSlug}", a.HandleUpdateSongSubmit)
 		r.Post("/songs/{songSlug}/artwork/delete", a.HandleRemoveArtworkSubmit)

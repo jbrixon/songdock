@@ -967,7 +967,7 @@ func TestAdminSongFormUsesActiveArtistWithoutSlugInput(t *testing.T) {
 }
 
 func TestAdminCreateSongUsesActiveArtistCookie(t *testing.T) {
-	router, cleanup := testRouter(t)
+	router, dbPath, cleanup := testRouterWithDBPath(t)
 	defer cleanup()
 
 	token, err := admin.NewToken([]byte(testAdminSecret), 1, "admin@example.com", time.Now().UTC())
@@ -990,10 +990,23 @@ func TestAdminCreateSongUsesActiveArtistCookie(t *testing.T) {
 
 	router.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusOK {
-		t.Fatalf("POST /admin/songs: expected status 200, got %d", rec.Code)
+	if rec.Code != http.StatusSeeOther {
+		t.Fatalf("POST /admin/songs: expected status 303, got %d", rec.Code)
 	}
-	body := rec.Body.String()
+	if got := rec.Header().Get("Location"); got != "/admin/songs/active-artist-song/preview" {
+		t.Fatalf("POST /admin/songs: expected redirect to preview, got %q", got)
+	}
+
+	previewReq := httptest.NewRequest(http.MethodGet, rec.Header().Get("Location"), nil)
+	previewReq.AddCookie(&http.Cookie{Name: admin.SessionCookieName, Value: token})
+	previewReq.AddCookie(&http.Cookie{Name: admin.ActiveArtistCookieName, Value: activeArtistToken})
+	previewRec := httptest.NewRecorder()
+	router.ServeHTTP(previewRec, previewReq)
+
+	if previewRec.Code != http.StatusOK {
+		t.Fatalf("GET song preview: expected status 200, got %d", previewRec.Code)
+	}
+	body := previewRec.Body.String()
 	for _, want := range []string{
 		`class="admin-preview-banner"`,
 		`Go back to dashboard`,
@@ -1005,6 +1018,28 @@ func TestAdminCreateSongUsesActiveArtistCookie(t *testing.T) {
 		if !strings.Contains(body, want) {
 			t.Fatalf("POST /admin/songs: body missing %q", want)
 		}
+	}
+
+	secondPreviewReq := httptest.NewRequest(http.MethodGet, rec.Header().Get("Location"), nil)
+	secondPreviewReq.AddCookie(&http.Cookie{Name: admin.SessionCookieName, Value: token})
+	secondPreviewReq.AddCookie(&http.Cookie{Name: admin.ActiveArtistCookieName, Value: activeArtistToken})
+	secondPreviewRec := httptest.NewRecorder()
+	router.ServeHTTP(secondPreviewRec, secondPreviewReq)
+	if secondPreviewRec.Code != http.StatusOK {
+		t.Fatalf("refresh song preview: expected status 200, got %d", secondPreviewRec.Code)
+	}
+
+	db, err := sql.Open("sqlite", dbPath)
+	if err != nil {
+		t.Fatalf("open test database: %v", err)
+	}
+	defer db.Close()
+	var songCount int
+	if err := db.QueryRow(`SELECT COUNT(*) FROM songs WHERE song_slug = ?`, "active-artist-song").Scan(&songCount); err != nil {
+		t.Fatalf("count created songs: %v", err)
+	}
+	if songCount != 1 {
+		t.Fatalf("refresh song preview: expected exactly 1 song, got %d", songCount)
 	}
 }
 
