@@ -38,7 +38,7 @@ SongDock gives independent artists and small labels a simple alternative:
 - Invite-only artist-admin registration and session-based authentication.
 - Song creation, editing, and deletion for assigned artists.
 - Optional per-artist Meta Pixel tracking for public song-page views.
-- Small, self-hosted SQLite database with a single persistent file.
+- Small, self-hosted SQLite database by default, with optional PostgreSQL support.
 - Docker image published to GitHub Container Registry.
 - Reverse-proxy friendly: bring your own domain, TLS, backups, and infrastructure.
 
@@ -114,7 +114,15 @@ docker run --rm \
 
 For multiple SongDock instances sharing one database, run `migrate up` once
 before starting the instances and set `SONGDOCK_AUTO_MIGRATE=false` on each
-server. Run migrations as a single process during upgrades.
+server. Run migrations as a single one-off process during upgrades. This
+process is the same for SQLite and PostgreSQL.
+
+For PostgreSQL, configure the URL on the migration command itself:
+
+```sh
+POSTGRES_URL='postgres://user:password@db.example.com:5432/songdock?sslmode=require' \
+  songdock migrate up
+```
 
 ## First-run setup
 
@@ -136,11 +144,23 @@ Platform administrators can manage artists, users, and invitations. Artist admin
 
 SongDock reads environment variables from `.env` when started through `mise`. In a container, provide the same variables with `env_file`, `docker run --env-file`, or your deployment platform's secret manager.
 
-Database storage and artwork storage are configured independently. `DB_PATH`
-continues to control only SQLite and defaults to `songs.db`. Artwork uses the
-filesystem by default and stores files in `ARTWORK_DIR`, which defaults to
-`/data/uploads/artwork` for the server. `ARTWORK_DIR` is ignored when the S3
-driver is selected.
+Database storage and artwork storage are configured independently. SQLite is
+the default backend: `DB_PATH` selects its database file and defaults to
+`songs.db`. Set `POSTGRES_URL` to select PostgreSQL; it takes precedence over
+`DB_PATH` and accepts complete PostgreSQL URLs, including TLS parameters such
+as `sslmode=require`. SongDock uses the configured PostgreSQL database as-is;
+it does not copy an existing SQLite database into PostgreSQL.
+
+`SONGDOCK_AUTO_MIGRATE` controls automatic migrations for both backends. It is
+convenient for a simple single-instance deployment. For multiple SongDock
+instances sharing one database, run `songdock migrate up` exactly once before
+starting the instances and set `SONGDOCK_AUTO_MIGRATE=false` on every server.
+Run migrations as one one-off process during upgrades; do not have every
+server replica run migrations.
+
+Artwork uses the filesystem by default and stores files in `ARTWORK_DIR`, which
+defaults to `/data/uploads/artwork` for the server. `ARTWORK_DIR` is ignored
+when the S3 driver is selected.
 
 For local filesystem artwork storage:
 
@@ -174,6 +194,7 @@ assuming the bucket is publicly readable.
 | `PLATFORM_ADMIN_USERNAME` | Yes | — | Initial platform administrator username. |
 | `PLATFORM_ADMIN_PASSWORD` | Yes | — | Initial platform administrator password; at least 16 characters. |
 | `DB_PATH` | No | `songs.db` | Path to the SQLite database file. |
+| `POSTGRES_URL` | No | — | Complete PostgreSQL connection URL. When non-empty, PostgreSQL takes precedence over `DB_PATH`; URL parameters control TLS, such as `sslmode=require`. |
 | `ARTWORK_STORAGE_DRIVER` | No | `filesystem` | Artwork storage driver. Supported values are `filesystem` and `s3`; it does not affect SQLite. |
 | `ARTWORK_DIR` | No | `/data/uploads/artwork` | Filesystem artwork directory. Ignored when `ARTWORK_STORAGE_DRIVER=s3`. |
 | `S3_ENDPOINT` | S3 only | — | Optional custom S3-compatible endpoint. |
@@ -192,7 +213,7 @@ Keep `ADMIN_BACKEND_SECRET` stable after creating users. Changing it invalidates
 
 ## Docker deployment with Caddy
 
-The release workflow publishes images such as `ghcr.io/jbrixon/songdock:v1.2.3` and `ghcr.io/jbrixon/songdock:latest`. The container listens on port `8080` and stores its SQLite database wherever `DB_PATH` points.
+The release workflow publishes images such as `ghcr.io/jbrixon/songdock:v1.2.3` and `ghcr.io/jbrixon/songdock:latest`. The container listens on port `8080` and uses SQLite at `DB_PATH` unless `POSTGRES_URL` is configured.
 
 Create a deployment directory containing `.env`, `compose.yaml`, and `Caddyfile`:
 

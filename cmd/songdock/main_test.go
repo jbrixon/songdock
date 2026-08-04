@@ -1985,6 +1985,7 @@ func TestRunRejectsMissingOrUnknownCommand(t *testing.T) {
 func TestMigrateUpNeedsOnlyDatabasePath(t *testing.T) {
 	dbPath := filepath.Join(t.TempDir(), "songs.db")
 	t.Setenv("DB_PATH", dbPath)
+	t.Setenv("POSTGRES_URL", "")
 	t.Setenv("ADMIN_BACKEND_SECRET", "")
 	t.Setenv("PLATFORM_ADMIN_USERNAME", "")
 	t.Setenv("PLATFORM_ADMIN_PASSWORD", "")
@@ -2005,6 +2006,29 @@ func TestMigrateUpNeedsOnlyDatabasePath(t *testing.T) {
 	}
 	if tables != 1 {
 		t.Fatalf("expected songs table after migration, got %d matches", tables)
+	}
+}
+
+func TestDatabaseSelectionPrefersPostgresURL(t *testing.T) {
+	if got := (store.DatabaseConfig{SQLitePath: "/tmp/songs.db", PostgresURL: "postgres://user:password@localhost/songdock"}).Backend(); got != "postgres" {
+		t.Fatalf("database backend = %q, want postgres", got)
+	}
+	if got := (store.DatabaseConfig{SQLitePath: "/tmp/songs.db"}).Backend(); got != "sqlite" {
+		t.Fatalf("database backend = %q, want sqlite", got)
+	}
+}
+
+func TestInvalidPostgresURLDoesNotFallbackToSQLite(t *testing.T) {
+	dbPath := filepath.Join(t.TempDir(), "must-not-be-created.db")
+	_, err := store.OpenConfiguredRepository(store.DatabaseConfig{
+		SQLitePath:  dbPath,
+		PostgresURL: "not-a-postgres-url",
+	}, false)
+	if err == nil {
+		t.Fatal("expected invalid PostgreSQL URL error")
+	}
+	if _, statErr := os.Stat(dbPath); !errors.Is(statErr, os.ErrNotExist) {
+		t.Fatalf("expected SQLite fallback database not to be created, stat error: %v", statErr)
 	}
 }
 
@@ -2072,6 +2096,15 @@ func TestSQLiteRepositoryCanOpenWithoutMigration(t *testing.T) {
 	}
 	if tables != 0 {
 		t.Fatalf("expected no tables without migration, got %d", tables)
+	}
+}
+
+func TestConfiguredSQLiteRepositoryRequiresSchemaWhenAutoMigrationDisabled(t *testing.T) {
+	dbPath := filepath.Join(t.TempDir(), "songs.db")
+	if _, err := store.OpenConfiguredRepository(store.DatabaseConfig{SQLitePath: dbPath}, false); err == nil {
+		t.Fatal("expected missing schema error")
+	} else if !strings.Contains(err.Error(), "run songdock migrate up") {
+		t.Fatalf("missing schema error = %v, want migration guidance", err)
 	}
 }
 

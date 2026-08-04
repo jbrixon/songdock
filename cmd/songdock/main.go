@@ -39,7 +39,9 @@ func run(args []string) error {
 }
 
 func migrateUp() error {
-	if err := store.MigrateSQLiteDatabase(databasePath()); err != nil {
+	config := databaseConfig()
+	log.Printf("database backend: %s", config.Backend())
+	if err := store.MigrateConfiguredDatabase(config); err != nil {
 		return fmt.Errorf("migrate: %w", err)
 	}
 	return nil
@@ -59,11 +61,9 @@ func serve() error {
 	if err != nil {
 		return err
 	}
-	if shouldMigrate {
-		if err := store.MigrateSQLiteDatabase(databasePath()); err != nil {
-			return fmt.Errorf("migrate: %w", err)
-		}
-	}
+
+	dbConfig := databaseConfig()
+	log.Printf("database backend: %s", dbConfig.Backend())
 
 	adminSecret := strings.TrimSpace(os.Getenv("ADMIN_BACKEND_SECRET"))
 	if adminSecret == "" {
@@ -84,7 +84,7 @@ func serve() error {
 		return fmt.Errorf("PLATFORM_ADMIN_PASSWORD must be at least %d characters", minPlatformAdminPasswordLength)
 	}
 
-	repo, err := store.OpenSQLiteSongRepository(databasePath())
+	repo, err := store.OpenConfiguredRepository(dbConfig, shouldMigrate)
 	if err != nil {
 		return fmt.Errorf("open database: %w", err)
 	}
@@ -128,6 +128,13 @@ func databasePath() string {
 		return path
 	}
 	return "songs.db"
+}
+
+func databaseConfig() store.DatabaseConfig {
+	return store.DatabaseConfig{
+		SQLitePath:  databasePath(),
+		PostgresURL: strings.TrimSpace(os.Getenv("POSTGRES_URL")),
+	}
 }
 
 func automaticMigrations() (bool, error) {
