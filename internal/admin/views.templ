@@ -17,7 +17,7 @@ templ adminAuthStyles() {
 			--danger-border: rgba(255, 180, 171, 0.38);
 			--danger-text: #ffdad6;
 			--font-display: Sora, ui-sans-serif, system-ui, sans-serif;
-			--font-body: "Hanken Grotesk", Inter, ui-sans-serif, system-ui, sans-serif;
+			--font-body: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
 			--font-label: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 			--radius-card: 1rem;
 			--radius-control: 0.75rem;
@@ -31,7 +31,7 @@ templ adminAuthStyles() {
 		}
 		body {
 			margin: 0;
-			min-height: 100vh;
+			min-height: 100dvh;
 			display: grid;
 			place-items: start center;
 			padding: clamp(1.5rem, 5vw, 4rem) 1rem;
@@ -44,19 +44,19 @@ templ adminAuthStyles() {
 		}
 		.admin-card {
 			width: min(100%, 28rem);
-			padding: clamp(1.5rem, 5vw, 2.5rem);
+			padding: clamp(1.75rem, 5vw, 3rem);
 			border: 1px solid var(--surface-border);
 			border-radius: var(--radius-card);
 			background: var(--surface);
 			box-shadow: var(--shadow-glow);
 			backdrop-filter: blur(24px);
 		}
-		.admin-card__header { margin-bottom: 2rem; }
+		.admin-card__header { margin-bottom: 2.5rem; }
 		.admin-logo {
 			display: block;
-			width: min(100%, 17rem);
+			width: min(100%, 13rem);
 			height: auto;
-			margin: 0 auto 1.75rem;
+			margin: 0 auto 2.25rem;
 		}
 		.admin-eyebrow {
 			margin: 0 0 0.4rem;
@@ -71,23 +71,23 @@ templ adminAuthStyles() {
 			margin: 0;
 			font-family: var(--font-display);
 			font-size: clamp(2rem, 8vw, 2.5rem);
-			line-height: 1.15;
+			line-height: 1.05;
+			letter-spacing: -0.04em;
 		}
-		.admin-copy { margin: 0.5rem 0 0; color: var(--muted); }
+		.admin-copy { margin: 0.75rem 0 0; color: var(--muted); line-height: 1.55; }
 		.admin-alert {
-			margin-bottom: 1rem;
-			padding: 0.9rem 1rem;
+			margin-bottom: 1.5rem;
+			padding: 1rem 1.1rem;
 			border: 1px solid var(--danger-border);
 			border-radius: var(--radius-control);
 			background: var(--danger-bg);
 			color: var(--danger-text);
 		}
-		.admin-form { display: grid; gap: 0.5rem; }
+		.admin-form { display: grid; gap: 0.75rem; }
 		.admin-form label {
-			margin-top: 1rem;
-			margin-bottom: 0.1rem;
+			margin: 0;
 		}
-		.admin-form label:first-child { margin-top: 0; }
+		.admin-form label:not(:first-child) { margin-top: 0.35rem; }
 		.admin-label {
 			font-family: var(--font-label);
 			font-size: 0.78rem;
@@ -97,7 +97,8 @@ templ adminAuthStyles() {
 		}
 		.admin-input {
 			width: 100%;
-			padding: 0.9rem 1rem;
+			min-height: 3rem;
+			padding: 0.85rem 1rem;
 			border: 1px solid var(--surface-border);
 			border-radius: var(--radius-control);
 			background: rgba(6, 14, 32, 0.88);
@@ -109,8 +110,8 @@ templ adminAuthStyles() {
 			box-shadow: 0 0 0 4px rgba(255, 177, 198, 0.12);
 		}
 		.admin-button {
-			margin-top: 0.5rem;
-			min-height: 2.875rem;
+			margin-top: 0.65rem;
+			min-height: 3rem;
 			width: 100%;
 			padding: 0.95rem 1rem;
 			border: 0;
@@ -126,6 +127,12 @@ templ adminAuthStyles() {
 		.admin-button:hover {
 			transform: translateY(-1px);
 			box-shadow: 0 0 42px rgba(255, 177, 198, 0.38);
+		}
+		.admin-inline-link { color: var(--accent); }
+		.admin-auth-footer { margin-top: 1.25rem; text-align: center; }
+		@media (prefers-reduced-motion: reduce) {
+			.admin-button { transition: none; }
+			.admin-button:hover { transform: none; box-shadow: none; }
 		}
 	</style>
 }
@@ -148,7 +155,7 @@ templ adminBaseStyles() {
 			--danger-border: rgba(255, 180, 171, 0.38);
 			--danger-text: #ffdad6;
 			--font-display: Sora, ui-sans-serif, system-ui, sans-serif;
-			--font-body: "Hanken Grotesk", Inter, ui-sans-serif, system-ui, sans-serif;
+			--font-body: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
 			--font-label: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 			--radius-card: 1rem;
 			--radius-control: 0.75rem;
@@ -161,7 +168,7 @@ templ adminBaseStyles() {
 		}
 		body {
 			margin: 0;
-			min-height: 100vh;
+			min-height: 100dvh;
 			display: grid;
 			place-items: start center;
 			padding: clamp(1.5rem, 5vw, 4rem) 1rem;
@@ -182,39 +189,44 @@ templ adminBaseStyles() {
 			box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
 			backdrop-filter: blur(18px);
 		}
-		section { margin-top: 2.5rem; overflow-x: auto; }
+		section { margin-top: 3.5rem; overflow-x: auto; }
+		.admin-form { display: grid; gap: 0.75rem; }
+		.admin-form label:not(:first-child) { margin-top: 0.35rem; }
 		.admin-section-header {
 			display: flex;
-			align-items: end;
+			align-items: start;
 			justify-content: space-between;
 			gap: 1rem;
-			margin-bottom: 1rem;
+			margin-bottom: 1.5rem;
 		}
 		.admin-section-header h2 { margin-bottom: 0; }
-		.admin-meta { margin: 0.5rem 0 0; }
-		.admin-logout-form {
-			position: absolute;
-			top: 2rem;
-			right: 2rem;
+		.admin-section-header > div { min-width: 0; }
+		.admin-meta { margin: 0.75rem 0 0; line-height: 1.55; }
+		.admin-logout-form { flex: 0 0 auto; margin-top: 0.25rem; }
+		.admin-logout-button {
+			margin-top: 0;
+			border: 1px solid var(--surface-border);
+			background: rgba(23, 31, 51, 0.72);
+			color: var(--text);
+			box-shadow: none;
 		}
-		.admin-logout-button { margin-top: 0; }
 		.admin-page-logo {
 			display: block;
 			width: 8rem;
 			height: auto;
-			margin-bottom: 1.25rem;
+			margin-bottom: 1.5rem;
 		}
 		h1,
 		h2 {
 			font-family: var(--font-display);
 			line-height: 1.2;
 		}
-		h1 { margin: 0; font-size: clamp(2rem, 7vw, 2.75rem); letter-spacing: -0.03em; }
+		h1 { margin: 0; font-size: clamp(2rem, 7vw, 2.75rem); line-height: 1.05; letter-spacing: -0.04em; }
 		h2 { margin: 0 0 0.75rem; font-size: 1.5rem; letter-spacing: -0.02em; }
-		p { color: var(--muted); }
+		p { color: var(--muted); line-height: 1.55; }
 		label {
 			display: block;
-			margin-bottom: 0.5rem;
+			margin-bottom: 0;
 			font-family: var(--font-label);
 			font-size: 0.78rem;
 			font-weight: 600;
@@ -223,6 +235,7 @@ templ adminBaseStyles() {
 		}
 		select {
 			width: 100%;
+			min-height: 3rem;
 			padding: 0.85rem 0.95rem;
 			border: 1px solid var(--surface-border);
 			border-radius: var(--radius-control);
@@ -245,7 +258,7 @@ templ adminBaseStyles() {
 			box-shadow: 0 0 0 4px rgba(255, 177, 198, 0.12);
 		}
 		button {
-			min-height: 2.875rem;
+			min-height: 3rem;
 			margin-top: 0.8rem;
 			padding: 0.85rem 1.1rem;
 			border: 0;
@@ -256,7 +269,10 @@ templ adminBaseStyles() {
 			font-weight: 800;
 			cursor: pointer;
 			box-shadow: 0 0 24px rgba(255, 177, 198, 0.22);
+			transition: transform 160ms ease, box-shadow 160ms ease;
 		}
+		button:hover { transform: translateY(-1px); box-shadow: 0 0 36px rgba(255, 177, 198, 0.3); }
+		button:active { transform: translateY(0); }
 		button.admin-disabled-control {
 			border: 1px solid rgba(223, 190, 197, 0.32);
 			background: #222a3d;
@@ -282,6 +298,12 @@ templ adminBaseStyles() {
 			text-decoration: none;
 			box-shadow: 0 0 24px rgba(255, 177, 198, 0.22);
 		}
+		.admin-link-button--secondary {
+			border: 1px solid var(--surface-border);
+			background: rgba(23, 31, 51, 0.72);
+			color: var(--text);
+			box-shadow: none;
+		}
 		.admin-link-button--disabled {
 			opacity: 0.45;
 			cursor: not-allowed;
@@ -289,7 +311,7 @@ templ adminBaseStyles() {
 		.admin-create-song {
 			display: flex;
 			justify-content: flex-end;
-			margin: 1.25rem 0 0;
+			margin: 1.5rem 0 0;
 		}
 		table {
 			width: 100%;
@@ -298,7 +320,7 @@ templ adminBaseStyles() {
 		}
 		th,
 		td {
-			padding: 0.85rem 0.75rem;
+			padding: 1rem 0.85rem;
 			border-top: 1px solid var(--surface-border);
 			text-align: left;
 			vertical-align: top;
@@ -332,6 +354,7 @@ templ adminBaseStyles() {
 		input,
 		textarea {
 			width: 100%;
+			min-height: 3rem;
 			padding: 0.85rem 0.95rem;
 			border: 1px solid var(--surface-border);
 			border-radius: var(--radius-control);
@@ -340,6 +363,7 @@ templ adminBaseStyles() {
 			font: inherit;
 		}
 		textarea { min-height: 7rem; resize: vertical; }
+		.admin-form-page { max-width: 36rem; }
 		.admin-actions {
 			display: flex;
 			flex-wrap: wrap;
@@ -355,8 +379,8 @@ templ adminBaseStyles() {
 			box-shadow: none;
 		}
 		.admin-danger-menu {
-			margin-top: 2rem;
-			padding-top: 1.25rem;
+			margin-top: 3rem;
+			padding-top: 1.5rem;
 			border-top: 1px solid var(--surface-border);
 		}
 		.admin-danger-menu summary {
@@ -381,8 +405,13 @@ templ adminBaseStyles() {
 			}
 			.admin-section-header { display: block; }
 			.admin-section-header .admin-link-button { margin-top: 0.75rem; width: 100%; }
-			.admin-logout-form { top: 1.25rem; right: 1.25rem; }
+			.admin-logout-form { margin-top: 1.25rem; }
+			.admin-logout-button { width: 100%; }
 			table { min-width: 36rem; }
+		}
+		@media (prefers-reduced-motion: reduce) {
+			button { transition: none; }
+			button:hover { transform: none; box-shadow: none; }
 		}
 	</style>
 }
@@ -416,8 +445,8 @@ templ LoginCard(view loginView) {
 			<input class="admin-input" id="password" name="password" type="password" autocomplete="current-password" required/>
 			<button class="admin-button" type="submit">Log in</button>
 		</form>
-		<p class="admin-copy" style="margin-top:1rem;text-align:center;">
-			New here? <a href="/admin/register" style="color:var(--accent);">Create your account</a>
+		<p class="admin-copy admin-auth-footer">
+			New here? <a class="admin-inline-link" href="/admin/register">Create your account</a>
 		</p>
 	</section>
 }
@@ -466,8 +495,8 @@ templ RegisterCard(view registerView) {
 			<input class="admin-input" id="password_confirm" name="password_confirm" type="password" autocomplete="new-password" minlength="12" required/>
 			<button class="admin-button" type="submit">Create account</button>
 		</form>
-		<p class="admin-copy" style="margin-top:1rem;text-align:center;">
-			Already have an account? <a href="/admin/login" style="color:var(--accent);">Log in</a>
+		<p class="admin-copy admin-auth-footer">
+			Already have an account? <a class="admin-inline-link" href="/admin/login">Log in</a>
 		</p>
 	</section>
 }
@@ -607,7 +636,7 @@ templ SongFormPage(view songFormView) {
 			@adminBaseStyles()
 		</head>
 		<body>
-			<main style="width:min(100%,36rem);">
+			<main class="admin-form-page">
 				<header class="admin-section-header">
 					<div>
 						<img class="admin-page-logo" src="/static/songdock_logo_dark.v2.png" alt="SongDock"/>
@@ -618,7 +647,7 @@ templ SongFormPage(view songFormView) {
 					<p class="admin-alert" role="alert">{ view.Error }</p>
 				}
 				if view.ActiveArtist != nil {
-					<p>Artist: { view.ActiveArtist.Name }</p>
+					<p class="admin-meta">Artist: { view.ActiveArtist.Name }</p>
 					<form class="admin-form" method="post" enctype="multipart/form-data" action={ view.Action }>
 						<label for="title">Title</label>
 						<input id="title" name="title" required value={ view.Title }/>
@@ -635,7 +664,7 @@ templ SongFormPage(view songFormView) {
 						<input id="apple_music_url" name="apple_music_url" value={ view.AppleMusicURL }/>
 						<div class="admin-actions">
 							<button type="submit">{ view.SubmitLabel }</button>
-							<a class="admin-link-button" href="/admin/">Cancel</a>
+							<a class="admin-link-button admin-link-button--secondary" href="/admin/">Cancel</a>
 						</div>
 					</form>
 					<script>

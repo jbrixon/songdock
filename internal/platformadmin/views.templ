@@ -20,7 +20,7 @@ templ platformStyles() {
 			--danger-border: rgba(255, 180, 171, 0.38);
 			--danger-text: #ffdad6;
 			--font-display: Sora, ui-sans-serif, system-ui, sans-serif;
-			--font-body: "Hanken Grotesk", Inter, ui-sans-serif, system-ui, sans-serif;
+			--font-body: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
 			--font-label: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 			--radius-card: 1rem;
 			--radius-control: 0.75rem;
@@ -33,7 +33,7 @@ templ platformStyles() {
 		}
 		body {
 			margin: 0;
-			min-height: 100vh;
+			min-height: 100dvh;
 			display: grid;
 			place-items: start center;
 			padding: clamp(1.5rem, 5vw, 4rem) 1rem;
@@ -47,7 +47,7 @@ templ platformStyles() {
 		.platform-shell,
 		.platform-card {
 			width: min(100%, 68rem);
-			padding: clamp(1.5rem, 4vw, 2.75rem);
+			padding: clamp(1.75rem, 4vw, 3.25rem);
 			border: 1px solid var(--surface-border);
 			border-radius: var(--radius-card);
 			background: var(--surface);
@@ -60,8 +60,9 @@ templ platformStyles() {
 			align-items: start;
 			justify-content: space-between;
 			gap: 1rem;
-			margin-bottom: 2.25rem;
+			margin-bottom: 2.5rem;
 		}
+		.platform-header > div:first-child { min-width: 0; }
 		.platform-actions {
 			display: flex;
 			flex-wrap: wrap;
@@ -69,12 +70,12 @@ templ platformStyles() {
 			justify-content: flex-end;
 			gap: 0.75rem;
 		}
-		.platform-card__header { margin-bottom: 2rem; }
+		.platform-card__header { margin-bottom: 2.5rem; }
 		.platform-logo {
 			display: block;
-			width: min(100%, 17rem);
+			width: min(100%, 13rem);
 			height: auto;
-			margin: 0 auto 1.75rem;
+			margin: 0 auto 2.25rem;
 		}
 		.platform-page-logo {
 			display: block;
@@ -95,13 +96,13 @@ templ platformStyles() {
 			margin: 0;
 			font-family: var(--font-display);
 			font-size: clamp(2rem, 7vw, 2.5rem);
-			line-height: 1.15;
+			line-height: 1.05;
 			letter-spacing: -0.03em;
 		}
-		.platform-copy { margin: 0.5rem 0 0; color: var(--muted); }
+		.platform-copy { margin: 0.75rem 0 0; color: var(--muted); line-height: 1.55; }
 		.platform-alert {
-			margin-bottom: 1rem;
-			padding: 0.9rem 1rem;
+			margin-bottom: 1.5rem;
+			padding: 1rem 1.1rem;
 			border: 1px solid var(--danger-border);
 			border-radius: var(--radius-control);
 			background: var(--danger-bg);
@@ -183,7 +184,8 @@ templ platformStyles() {
 		}
 		.platform-input {
 			width: 100%;
-			padding: 0.9rem 1rem;
+			min-height: 3rem;
+			padding: 0.85rem 1rem;
 			border: 1px solid var(--surface-border);
 			border-radius: var(--radius-control);
 			background: rgba(6, 14, 32, 0.88);
@@ -200,12 +202,10 @@ templ platformStyles() {
 			display: inline-flex;
 			align-items: center;
 			justify-content: center;
-			padding: 0.95rem 1rem;
-			min-height: 2.875rem;
-			border: 0;
+			padding: 0.9rem 1rem;
+			min-height: 3rem;
+			border: 1px solid transparent;
 			border-radius: var(--radius-pill);
-			background: linear-gradient(135deg, var(--accent), var(--accent-2));
-			color: var(--accent-text);
 			font: inherit;
 			font-weight: 800;
 			text-decoration: none;
@@ -213,13 +213,29 @@ templ platformStyles() {
 			box-shadow: 0 0 24px rgba(255, 177, 198, 0.22);
 			transition: transform 160ms ease, box-shadow 160ms ease;
 		}
+		.platform-button {
+			background: linear-gradient(135deg, var(--accent), var(--accent-2));
+			color: var(--accent-text);
+			box-shadow: 0 0 24px rgba(255, 177, 198, 0.22);
+		}
+		.platform-link,
+		.platform-nav a {
+			border-color: var(--surface-border);
+			background: rgba(23, 31, 51, 0.72);
+			color: var(--text);
+			box-shadow: none;
+		}
 		.platform-button:hover,
 		.platform-link:hover,
 		.platform-nav a:hover {
 			transform: translateY(-1px);
-			box-shadow: 0 0 38px rgba(255, 177, 198, 0.34);
+			box-shadow: 0 0 34px rgba(255, 177, 198, 0.28);
 		}
+		.platform-button:active,
+		.platform-link:active,
+		.platform-nav a:active { transform: translateY(0); }
 		.platform-button--danger {
+			border-color: var(--danger-border);
 			background: var(--danger-bg);
 			color: var(--danger-text);
 			box-shadow: none;
@@ -228,17 +244,18 @@ templ platformStyles() {
 			display: flex;
 			flex-wrap: wrap;
 			gap: 0.75rem;
-			margin-top: 0.5rem;
+			margin-top: 1.25rem;
 		}
 		.platform-panel { overflow-x: auto; }
 		.platform-table {
 			width: 100%;
+			min-width: 44rem;
 			border-collapse: collapse;
 			table-layout: fixed;
 		}
 		.platform-table th,
 		.platform-table td {
-			padding: 0.85rem;
+			padding: 1rem 0.85rem;
 			border-top: 1px solid var(--surface-border);
 			text-align: left;
 			vertical-align: top;
@@ -252,8 +269,9 @@ templ platformStyles() {
 			letter-spacing: 0.05em;
 			text-transform: uppercase;
 		}
-		.platform-panel > .platform-table { margin-top: 1.75rem; }
-		.platform-panel > .platform-form + .platform-table { margin-top: 2.5rem; }
+		.platform-panel > .platform-table { margin-top: 0; }
+		.platform-panel > .platform-form + .platform-table { margin-top: 2rem; }
+		.platform-table td > form + form { margin-top: 0.75rem; }
 		@media (max-width: 760px) {
 			body { display: block; padding: 0; }
 			.platform-shell,
@@ -267,13 +285,23 @@ templ platformStyles() {
 			.platform-header { display: block; }
 			.platform-actions { margin-top: 1rem; justify-content: start; }
 			.platform-link { margin-top: 1rem; width: 100%; }
+			.platform-header > form { margin-top: 1.25rem; }
+			.platform-header > form .platform-button { width: 100%; }
 			.platform-form--inline,
 			.platform-form--artist { grid-template-columns: 1fr; }
 			.platform-form--inline > *,
-			.platform-form--artist > * {
+				.platform-form--artist > * {
 				grid-column: auto !important;
 				grid-row: auto !important;
 			}
+		}
+		@media (prefers-reduced-motion: reduce) {
+			.platform-button,
+			.platform-link,
+			.platform-nav a { transition: none; }
+			.platform-button:hover,
+			.platform-link:hover,
+			.platform-nav a:hover { transform: none; box-shadow: none; }
 		}
 	</style>
 }
