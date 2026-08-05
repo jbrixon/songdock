@@ -116,6 +116,17 @@ templ platformStyles() {
 		.platform-field-status { margin: -0.4rem 0 0; color: var(--muted); font-size: 0.88rem; }
 		.platform-field-status--ok { color: #9af5df; }
 		.platform-field-status--error { color: var(--danger-text); }
+		.platform-visually-hidden {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			padding: 0;
+			margin: -1px;
+			overflow: hidden;
+			clip: rect(0, 0, 0, 0);
+			white-space: nowrap;
+			border: 0;
+		}
 		.platform-form { display: grid; gap: 0.85rem; }
 		.platform-form > .platform-label:not(:first-child) { margin-top: 0.35rem; }
 		.platform-form--inline {
@@ -164,13 +175,11 @@ templ platformStyles() {
 			grid-row: 2;
 			margin-top: 0;
 		}
-		.platform-form--user-assign,
 		.platform-form--reissue {
 			min-width: 12rem;
 			gap: 0.55rem;
 			margin: 0;
 		}
-		.platform-form--user-assign .platform-button,
 		.platform-form--reissue .platform-button {
 			width: 100%;
 			padding: 0.75rem 1rem;
@@ -240,6 +249,46 @@ templ platformStyles() {
 			color: var(--danger-text);
 			box-shadow: none;
 		}
+		.platform-button:disabled {
+			cursor: not-allowed;
+			opacity: 0.5;
+			box-shadow: none;
+		}
+		.platform-button:disabled:hover {
+			transform: none;
+			box-shadow: none;
+		}
+		.platform-tooltip {
+			position: relative;
+			display: inline-flex;
+		}
+		.platform-tooltip::after {
+			content: attr(data-tooltip);
+			position: absolute;
+			z-index: 2;
+			top: calc(100% + 0.5rem);
+			left: 50%;
+			width: max-content;
+			max-width: min(20rem, calc(100vw - 2rem));
+			padding: 0.55rem 0.75rem;
+			border: 1px solid var(--surface-border);
+			border-radius: var(--radius-control);
+			background: var(--surface-highest);
+			color: var(--text);
+			font-size: 0.82rem;
+			font-weight: 600;
+			line-height: 1.35;
+			text-align: center;
+			pointer-events: none;
+			opacity: 0;
+			transform: translate(-50%, -0.25rem);
+			transition: opacity 160ms ease, transform 160ms ease;
+		}
+		.platform-tooltip:hover::after,
+		.platform-tooltip:focus-visible::after {
+			opacity: 1;
+			transform: translate(-50%, 0);
+		}
 		.platform-nav {
 			display: flex;
 			flex-wrap: wrap;
@@ -298,7 +347,8 @@ templ platformStyles() {
 		@media (prefers-reduced-motion: reduce) {
 			.platform-button,
 			.platform-link,
-			.platform-nav a { transition: none; }
+			.platform-nav a,
+			.platform-tooltip::after { transition: none; }
 			.platform-button:hover,
 			.platform-link:hover,
 			.platform-nav a:hover { transform: none; box-shadow: none; }
@@ -425,7 +475,7 @@ templ UsersPanel(view usersView) {
 				<tr>
 					<th scope="col">Email</th>
 					<th scope="col">Artists</th>
-					<th scope="col">Assign / action</th>
+					<th scope="col">Action</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -449,21 +499,26 @@ templ UsersPanel(view usersView) {
 									} else {
 										<span>Unassigned</span>
 									}
-								</td>
-								<td>
-									<form class="platform-form platform-form--user-assign" method="post" action={ "/platform/admin/users/" + int64String(user.ID) + "/artists" } hx-post={ "/platform/admin/users/" + int64String(user.ID) + "/artists" } hx-target="#users-panel" hx-swap="outerHTML">
-										<label class="platform-label" for={ "assign-artist-" + int64String(user.ID) }>Assign artist</label>
-										<select class="platform-input" id={ "assign-artist-" + int64String(user.ID) } name="artist_slug" required>
-											<option value="">Choose an artist</option>
-											for _, artist := range view.Artists {
-												<option value={ artist.Slug }>{ artist.Name }</option>
-											}
-										</select>
-										<button class="platform-button" type="submit">Assign</button>
-									</form>
-									<form method="post" action={ "/platform/admin/users/" + int64String(user.ID) + "/delete" } hx-post={ "/platform/admin/users/" + int64String(user.ID) + "/delete" } hx-target="#users-panel" hx-swap="outerHTML" onsubmit="return confirm('Permanently delete this user?')">
-										<button class="platform-button platform-button--danger" type="submit">Delete</button>
-									</form>
+							</td>
+							<td>
+									if len(user.Artists) == 0 {
+										<form method="post" action={ "/platform/admin/users/" + int64String(user.ID) + "/delete" } hx-post={ "/platform/admin/users/" + int64String(user.ID) + "/delete" } hx-target="#users-panel" hx-swap="outerHTML" onsubmit="return confirm('Permanently delete this user?')">
+											<button class="platform-button platform-button--danger" type="submit">Delete</button>
+										</form>
+									} else {
+										<span
+											class="platform-tooltip"
+											tabindex="0"
+											role="group"
+											aria-label="Delete user unavailable"
+											aria-describedby={ "delete-user-" + int64String(user.ID) + "-hint" }
+											data-tooltip="Unassign all artists before deleting."
+											title="Unassign all artists before deleting."
+										>
+											<button class="platform-button platform-button--danger" type="button" disabled>Delete</button>
+											<span id={ "delete-user-" + int64String(user.ID) + "-hint" } class="platform-visually-hidden">Unassign all artists before deleting.</span>
+										</span>
+									}
 								</td>
 						</tr>
 					}

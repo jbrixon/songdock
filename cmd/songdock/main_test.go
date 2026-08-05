@@ -1899,7 +1899,7 @@ func TestPlatformAdminCanReissueExpiredInvitation(t *testing.T) {
 	}
 }
 
-func TestPlatformAdminCanAssignExistingUserToArtist(t *testing.T) {
+func TestPlatformAdminUsersPageDisablesDeleteForAssignedUser(t *testing.T) {
 	router, dbPath, cleanup := testRouterWithDBPath(t)
 	defer cleanup()
 
@@ -1908,9 +1908,6 @@ func TestPlatformAdminCanAssignExistingUserToArtist(t *testing.T) {
 		t.Fatalf("open db: %v", err)
 	}
 	defer db.Close()
-	if _, err := db.Exec(`INSERT INTO artists (name, slug) VALUES (?, ?)`, "Third Artist", "third-artist"); err != nil {
-		t.Fatalf("create third artist: %v", err)
-	}
 	result, err := db.Exec(`INSERT INTO users (email, password_hash) VALUES (?, ?)`, "assign@example.com", "password-hash")
 	if err != nil {
 		t.Fatalf("create assignment user: %v", err)
@@ -1923,67 +1920,29 @@ func TestPlatformAdminCanAssignExistingUserToArtist(t *testing.T) {
 		t.Fatalf("assign initial artist: %v", err)
 	}
 
-	unauthenticated := httptest.NewRequest(http.MethodPost, "/platform/admin/users/"+strconv.FormatInt(userID, 10)+"/artists", nil)
-	unauthenticatedRec := httptest.NewRecorder()
-	router.ServeHTTP(unauthenticatedRec, unauthenticated)
-	if unauthenticatedRec.Code != http.StatusSeeOther || unauthenticatedRec.Header().Get("Location") != "/platform/admin/login" {
-		t.Fatalf("unauthenticated assignment: status %d, location %q", unauthenticatedRec.Code, unauthenticatedRec.Header().Get("Location"))
-	}
-
 	platformCookie := platformAdminSessionCookie(t, router)
 	usersReq := httptest.NewRequest(http.MethodGet, "/platform/admin/users", nil)
 	usersReq.AddCookie(platformCookie)
 	usersRec := httptest.NewRecorder()
 	router.ServeHTTP(usersRec, usersReq)
-	if usersRec.Code != http.StatusOK || !strings.Contains(usersRec.Body.String(), "/artists\"") || !strings.Contains(usersRec.Body.String(), `name="artist_slug"`) {
-		t.Fatalf("users assignment form: status %d, body %s", usersRec.Code, usersRec.Body.String())
+	usersBody := usersRec.Body.String()
+	if usersRec.Code != http.StatusOK || strings.Contains(usersBody, `/platform/admin/users/`+strconv.FormatInt(userID, 10)+`/artists`) || strings.Contains(usersBody, `name="artist_slug"`) {
+		t.Fatalf("users page: status %d, body %s", usersRec.Code, usersRec.Body.String())
 	}
-
-	form := url.Values{"artist_slug": {"hey-sis"}}
-	assignReq := httptest.NewRequest(http.MethodPost, "/platform/admin/users/"+strconv.FormatInt(userID, 10)+"/artists", strings.NewReader(form.Encode()))
-	assignReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	assignReq.Header.Set("HX-Request", "true")
-	assignReq.AddCookie(platformCookie)
-	assignRec := httptest.NewRecorder()
-	router.ServeHTTP(assignRec, assignReq)
-	if assignRec.Code != http.StatusOK || !strings.Contains(assignRec.Body.String(), "User assigned to artist.") {
-		t.Fatalf("assign existing user: status %d, body %s", assignRec.Code, assignRec.Body.String())
+	for _, want := range []string{
+		`class="platform-tooltip"`,
+		`tabindex="0"`,
+		`aria-label="Delete user unavailable"`,
+		`data-tooltip="Unassign all artists before deleting."`,
+		`aria-describedby="delete-user-`,
+		`disabled`,
+	} {
+		if !strings.Contains(usersBody, want) {
+			t.Fatalf("assigned user: expected %q in accessible disabled delete control", want)
+		}
 	}
-
-	duplicateReq := httptest.NewRequest(http.MethodPost, "/platform/admin/users/"+strconv.FormatInt(userID, 10)+"/artists", strings.NewReader(form.Encode()))
-	duplicateReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	duplicateReq.Header.Set("HX-Request", "true")
-	duplicateReq.AddCookie(platformCookie)
-	duplicateRec := httptest.NewRecorder()
-	router.ServeHTTP(duplicateRec, duplicateReq)
-	if duplicateRec.Code != http.StatusOK {
-		t.Fatalf("duplicate assignment: expected status 200, got %d; body %s", duplicateRec.Code, duplicateRec.Body.String())
-	}
-
-	var assignedCount, thirdArtistMembership int
-	if err := db.QueryRow(`SELECT COUNT(*) FROM user_artists WHERE user_id = ?`, userID).Scan(&assignedCount); err != nil {
-		t.Fatalf("count assignments: %v", err)
-	}
-	if err := db.QueryRow(`SELECT COUNT(*) FROM user_artists ua JOIN artists a ON a.id = ua.artist_id WHERE ua.user_id = ? AND a.slug = ?`, userID, "third-artist").Scan(&thirdArtistMembership); err != nil {
-		t.Fatalf("query unassigned artist: %v", err)
-	}
-	if assignedCount != 2 || thirdArtistMembership != 0 {
-		t.Fatalf("assignments = %d, third-artist membership = %d; want exactly two without third artist", assignedCount, thirdArtistMembership)
-	}
-
-	token, err := admin.NewToken([]byte(testAdminSecret), userID, "assign@example.com", time.Now().UTC())
-	if err != nil {
-		t.Fatalf("create user token: %v", err)
-	}
-	adminReq := httptest.NewRequest(http.MethodGet, "/admin/", nil)
-	adminReq.AddCookie(&http.Cookie{Name: admin.SessionCookieName, Value: token})
-	adminRec := httptest.NewRecorder()
-	router.ServeHTTP(adminRec, adminReq)
-	if adminRec.Code != http.StatusOK {
-		t.Fatalf("GET /admin/ assigned user: expected status 200, got %d; body %s", adminRec.Code, adminRec.Body.String())
-	}
-	if strings.Contains(adminRec.Body.String(), "Third Artist") {
-		t.Fatal("assigned user can see an unassigned artist")
+	if strings.Contains(usersBody, `/platform/admin/users/`+strconv.FormatInt(userID, 10)+`/delete`) {
+		t.Fatal("assigned user: did not expect a delete action")
 	}
 }
 

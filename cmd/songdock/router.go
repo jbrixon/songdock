@@ -111,7 +111,6 @@ func newRouterWithArtworkStore(songs store.SongRepository, adminRepo admin.Repos
 		r.Post("/invitations", platform.HandleCreateInvitationSubmit)
 		r.Post("/invitations/{invitationID}/reissue", platform.HandleReissueInvitationSubmit)
 		r.Post("/invitations/{invitationID}/revoke", platform.HandleRevokeInvitationSubmit)
-		r.Post("/users/{userID}/artists", platform.HandleAssignUserToArtistSubmit)
 		r.Get("/artists", platform.HandleArtists)
 		r.Get("/artists/slug/{mode}", platform.HandleArtistSlugAvailability)
 		r.Post("/artists", platform.HandleCreateArtistSubmit)

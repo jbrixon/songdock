@@ -73,7 +73,7 @@ func TestPostgresRepositoryIntegration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("create user: %v", err)
 	}
-	if err := repo.AssignUserToArtist(userID, artist.Slug); err != nil {
+	if _, err := repo.db.Exec(`INSERT INTO user_artists (user_id, artist_id) VALUES ($1, $2)`, userID, artist.ID); err != nil {
 		t.Fatalf("assign user: %v", err)
 	}
 	assigned, err := repo.IsUserAssignedToArtist(userID, artist.ID)

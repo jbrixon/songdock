@@ -278,28 +278,6 @@ func (r *PostgresSongRepository) ListArtistsForUser(userID int64) ([]Artist, err
 	return artists, nil
 }
 
-func (r *PostgresSongRepository) AssignUserToArtist(userID int64, artistSlug string) error {
-	var one int
-	if err := r.db.QueryRow(`SELECT 1 FROM users WHERE id = $1`, userID).Scan(&one); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return ErrUserNotFound
-		}
-		return fmt.Errorf("query user for assignment: %w", err)
-	}
-
-	artist, err := r.FindArtistBySlug(artistSlug)
-	if err != nil {
-		return err
-	}
-	if _, err := r.db.Exec(
-		`INSERT INTO user_artists (user_id, artist_id) VALUES ($1, $2)
-		 ON CONFLICT (user_id, artist_id) DO NOTHING`, userID, artist.ID,
-	); err != nil {
-		return fmt.Errorf("assign user to artist: %w", err)
-	}
-	return nil
-}
-
 func (r *PostgresSongRepository) IsUserAssignedToArtist(userID, artistID int64) (bool, error) {
 	var one int
 	err := r.db.QueryRow(

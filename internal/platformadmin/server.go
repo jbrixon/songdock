@@ -194,43 +194,6 @@ func (s *Server) HandleDeleteUserSubmit(w http.ResponseWriter, r *http.Request) 
 	s.renderUsersResponse(w, r, http.StatusOK, "User deleted.")
 }
 
-// HandleAssignUserToArtistSubmit assigns an existing user to an artist.
-func (s *Server) HandleAssignUserToArtistSubmit(w http.ResponseWriter, r *http.Request) {
-	if _, ok := s.authenticatedSession(r); !ok {
-		http.Redirect(w, r, "/platform/admin/login", http.StatusSeeOther)
-		return
-	}
-
-	userID, err := strconv.ParseInt(strings.TrimSpace(chi.URLParam(r, "userID")), 10, 64)
-	if err != nil || userID <= 0 {
-		s.renderUsersResponse(w, r, http.StatusBadRequest, "Choose an existing user.")
-		return
-	}
-	if err := r.ParseForm(); err != nil {
-		s.renderUsersResponse(w, r, formErrorStatus(err), "Invalid form submission.")
-		return
-	}
-	artistSlug := strings.TrimSpace(r.Form.Get("artist_slug"))
-	if artistSlug == "" {
-		s.renderUsersResponse(w, r, http.StatusBadRequest, "Choose an artist to assign.")
-		return
-	}
-
-	if err := s.repo.AssignUserToArtist(userID, artistSlug); err != nil {
-		switch {
-		case errors.Is(err, store.ErrUserNotFound):
-			s.renderUsersResponse(w, r, http.StatusNotFound, "User not found.")
-		case errors.Is(err, store.ErrArtistNotFound):
-			s.renderUsersResponse(w, r, http.StatusBadRequest, "Choose an existing artist to assign.")
-		default:
-			http.Error(w, "internal server error", http.StatusInternalServerError)
-		}
-		return
-	}
-
-	s.renderUsersResponse(w, r, http.StatusOK, "User assigned to artist.")
-}
-
 // HandleInvitations renders invitation management.
 func (s *Server) HandleInvitations(w http.ResponseWriter, r *http.Request) {
 	if _, ok := s.authenticatedSession(r); !ok {
@@ -561,11 +524,7 @@ func (s *Server) usersView() (usersView, error) {
 	if err != nil {
 		return usersView{}, err
 	}
-	artists, err := s.repo.ListArtists()
-	if err != nil {
-		return usersView{}, err
-	}
-	return usersView{Users: users, Artists: artists}, nil
+	return usersView{Users: users}, nil
 }
 
 func (s *Server) invitationsView(message, email string, artistID int64) (invitationsView, error) {

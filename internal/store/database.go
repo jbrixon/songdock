@@ -37,7 +37,6 @@ type Repository interface {
 	DeleteArtist(artistID int64) ([]string, error)
 
 	ListArtistsForUser(userID int64) ([]Artist, error)
-	AssignUserToArtist(userID int64, artistSlug string) error
 	IsUserAssignedToArtist(userID, artistID int64) (bool, error)
 
 	SongSlugExists(artistID int64, songSlug string) (bool, error)
