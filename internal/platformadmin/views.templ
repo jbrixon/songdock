@@ -502,7 +502,7 @@ templ UsersPanel(view usersView) {
 							</td>
 							<td>
 									if len(user.Artists) == 0 {
-										<form method="post" action={ "/platform/admin/users/" + int64String(user.ID) + "/delete" } hx-post={ "/platform/admin/users/" + int64String(user.ID) + "/delete" } hx-target="#users-panel" hx-swap="outerHTML" onsubmit="return confirm('Permanently delete this user?')">
+										<form method="post" action={ "/platform/admin/users/" + int64String(user.ID) + "/delete" } hx-post={ "/platform/admin/users/" + int64String(user.ID) + "/delete" } hx-target="#users-panel" hx-swap="outerHTML" hx-confirm="Permanently delete this user?">
 											<button class="platform-button platform-button--danger" type="submit">Delete</button>
 										</form>
 									} else {

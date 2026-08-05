@@ -405,7 +405,7 @@ func UsersPanel(view usersView) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "\" hx-target=\"#users-panel\" hx-swap=\"outerHTML\" onsubmit=\"return confirm('Permanently delete this user?')\"><button class=\"platform-button platform-button--danger\" type=\"submit\">Delete</button></form>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "\" hx-target=\"#users-panel\" hx-swap=\"outerHTML\" hx-confirm=\"Permanently delete this user?\"><button class=\"platform-button platform-button--danger\" type=\"submit\">Delete</button></form>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

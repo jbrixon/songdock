@@ -1946,6 +1946,41 @@ func TestPlatformAdminUsersPageDisablesDeleteForAssignedUser(t *testing.T) {
 	}
 }
 
+func TestPlatformAdminUserDeleteUsesHTMXConfirmation(t *testing.T) {
+	router, dbPath, cleanup := testRouterWithDBPath(t)
+	defer cleanup()
+
+	db, err := sql.Open("sqlite", dbPath)
+	if err != nil {
+		t.Fatalf("open db: %v", err)
+	}
+	defer db.Close()
+	result, err := db.Exec(`INSERT INTO users (email, password_hash) VALUES (?, ?)`, "unassigned@example.com", "password-hash")
+	if err != nil {
+		t.Fatalf("create unassigned user: %v", err)
+	}
+	userID, err := result.LastInsertId()
+	if err != nil {
+		t.Fatalf("get unassigned user id: %v", err)
+	}
+
+	usersReq := httptest.NewRequest(http.MethodGet, "/platform/admin/users", nil)
+	usersReq.AddCookie(platformAdminSessionCookie(t, router))
+	usersRec := httptest.NewRecorder()
+	router.ServeHTTP(usersRec, usersReq)
+	if usersRec.Code != http.StatusOK {
+		t.Fatalf("GET /platform/admin/users: expected status 200, got %d", usersRec.Code)
+	}
+
+	body := usersRec.Body.String()
+	if !strings.Contains(body, `hx-confirm="Permanently delete this user?"`) {
+		t.Fatalf("unassigned user %d: expected HTMX confirmation, body %s", userID, body)
+	}
+	if strings.Contains(body, `onsubmit="return confirm('Permanently delete this user?')"`) {
+		t.Fatal("user delete form: did not expect inline confirmation handler")
+	}
+}
+
 // seedTestInvitation creates a platform admin invitation and returns the
 // plain-text invite code.
 func seedTestInvitation(t *testing.T, router http.Handler) (string, error) {
