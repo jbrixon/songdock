@@ -340,7 +340,7 @@ Contributions, bug reports, and documentation improvements are welcome.
 
 Please avoid including real credentials, production databases, or generated local files in commits. Keep pull requests focused so they are easy to review.
 
-GitHub Actions checks formatting, vet, unit tests, and acceptance tests for pushes to `main` and pull requests. To release, update the semantic version in [`VERSION`](VERSION) and merge it to `main`. After the `CI` workflow succeeds, if `v<VERSION>` has not been released yet, Actions runs the release acceptance tests, creates the tag and GitHub release, and publishes the matching image to GHCR. Reusing an already released version is skipped.
+GitHub Actions checks formatting, vet, unit tests, and acceptance tests for pushes to `main` and pull requests. Each successful push to `main` also builds and tests the release image and stores the binary artifact. To release, update the semantic version in [`VERSION`](VERSION) and merge it to `main`. After the `CI` workflow succeeds, if `v<VERSION>` has not been released yet, Actions creates the tag and GitHub release and publishes the matching image to GHCR. Reusing an already released version is skipped.
 
 ## Project status
 
