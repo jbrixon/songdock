@@ -77,12 +77,6 @@ templ platformStyles() {
 			height: auto;
 			margin: 0 auto 2.25rem;
 		}
-		.platform-page-logo {
-			display: block;
-			width: 8rem;
-			height: auto;
-			margin-bottom: 1rem;
-		}
 		.platform-eyebrow {
 			margin: 0 0 0.4rem;
 			color: var(--accent-2);
@@ -618,17 +612,7 @@ templ HomePage(view homeView) {
 		</head>
 		<body class="platform-home-body">
 			<div class="platform-home">
-				<aside class="platform-home-sidebar">
-					<a class="platform-home-brand" href="/platform/admin/" aria-label="SongDock dashboard">
-						<img src="/static/songdock_logo_dark.v2.png" alt="SongDock"/>
-					</a>
-					<nav class="platform-nav" aria-label="Platform admin navigation">
-						<a href="/platform/admin/" aria-current="page"><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#layout-dashboard"></use></svg>Dashboard</a>
-						<a href="/platform/admin/artists"><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#music"></use></svg>Artists</a>
-						<a href="/platform/admin/invitations"><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#mail"></use></svg>Invitations</a>
-						<a href="/platform/admin/users"><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#users"></use></svg>Users</a>
-					</nav>
-				</aside>
+				@platformAdminSidebar("dashboard")
 				<main class="platform-home-main">
 					<header class="platform-header platform-home-header">
 						<div>
@@ -674,22 +658,26 @@ templ UsersPage(view usersView) {
 			@htmxScript()
 			@platformStyles()
 		</head>
-		<body>
-			<main class="platform-shell">
-				<header class="platform-header">
-					<div>
-						<img class="platform-page-logo" src="/static/songdock_logo_dark.v2.png" alt="SongDock"/>
-						<p class="platform-eyebrow">Platform Admin</p>
-						<h1>Users</h1>
-						<p class="platform-copy">View platform users and their artist assignments.</p>
-					</div>
-					<div class="platform-actions">
-						<a class="platform-link" href="/platform/admin/invitations">Manage invitations</a>
-						<a class="platform-link" href="/platform/admin/">Dashboard</a>
-					</div>
-				</header>
-				@UsersPanel(view)
-			</main>
+		<body class="platform-home-body">
+			<div class="platform-home">
+				@platformAdminSidebar("users")
+				<main class="platform-home-main">
+					<section class="platform-shell">
+						<header class="platform-header">
+							<div>
+								<p class="platform-eyebrow">Platform Admin</p>
+								<h1>Users</h1>
+								<p class="platform-copy">View platform users and their artist assignments.</p>
+							</div>
+							<div class="platform-actions">
+								<a class="platform-link" href="/platform/admin/invitations">Manage invitations</a>
+								<a class="platform-link" href="/platform/admin/">Dashboard</a>
+							</div>
+						</header>
+						@UsersPanel(view)
+					</section>
+				</main>
+			</div>
 		</body>
 	</html>
 }
@@ -769,22 +757,26 @@ templ InvitationsPage(view invitationsView) {
 			@htmxScript()
 			@platformStyles()
 		</head>
-		<body>
-			<main class="platform-shell">
-				<header class="platform-header">
-					<div>
-						<img class="platform-page-logo" src="/static/songdock_logo_dark.v2.png" alt="SongDock"/>
-						<p class="platform-eyebrow">Platform Admin</p>
-						<h1>Invitations</h1>
-						<p class="platform-copy">Create and manage invitations for artist administrators.</p>
-					</div>
-					<div class="platform-actions">
-						<a class="platform-link" href="/platform/admin/users">Manage users</a>
-						<a class="platform-link" href="/platform/admin/">Dashboard</a>
-					</div>
-				</header>
-				@InvitationsPanel(view)
-			</main>
+		<body class="platform-home-body">
+			<div class="platform-home">
+				@platformAdminSidebar("invitations")
+				<main class="platform-home-main">
+					<section class="platform-shell">
+						<header class="platform-header">
+							<div>
+								<p class="platform-eyebrow">Platform Admin</p>
+								<h1>Invitations</h1>
+								<p class="platform-copy">Create and manage invitations for artist administrators.</p>
+							</div>
+							<div class="platform-actions">
+								<a class="platform-link" href="/platform/admin/users">Manage users</a>
+								<a class="platform-link" href="/platform/admin/">Dashboard</a>
+							</div>
+						</header>
+						@InvitationsPanel(view)
+					</section>
+				</main>
+			</div>
 		</body>
 	</html>
 }
@@ -879,21 +871,25 @@ templ ArtistsPage(view artistsView) {
 			@htmxScript()
 			@platformStyles()
 		</head>
-		<body>
-			<main class="platform-shell">
-				<header class="platform-header">
-					<div>
-						<img class="platform-page-logo" src="/static/songdock_logo_dark.v2.png" alt="SongDock"/>
-						<p class="platform-eyebrow">Platform Admin</p>
-						<h1>Artists</h1>
-						<p class="platform-copy">Create platform-managed artist tenants.</p>
-					</div>
-					<div class="platform-actions">
-						<a class="platform-link" href="/platform/admin/">Dashboard</a>
-					</div>
-				</header>
-				@ArtistsPanel(view)
-			</main>
+		<body class="platform-home-body">
+			<div class="platform-home">
+				@platformAdminSidebar("artists")
+				<main class="platform-home-main">
+					<section class="platform-shell">
+						<header class="platform-header">
+							<div>
+								<p class="platform-eyebrow">Platform Admin</p>
+								<h1>Artists</h1>
+								<p class="platform-copy">Create platform-managed artist tenants.</p>
+							</div>
+							<div class="platform-actions">
+								<a class="platform-link" href="/platform/admin/">Dashboard</a>
+							</div>
+						</header>
+						@ArtistsPanel(view)
+					</section>
+				</main>
+			</div>
 		</body>
 	</html>
 }
@@ -954,4 +950,18 @@ templ ArtistSlugFields(view artistsView) {
 		<input class="platform-input" id="slug" name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" aria-describedby="slug-status" value={ view.Slug } hx-get="/platform/admin/artists/slug/manual" hx-trigger="input changed delay:350ms" hx-include="#name" hx-target="#artist-slug-field" hx-swap="outerHTML"/>
 		<p class={ "platform-field-status" + artistSlugStatusClass(view.SlugStatus.State) } id="slug-status" aria-live="polite">{ view.SlugStatus.Message }</p>
 	</div>
+}
+
+templ platformAdminSidebar(active string) {
+	<aside class="platform-home-sidebar">
+		<a class="platform-home-brand" href="/platform/admin/" aria-label="SongDock dashboard">
+			<img src="/static/songdock_logo_dark.v2.png" alt="SongDock"/>
+		</a>
+		<nav class="platform-nav" aria-label="Platform admin navigation">
+			<a href="/platform/admin/" aria-current={ platformNavCurrent(active, "dashboard") }><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#layout-dashboard"></use></svg>Dashboard</a>
+			<a href="/platform/admin/artists" aria-current={ platformNavCurrent(active, "artists") }><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#music"></use></svg>Artists</a>
+			<a href="/platform/admin/invitations" aria-current={ platformNavCurrent(active, "invitations") }><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#mail"></use></svg>Invitations</a>
+			<a href="/platform/admin/users" aria-current={ platformNavCurrent(active, "users") }><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#users"></use></svg>Users</a>
+		</nav>
+	</aside>
 }

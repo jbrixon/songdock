@@ -52,3 +52,10 @@ func artistSlugStatusClass(state string) string {
 func int64String(v int64) string {
 	return strconv.FormatInt(v, 10)
 }
+
+func platformNavCurrent(active, page string) string {
+	if active == page {
+		return "page"
+	}
+	return "false"
+}
