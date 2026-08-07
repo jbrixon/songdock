@@ -988,6 +988,16 @@ templ platformStyles() {
 				max-width: 100%;
 				overflow-wrap: anywhere;
 			}
+			.platform-invitations-grid {
+				display: grid;
+				grid-template-columns: 1fr;
+			}
+			.platform-invitations-grid > .platform-invitations-card:first-child {
+				max-width: none;
+			}
+			.platform-invitations-grid > .platform-invitations-card:last-child {
+				min-width: 0;
+			}
 		}
 		@media (max-width: 760px) {
 			body { display: block; padding: 0; }
