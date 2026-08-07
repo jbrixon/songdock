@@ -3,7 +3,9 @@ package platformadmin
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/jbrixon/songdock/internal/store"
 )
@@ -54,6 +56,15 @@ func artistSlugStatusClass(state string) string {
 
 func int64String(v int64) string {
 	return strconv.FormatInt(v, 10)
+}
+
+func artistInitial(name string) string {
+	name = strings.TrimSpace(name)
+	if name == "" {
+		return "?"
+	}
+	r, _ := utf8.DecodeRuneInString(name)
+	return strings.ToUpper(string(r))
 }
 
 func platformNavCurrent(active, page string) string {
