@@ -372,6 +372,115 @@ templ platformStyles() {
 			margin-top: 1.25rem;
 			font-size: 1.05rem;
 		}
+		.platform-users-main {
+			min-width: 0;
+			padding-top: 8.5rem;
+		}
+		.platform-users-header {
+			margin-bottom: 0.5rem;
+		}
+		.platform-users-header .platform-copy {
+			margin-top: 1rem;
+		}
+		.platform-users-invite-button {
+			gap: 0.6rem;
+			margin-bottom: 2.5rem;
+			border-radius: var(--radius-control);
+		}
+		.platform-users-button-icon {
+			width: 1.25rem;
+			height: 1.25rem;
+		}
+		.platform-users-panel {
+			width: 100%;
+			min-width: 0;
+			overflow-x: auto;
+			border-radius: var(--radius-control);
+		}
+		.platform-users-panel .platform-tooltip::after {
+			display: none;
+		}
+		.platform-users-table {
+			min-width: 44rem;
+			border-collapse: separate;
+			border-spacing: 0;
+			overflow: hidden;
+		}
+		.platform-users-table th,
+		.platform-users-table td {
+			padding: 0 1.5rem;
+			border-top: 0;
+			vertical-align: middle;
+		}
+		.platform-users-table th {
+			height: 3rem;
+			background: var(--surface-high);
+			font-size: 0.72rem;
+			text-transform: none;
+		}
+		.platform-users-table td {
+			height: 4.25rem;
+			background: var(--surface-low);
+		}
+		.platform-users-table th:nth-child(1) { width: 42%; }
+		.platform-users-table th:nth-child(2) { width: 48%; }
+		.platform-users-table th:nth-child(3) { width: 10%; }
+		.platform-users-table thead th:first-child {
+			border-top-left-radius: var(--radius-control);
+		}
+		.platform-users-table thead th:last-child {
+			border-top-right-radius: var(--radius-control);
+		}
+		.platform-users-table td:last-child,
+		.platform-users-table th:last-child {
+			text-align: right;
+		}
+		.platform-users-table tbody tr:last-child td:first-child {
+			border-bottom-left-radius: var(--radius-control);
+		}
+		.platform-users-table tbody tr:last-child td:last-child {
+			border-bottom-right-radius: var(--radius-control);
+		}
+		.platform-user-artists {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5rem;
+		}
+		.platform-user-artist {
+			padding: 0.35rem 0.75rem;
+			border-radius: var(--radius-control);
+			background: var(--surface);
+			font-size: 0.9rem;
+		}
+		.platform-user-action form {
+			display: flex;
+			justify-content: flex-end;
+			margin: 0;
+		}
+		.platform-user-delete {
+			display: grid;
+			width: 2.75rem;
+			height: 2.75rem;
+			min-height: 2.75rem;
+			place-items: center;
+			padding: 0;
+			border: 1px solid transparent;
+			border-radius: 50%;
+			background: transparent;
+			color: var(--danger-text);
+			cursor: pointer;
+		}
+		.platform-user-delete:hover {
+			background: var(--surface-high);
+		}
+		.platform-user-delete:disabled {
+			cursor: not-allowed;
+			opacity: 0.5;
+		}
+		.platform-user-delete svg {
+			width: 1.15rem;
+			height: 1.15rem;
+		}
 		.platform-artists-main {
 			padding-top: 8.5rem;
 		}
@@ -856,6 +965,30 @@ templ platformStyles() {
 			background: transparent;
 			font: inherit;
 		}
+		@media (max-width: 1100px) {
+			.platform-users-header > div {
+				max-width: 100%;
+			}
+			.platform-users-panel {
+				overflow-x: visible;
+			}
+			.platform-users-table {
+				min-width: 0;
+			}
+			.platform-users-table th,
+			.platform-users-table td {
+				padding-right: 0.65rem;
+				padding-left: 0.65rem;
+			}
+			.platform-users-table th:nth-child(1) { width: 40%; }
+			.platform-users-table th:nth-child(2) { width: 40%; }
+			.platform-users-table th:nth-child(3) { width: 20%; }
+			.platform-user-artist {
+				min-width: 0;
+				max-width: 100%;
+				overflow-wrap: anywhere;
+			}
+		}
 		@media (max-width: 760px) {
 			body { display: block; padding: 0; }
 			.platform-shell,
@@ -925,6 +1058,10 @@ templ platformStyles() {
 			.platform-home-main {
 				margin-left: 0;
 				padding: 2rem 1.25rem 3rem;
+			}
+			.platform-users-main {
+				width: 100%;
+				padding-top: 3rem;
 			}
 			.platform-artists-main { padding-top: 3rem; }
 			.platform-artists-card {
@@ -1067,21 +1204,15 @@ templ UsersPage(view usersView) {
 		<body class="platform-home-body">
 			<div class="platform-home">
 				@platformAdminSidebar("users")
-				<main class="platform-home-main">
-					<section class="platform-shell">
-						<header class="platform-header">
-							<div>
-								<p class="platform-eyebrow">Platform Admin</p>
-								<h1>Users</h1>
-								<p class="platform-copy">View platform users and their artist assignments.</p>
-							</div>
-							<div class="platform-actions">
-								<a class="platform-link" href="/platform/admin/invitations">Manage invitations</a>
-								<a class="platform-link" href="/platform/admin/">Dashboard</a>
-							</div>
-						</header>
-						@UsersPanel(view)
-					</section>
+				<main class="platform-home-main platform-users-main">
+					<header class="platform-header platform-home-header platform-users-header">
+						<div>
+							<h1>Users</h1>
+							<p class="platform-copy">View platform users and their artist assignments.</p>
+						</div>
+					</header>
+					<a class="platform-button platform-users-invite-button" href="/platform/admin/invitations"><svg class="platform-users-button-icon" aria-hidden="true"><use href="/static/lucide.svg#plus"></use></svg>Invite User</a>
+					@UsersPanel(view)
 				</main>
 			</div>
 		</body>
@@ -1089,8 +1220,8 @@ templ UsersPage(view usersView) {
 }
 
 templ UsersPanel(view usersView) {
-	<section id="users-panel" class="platform-panel" aria-label="User management">
-		<table class="platform-table">
+	<section id="users-panel" class="platform-users-panel" aria-label="User management">
+		<table class="platform-table platform-users-table">
 			<thead>
 				<tr>
 					<th scope="col">Email</th>
@@ -1110,20 +1241,19 @@ templ UsersPanel(view usersView) {
 							<td>{ user.Email }</td>
 							<td>
 								if len(user.Artists) > 0 {
-									for i, artist := range user.Artists {
-										if i > 0 {
-											<span>, </span>
+									<div class="platform-user-artists">
+										for _, artist := range user.Artists {
+											<span class="platform-user-artist">{ artist.Name }</span>
 										}
-											<span>{ artist.Name }</span>
-										}
-									} else {
-										<span>Unassigned</span>
-									}
+									</div>
+								} else {
+									<span>Unassigned</span>
+								}
 							</td>
-							<td>
+							<td class="platform-user-action">
 									if len(user.Artists) == 0 {
 										<form method="post" action={ "/platform/admin/users/" + int64String(user.ID) + "/delete" } hx-post={ "/platform/admin/users/" + int64String(user.ID) + "/delete" } hx-target="#users-panel" hx-swap="outerHTML" hx-confirm="Permanently delete this user?">
-											<button class="platform-button platform-button--danger" type="submit">Delete</button>
+											<button class="platform-user-delete" type="submit" aria-label="Delete user" title="Delete user"><svg aria-hidden="true"><use href="/static/lucide.svg#trash-2"></use></svg></button>
 										</form>
 									} else {
 										<span
@@ -1135,7 +1265,7 @@ templ UsersPanel(view usersView) {
 											data-tooltip="Unassign all artists before deleting."
 											title="Unassign all artists before deleting."
 										>
-											<button class="platform-button platform-button--danger" type="button" disabled>Delete</button>
+											<button class="platform-user-delete" type="button" aria-label="Delete user unavailable" title="Unassign all artists before deleting." disabled><svg aria-hidden="true"><use href="/static/lucide.svg#trash-2"></use></svg></button>
 											<span id={ "delete-user-" + int64String(user.ID) + "-hint" } class="platform-visually-hidden">Unassign all artists before deleting.</span>
 										</span>
 									}
