@@ -305,6 +305,12 @@ templ platformStyles() {
 			border-right: 1px solid var(--surface-border);
 			background: rgba(23, 31, 51, 0.42);
 		}
+		.platform-home-sidebar-header {
+			display: block;
+		}
+		.platform-mobile-back {
+			display: none;
+		}
 		.platform-home-brand {
 			display: block;
 			padding: 0 0.875rem;
@@ -486,6 +492,194 @@ templ platformStyles() {
 		.platform-panel > .platform-table { margin-top: 0; }
 		.platform-panel > .platform-form + .platform-table { margin-top: 2rem; }
 		.platform-table td > form + form { margin-top: 0.75rem; }
+		.platform-invitations-main {
+			padding-top: 7.5rem;
+		}
+		.platform-invitations-header {
+			align-items: start;
+			margin-bottom: 2.25rem;
+		}
+		.platform-invitations-header .platform-copy {
+			margin-top: 1rem;
+		}
+		.platform-invitations-panel {
+			width: 100%;
+		}
+		.platform-invitations-grid {
+			display: grid;
+			grid-template-columns: minmax(18rem, 0.7fr) minmax(0, 1fr);
+			gap: 1.5rem;
+			align-items: stretch;
+		}
+		@media (min-width: 761px) {
+			.platform-invitations-grid {
+				display: flex;
+				flex-wrap: wrap;
+			}
+			.platform-invitations-grid > .platform-invitations-card:first-child {
+				flex: 0 1 450px;
+				max-width: 450px;
+			}
+			.platform-invitations-grid > .platform-invitations-card:last-child {
+				flex: 1 1 650px;
+				min-width: min(650px, 100%);
+			}
+		}
+		.platform-invitations-card {
+			min-width: 0;
+			min-height: 22.625rem;
+			padding: 2rem;
+			border: 1px solid var(--surface-border);
+			border-radius: var(--radius-card);
+			background: var(--surface-low);
+		}
+		.platform-invitations-card h2 {
+			margin: 0 0 1.25rem;
+			font-family: var(--font-display);
+			font-size: 1.5rem;
+			line-height: 1.2;
+		}
+		.platform-invitations-form {
+			gap: 0.75rem;
+		}
+		.platform-invitations-form > .platform-label:not(:first-child) {
+			margin-top: 0.35rem;
+		}
+		.platform-invitations-form .platform-label,
+		.platform-invitations-table th {
+			text-transform: none;
+		}
+		.platform-invitations-form .platform-button {
+			width: 100%;
+			margin-top: 0.75rem;
+			border-radius: var(--radius-control);
+		}
+		.platform-invitations-button-icon {
+			width: 1.25rem;
+			height: 1.25rem;
+			margin-right: 0.6rem;
+		}
+		.platform-invitations-select-wrap {
+			position: relative;
+		}
+		.platform-invitations-select-wrap .platform-input {
+			padding-right: 2.75rem;
+			appearance: none;
+		}
+		.platform-invitations-select-icon {
+			position: absolute;
+			top: 50%;
+			right: 1rem;
+			width: 1.25rem;
+			height: 1.25rem;
+			color: var(--muted);
+			pointer-events: none;
+			transform: translateY(-50%);
+		}
+		.platform-invitations-list-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 1rem;
+			margin-bottom: 1.75rem;
+		}
+		.platform-invitations-list-header h2 { margin: 0; }
+		.platform-invitations-count {
+			flex: 0 0 auto;
+			padding: 0.35rem 0.75rem;
+			border-radius: var(--radius-pill);
+			background: var(--surface-high);
+			color: var(--muted);
+			font-family: var(--font-label);
+			font-size: 0.7rem;
+			font-weight: 600;
+			letter-spacing: 0.04em;
+		}
+		.platform-invitations-table-wrap { overflow-x: auto; }
+		.platform-invitations-table {
+			min-width: 31rem;
+			table-layout: fixed;
+		}
+		.platform-invitations-table th,
+		.platform-invitations-table td {
+			padding: 0.75rem 0.5rem;
+			font-size: 0.9rem;
+			vertical-align: middle;
+		}
+		.platform-invitations-table th {
+			padding-top: 0;
+			padding-bottom: 0.9rem;
+			border-top: 0;
+			color: var(--muted);
+			font-size: 0.7rem;
+			font-weight: 600;
+		}
+		.platform-invitations-table th:nth-child(1) { width: 41%; }
+		.platform-invitations-table th:nth-child(2) { width: 17%; }
+		.platform-invitations-table th:nth-child(3) { width: 14%; }
+		.platform-invitations-table th:nth-child(4) { width: 17%; }
+		.platform-invitations-table th:nth-child(5) { width: 11%; }
+		.platform-invitation-status {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.35rem;
+			padding: 0.28rem 0.55rem;
+			border-radius: var(--radius-pill);
+			font-family: var(--font-label);
+			font-size: 0.68rem;
+			font-weight: 600;
+			white-space: nowrap;
+		}
+		.platform-invitation-status::before {
+			content: "";
+			width: 0.4rem;
+			height: 0.4rem;
+			border-radius: 50%;
+			background: currentColor;
+		}
+		.platform-invitation-status--active {
+			background: var(--accent-2);
+			color: var(--accent-text);
+		}
+		.platform-invitation-status--expired,
+		.platform-invitation-status--revoked {
+			border: 1px solid var(--danger-border);
+			background: var(--danger-bg);
+			color: var(--danger-text);
+		}
+		.platform-invitation-actions {
+			display: flex;
+			align-items: center;
+			justify-content: flex-end;
+			gap: 0.35rem;
+		}
+		.platform-invitation-icon-button {
+			display: grid;
+			width: 2.75rem;
+			height: 2.75rem;
+			place-items: center;
+			border: 1px solid transparent;
+			border-radius: 50%;
+			color: var(--muted);
+			cursor: pointer;
+			list-style: none;
+		}
+		.platform-invitation-icon-button:hover {
+			background: var(--surface-high);
+			color: var(--text);
+		}
+		.platform-invitation-icon-button svg {
+			width: 1.15rem;
+			height: 1.15rem;
+		}
+		.platform-invitation-revoke-form,
+		.platform-invitation-reissue-form { margin: 0; }
+		.platform-invitation-revoke-form .platform-invitation-icon-button,
+		.platform-invitation-reissue-form .platform-invitation-icon-button {
+			padding: 0;
+			background: transparent;
+			font: inherit;
+		}
 		@media (max-width: 760px) {
 			body { display: block; padding: 0; }
 			.platform-shell,
@@ -521,6 +715,34 @@ templ platformStyles() {
 				border-bottom: 0;
 				background: transparent;
 			}
+			.platform-home-sidebar-header {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+			.platform-mobile-back {
+				display: grid;
+				flex: 0 0 auto;
+				width: 2.75rem;
+				height: 2.75rem;
+				place-items: center;
+				border: 1px solid transparent;
+				border-radius: 50%;
+				color: #fff;
+				text-decoration: none;
+			}
+			.platform-mobile-back:hover {
+				background: var(--surface-high);
+				color: var(--text);
+			}
+			.platform-mobile-back:focus-visible {
+				outline: 2px solid var(--accent);
+				outline-offset: 2px;
+			}
+			.platform-mobile-back svg {
+				width: 1.25rem;
+				height: 1.25rem;
+			}
 			.platform-home-brand { padding: 0; }
 			.platform-home-brand img { width: 8rem; }
 			.platform-home .platform-nav { display: none; }
@@ -528,6 +750,7 @@ templ platformStyles() {
 				margin-left: 0;
 				padding: 2rem 1.25rem 3rem;
 			}
+			.platform-invitations-main { padding-top: 3rem; }
 			.platform-home-header { display: block; }
 			.platform-home-header > .platform-home-logout-form { margin: 0; }
 			.platform-home-logout-form {
@@ -535,6 +758,8 @@ templ platformStyles() {
 				right: 1.25rem;
 			}
 			.platform-home-action-grid { grid-template-columns: 1fr; }
+			.platform-invitations-grid { grid-template-columns: 1fr; }
+			.platform-invitations-card { min-height: 0; padding: 1.5rem; }
 		}
 		@media (prefers-reduced-motion: reduce) {
 			.platform-button,
@@ -760,21 +985,14 @@ templ InvitationsPage(view invitationsView) {
 		<body class="platform-home-body">
 			<div class="platform-home">
 				@platformAdminSidebar("invitations")
-				<main class="platform-home-main">
-					<section class="platform-shell">
-						<header class="platform-header">
-							<div>
-								<p class="platform-eyebrow">Platform Admin</p>
-								<h1>Invitations</h1>
-								<p class="platform-copy">Create and manage invitations for artist administrators.</p>
-							</div>
-							<div class="platform-actions">
-								<a class="platform-link" href="/platform/admin/users">Manage users</a>
-								<a class="platform-link" href="/platform/admin/">Dashboard</a>
-							</div>
-						</header>
-						@InvitationsPanel(view)
-					</section>
+				<main class="platform-home-main platform-invitations-main">
+					<header class="platform-header platform-home-header platform-invitations-header">
+						<div>
+							<h1>Invitations</h1>
+							<p class="platform-copy">Create and manage invitations for artist administrators.</p>
+						</div>
+					</header>
+					@InvitationsPanel(view)
 				</main>
 			</div>
 		</body>
@@ -782,81 +1000,90 @@ templ InvitationsPage(view invitationsView) {
 }
 
 templ InvitationsPanel(view invitationsView) {
-	<section id="invitations-panel" class="platform-panel" aria-label="Invitation management">
+	<section id="invitations-panel" class="platform-invitations-panel" aria-label="Invitation management">
 		if view.Message != "" {
 			<div class="platform-alert platform-alert--neutral" role="status">{ view.Message }</div>
 		}
-		<form
-			class="platform-form platform-form--inline"
-			method="post"
-			action="/platform/admin/invitations"
-			hx-post="/platform/admin/invitations"
-			hx-target="#invitations-panel"
-			hx-swap="outerHTML"
-		>
-			<label class="platform-label" for="email">Email</label>
-			<input class="platform-input" id="email" name="email" type="email" autocomplete="email" required value={ view.Email }/>
-			<label class="platform-label" for="artist_id">Artist</label>
-			<select class="platform-input" id="artist_id" name="artist_id" required>
-				<option value="">Choose an artist</option>
-				for _, artist := range view.Artists {
-					if view.ArtistID == artist.ID {
-						<option value={ int64String(artist.ID) } selected>{ artist.Name }</option>
-					} else {
-						<option value={ int64String(artist.ID) }>{ artist.Name }</option>
-					}
-				}
-			</select>
-			<button class="platform-button" type="submit">Create invitation</button>
-		</form>
-		<table class="platform-table">
-			<thead>
-				<tr>
-					<th scope="col">Pending invitation</th>
-					<th scope="col">Artist</th>
-					<th scope="col">Expires</th>
-					<th scope="col">Status</th>
-					<th scope="col">Action</th>
-				</tr>
-			</thead>
-			<tbody>
-				if len(view.PendingInvitations) > 0 {
-					for _, invitation := range view.PendingInvitations {
-						<tr>
-							<td>{ invitation.Email }</td>
-							<td>{ invitation.ArtistName }</td>
-							<td>{ invitation.ExpiresAt }</td>
-								<td>{ invitation.Status }</td>
-								<td>
-									if invitation.Status == "active" {
-										<form method="post" action={ "/platform/admin/invitations/" + int64String(invitation.ID) + "/revoke" } hx-post={ "/platform/admin/invitations/" + int64String(invitation.ID) + "/revoke" } hx-target="#invitations-panel" hx-swap="outerHTML">
-											<button class="platform-button" type="submit">Revoke</button>
-										</form>
-									} else {
-										<form class="platform-form platform-form--reissue" method="post" action={ "/platform/admin/invitations/" + int64String(invitation.ID) + "/reissue" } hx-post={ "/platform/admin/invitations/" + int64String(invitation.ID) + "/reissue" } hx-target="#invitations-panel" hx-swap="outerHTML">
-											<label class="platform-label" for={ "reissue-artist-" + int64String(invitation.ID) }>Reissue as artist</label>
-											<select class="platform-input" id={ "reissue-artist-" + int64String(invitation.ID) } name="artist_id" required>
-												for _, artist := range view.Artists {
-													if invitation.ArtistID == artist.ID {
-														<option value={ int64String(artist.ID) } selected>{ artist.Name }</option>
-													} else {
-														<option value={ int64String(artist.ID) }>{ artist.Name }</option>
+		<div class="platform-invitations-grid">
+			<section class="platform-invitations-card" aria-labelledby="create-invitation-title">
+				<h2 id="create-invitation-title">Create Invitation</h2>
+				<form
+					class="platform-form platform-invitations-form"
+					method="post"
+					action="/platform/admin/invitations"
+					hx-post="/platform/admin/invitations"
+					hx-target="#invitations-panel"
+					hx-swap="outerHTML"
+				>
+					<label class="platform-label" for="email">Email</label>
+					<input class="platform-input" id="email" name="email" type="email" autocomplete="email" required value={ view.Email }/>
+					<label class="platform-label" for="artist_id">Artist</label>
+					<div class="platform-invitations-select-wrap">
+						<select class="platform-input" id="artist_id" name="artist_id" required>
+							<option value="">Select an artist...</option>
+							for _, artist := range view.Artists {
+								if view.ArtistID == artist.ID {
+									<option value={ int64String(artist.ID) } selected>{ artist.Name }</option>
+								} else {
+									<option value={ int64String(artist.ID) }>{ artist.Name }</option>
+								}
+							}
+						</select>
+						<svg class="platform-invitations-select-icon" aria-hidden="true"><use href="/static/lucide.svg#chevron-down"></use></svg>
+					</div>
+					<button class="platform-button" type="submit"><svg class="platform-invitations-button-icon" aria-hidden="true"><use href="/static/lucide.svg#play"></use></svg>Create invitation</button>
+				</form>
+			</section>
+			<section class="platform-invitations-card" aria-labelledby="pending-invitations-title">
+				<header class="platform-invitations-list-header">
+					<h2 id="pending-invitations-title">Pending Invitations</h2>
+					<span class="platform-invitations-count">{ view.PendingInvitationCount } Pending</span>
+				</header>
+				<div class="platform-invitations-table-wrap">
+					<table class="platform-table platform-invitations-table">
+						<thead>
+							<tr>
+								<th scope="col">Invitee email</th>
+								<th scope="col">Artist</th>
+								<th scope="col">Expires</th>
+								<th scope="col">Status</th>
+				<th scope="col">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							if len(view.PendingInvitations) > 0 {
+								for _, invitation := range view.PendingInvitations {
+									<tr>
+										<td>{ invitation.Email }</td>
+										<td>{ invitation.ArtistName }</td>
+										<td>{ invitationExpiryLabel(invitation.ExpiresAt) }</td>
+										<td><span class={ "platform-invitation-status platform-invitation-status--" + invitation.Status }>{ invitationStatusLabel(invitation.Status) }</span></td>
+										<td>
+											<div class="platform-invitation-actions">
+												if invitation.Status == "active" {
+													<form class="platform-invitation-revoke-form" method="post" action={ "/platform/admin/invitations/" + int64String(invitation.ID) + "/revoke" } hx-post={ "/platform/admin/invitations/" + int64String(invitation.ID) + "/revoke" } hx-target="#invitations-panel" hx-swap="outerHTML">
+														<button class="platform-invitation-icon-button" type="submit" aria-label="Revoke invitation" title="Revoke invitation"><svg aria-hidden="true"><use href="/static/lucide.svg#trash-2"></use></svg></button>
+													</form>
+																	} else {
+																		<form class="platform-invitation-reissue-form" method="post" action={ "/platform/admin/invitations/" + int64String(invitation.ID) + "/reissue" } hx-post={ "/platform/admin/invitations/" + int64String(invitation.ID) + "/reissue" } hx-target="#invitations-panel" hx-swap="outerHTML">
+																			<input type="hidden" name="artist_id" value={ int64String(invitation.ArtistID) }/>
+																			<button class="platform-invitation-icon-button" type="submit" aria-label="Reissue invitation" title="Reissue invitation"><svg aria-hidden="true"><use href="/static/lucide.svg#rotate-cw"></use></svg></button>
+																		</form>
 													}
-												}
-											</select>
-											<button class="platform-button" type="submit">Reissue</button>
-										</form>
-									}
-							</td>
-						</tr>
-					}
-				} else {
-					<tr>
-						<td colspan="5">No pending invitations.</td>
-					</tr>
-				}
-			</tbody>
-		</table>
+											</div>
+										</td>
+									</tr>
+								}
+							} else {
+								<tr>
+									<td colspan="5">No pending invitations.</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</section>
+		</div>
 	</section>
 }
 
@@ -954,9 +1181,16 @@ templ ArtistSlugFields(view artistsView) {
 
 templ platformAdminSidebar(active string) {
 	<aside class="platform-home-sidebar">
-		<a class="platform-home-brand" href="/platform/admin/" aria-label="SongDock dashboard">
-			<img src="/static/songdock_logo_dark.v2.png" alt="SongDock"/>
-		</a>
+		<div class="platform-home-sidebar-header">
+			if active == "invitations" {
+				<a class="platform-mobile-back" href="/platform/admin/users" aria-label="Back to users" title="Back to users">
+					<svg aria-hidden="true"><use href="/static/lucide.svg#chevron-left"></use></svg>
+				</a>
+			}
+			<a class="platform-home-brand" href="/platform/admin/" aria-label="SongDock dashboard">
+				<img src="/static/songdock_logo_dark.v2.png" alt="SongDock"/>
+			</a>
+		</div>
 		<nav class="platform-nav" aria-label="Platform admin navigation">
 			<a href="/platform/admin/" aria-current={ platformNavCurrent(active, "dashboard") }><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#layout-dashboard"></use></svg>Dashboard</a>
 			<a href="/platform/admin/artists" aria-current={ platformNavCurrent(active, "artists") }><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#music"></use></svg>Artists</a>

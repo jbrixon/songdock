@@ -345,7 +345,7 @@ func (s *Server) HandleCreateInvitationSubmit(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	s.renderInvitationsResponse(w, r, http.StatusOK, fmt.Sprintf("Invitation created for %s. Code: %s", email, invitationCode), "", 0)
+	s.renderInvitationsResponse(w, r, http.StatusOK, fmt.Sprintf("Invitation created for %s. Share this code: %s", email, invitationCode), "", 0)
 }
 
 // HandleReissueInvitationSubmit reissues an expired or revoked invitation.
@@ -391,7 +391,7 @@ func (s *Server) HandleReissueInvitationSubmit(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	s.renderInvitationsResponse(w, r, http.StatusOK, fmt.Sprintf("Invitation reissued. Code: %s", invitationCode), "", 0)
+	s.renderInvitationsResponse(w, r, http.StatusOK, fmt.Sprintf("Invitation reissued. Share this code: %s", invitationCode), "", 0)
 }
 
 // HandleRevokeInvitationSubmit revokes a pending invitation.
@@ -536,12 +536,19 @@ func (s *Server) invitationsView(message, email string, artistID int64) (invitat
 	if err != nil {
 		return invitationsView{}, err
 	}
+	pendingInvitationCount := 0
+	for _, invitation := range invitations {
+		if invitation.Status == "active" {
+			pendingInvitationCount++
+		}
+	}
 	return invitationsView{
-		Artists:            artists,
-		PendingInvitations: invitations,
-		Message:            message,
-		Email:              email,
-		ArtistID:           artistID,
+		Artists:                artists,
+		PendingInvitations:     invitations,
+		PendingInvitationCount: pendingInvitationCount,
+		Message:                message,
+		Email:                  email,
+		ArtistID:               artistID,
 	}, nil
 }
 

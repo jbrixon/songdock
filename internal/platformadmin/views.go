@@ -1,7 +1,9 @@
 package platformadmin
 
 import (
+	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/jbrixon/songdock/internal/store"
 )
@@ -21,11 +23,12 @@ type usersView struct {
 }
 
 type invitationsView struct {
-	Artists            []store.Artist
-	PendingInvitations []store.UserInvitation
-	Message            string
-	Email              string
-	ArtistID           int64
+	Artists                []store.Artist
+	PendingInvitations     []store.UserInvitation
+	PendingInvitationCount int
+	Message                string
+	Email                  string
+	ArtistID               int64
 }
 
 type artistsView struct {
@@ -58,4 +61,39 @@ func platformNavCurrent(active, page string) string {
 		return "page"
 	}
 	return "false"
+}
+
+func invitationStatusLabel(status string) string {
+	switch status {
+	case "active":
+		return "Sent"
+	case "expired":
+		return "Expired"
+	case "revoked":
+		return "Revoked"
+	default:
+		return status
+	}
+}
+
+func invitationExpiryLabel(value string) string {
+	expiresAt, err := time.Parse("2006-01-02 15:04:05", value)
+	if err != nil {
+		return value
+	}
+
+	today := time.Now().UTC().Truncate(24 * time.Hour)
+	days := int(expiresAt.UTC().Truncate(24*time.Hour).Sub(today).Hours() / 24)
+	switch days {
+	case 0:
+		return "Today"
+	case 1:
+		return "In 1 day"
+	case 2, 3, 4, 5, 6:
+		return fmt.Sprintf("In %d days", days)
+	case -1:
+		return "Yesterday"
+	default:
+		return expiresAt.UTC().Format("Jan 2")
+	}
 }

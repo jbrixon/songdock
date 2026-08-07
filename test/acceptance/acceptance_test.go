@@ -484,10 +484,10 @@ func TestPlatformAdminCanCreateArtistAdminUser(t *testing.T) {
 	if createUserResp.StatusCode != http.StatusOK {
 		t.Fatalf("POST /platform/admin/invitations: expected status 200, got %d", createUserResp.StatusCode)
 	}
-	if !strings.Contains(createUserBody, "Invitation created for "+email+". Code: ") {
+	if !strings.Contains(createUserBody, "Invitation created for "+email+". Share this code: ") {
 		t.Fatalf("POST /platform/admin/invitations: expected invitation code in response, got %q", createUserBody)
 	}
-	codePrefix := "Invitation created for " + email + ". Code: "
+	codePrefix := "Invitation created for " + email + ". Share this code: "
 	codeIndex := strings.Index(createUserBody, codePrefix)
 	if codeIndex == -1 {
 		t.Fatalf("POST /platform/admin/invitations: expected invitation code prefix in response, got %q", createUserBody)

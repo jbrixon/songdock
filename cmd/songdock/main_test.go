@@ -1344,7 +1344,7 @@ func TestPlatformAdminCanCreateArtistAdminUser(t *testing.T) {
 	if !strings.Contains(body, `name="artist_id"`) {
 		t.Fatal("POST /platform/admin/invitations: expected artist select")
 	}
-	if !strings.Contains(body, "Invitation created for new-artist-admin@example.com. Code: ") {
+	if !strings.Contains(body, "Invitation created for new-artist-admin@example.com. Share this code: ") {
 		t.Fatal("POST /platform/admin/invitations: expected invitation success message")
 	}
 }
@@ -1800,7 +1800,7 @@ func TestPlatformAdminCanReissueRevokedInvitation(t *testing.T) {
 	invitationsReq.AddCookie(platformCookie)
 	invitationsRec := httptest.NewRecorder()
 	router.ServeHTTP(invitationsRec, invitationsReq)
-	if invitationsRec.Code != http.StatusOK || !strings.Contains(invitationsRec.Body.String(), "/reissue\"") || !strings.Contains(invitationsRec.Body.String(), "Reissue as artist") {
+	if invitationsRec.Code != http.StatusOK || !strings.Contains(invitationsRec.Body.String(), "/reissue") || !strings.Contains(invitationsRec.Body.String(), `name="artist_id"`) {
 		t.Fatalf("revoked invitation page: status %d, body %s", invitationsRec.Code, invitationsRec.Body.String())
 	}
 
@@ -1814,7 +1814,7 @@ func TestPlatformAdminCanReissueRevokedInvitation(t *testing.T) {
 	if reissueRec.Code != http.StatusOK {
 		t.Fatalf("reissue invitation: expected status 200, got %d; body: %s", reissueRec.Code, reissueRec.Body.String())
 	}
-	newCode := invitationCodeFromBody(t, reissueRec.Body.String(), "Invitation reissued. Code: ")
+	newCode := invitationCodeFromBody(t, reissueRec.Body.String(), "Invitation reissued. Share this code: ")
 	if newCode == oldCode {
 		t.Fatal("reissue returned the old invitation code")
 	}
@@ -1884,7 +1884,7 @@ func TestPlatformAdminCanReissueExpiredInvitation(t *testing.T) {
 	if reissueRec.Code != http.StatusOK {
 		t.Fatalf("reissue expired invitation: expected status 200, got %d; body: %s", reissueRec.Code, reissueRec.Body.String())
 	}
-	newCode := invitationCodeFromBody(t, reissueRec.Body.String(), "Invitation reissued. Code: ")
+	newCode := invitationCodeFromBody(t, reissueRec.Body.String(), "Invitation reissued. Share this code: ")
 
 	oldRegister := postForm(router, "/admin/register", url.Values{
 		"invite_code":      {oldCode},
@@ -2013,7 +2013,7 @@ func seedTestInvitation(t *testing.T, router http.Handler) (string, error) {
 	router.ServeHTTP(inviteRec, inviteReq)
 
 	body := inviteRec.Body.String()
-	prefix := "Invitation created for newartist@example.com. Code: "
+	prefix := "Invitation created for newartist@example.com. Share this code: "
 	idx := strings.Index(body, prefix)
 	if idx == -1 {
 		return "", fmt.Errorf("could not find invitation code in response body: %s", body)
