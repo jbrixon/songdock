@@ -1,0 +1,118 @@
+package platformadmin
+
+templ InvitationsPage(view invitationsView) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<link rel="icon" href="/static/favicon/favicon.ico"/>
+			<title>Platform Invitations</title>
+			@htmxScript()
+			<link rel="stylesheet" href="/static/platformadmin.v1.css"/>
+		</head>
+		<body class="platform-home-body">
+			<div class="platform-home">
+				@platformAdminSidebar("invitations")
+				<main class="platform-home-main platform-invitations-main">
+					<header class="platform-header platform-home-header platform-invitations-header">
+						<div>
+							<h1>Invitations</h1>
+							<p class="platform-copy">Create and manage invitations for artist administrators.</p>
+						</div>
+					</header>
+					@InvitationsPanel(view)
+				</main>
+			</div>
+		</body>
+	</html>
+}
+
+templ InvitationsPanel(view invitationsView) {
+	<section id="invitations-panel" class="platform-invitations-panel" aria-label="Invitation management">
+		if view.Message != "" {
+			<div class="platform-alert platform-alert--neutral" role="status">{ view.Message }</div>
+		}
+		<div class="platform-invitations-grid">
+			<section class="platform-invitations-card" aria-labelledby="create-invitation-title">
+				<h2 id="create-invitation-title">Create Invitation</h2>
+				<form
+					class="platform-form platform-invitations-form"
+					method="post"
+					action="/platform/admin/invitations"
+					hx-post="/platform/admin/invitations"
+					hx-target="#invitations-panel"
+					hx-swap="outerHTML"
+				>
+					<label class="platform-label" for="email">Email</label>
+					<input class="platform-input" id="email" name="email" type="email" autocomplete="email" required value={ view.Email }/>
+					<label class="platform-label" for="artist_id">Artist</label>
+					<div class="platform-invitations-select-wrap">
+						<select class="platform-input" id="artist_id" name="artist_id" required>
+							<option value="">Select an artist...</option>
+							for _, artist := range view.Artists {
+								if view.ArtistID == artist.ID {
+									<option value={ int64String(artist.ID) } selected>{ artist.Name }</option>
+								} else {
+									<option value={ int64String(artist.ID) }>{ artist.Name }</option>
+								}
+							}
+						</select>
+						<svg class="platform-invitations-select-icon" aria-hidden="true"><use href="/static/lucide.svg#chevron-down"></use></svg>
+					</div>
+					<button class="platform-button" type="submit"><svg class="platform-invitations-button-icon" aria-hidden="true"><use href="/static/lucide.svg#play"></use></svg>Create invitation</button>
+				</form>
+			</section>
+			<section class="platform-invitations-card" aria-labelledby="pending-invitations-title">
+				<header class="platform-invitations-list-header">
+					<h2 id="pending-invitations-title">Pending Invitations</h2>
+					<span class="platform-invitations-count">{ view.PendingInvitationCount } Pending</span>
+				</header>
+				<div class="platform-invitations-table-wrap">
+					<table class="platform-table platform-invitations-table">
+						<thead>
+							<tr>
+								<th scope="col">Invitee email</th>
+								<th scope="col">Artist</th>
+								<th scope="col">Expires</th>
+								<th scope="col">Status</th>
+				<th scope="col">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							if len(view.PendingInvitations) > 0 {
+								for _, invitation := range view.PendingInvitations {
+									<tr>
+										<td>{ invitation.Email }</td>
+										<td>{ invitation.ArtistName }</td>
+										<td>{ invitationExpiryLabel(invitation.ExpiresAt) }</td>
+										<td><span class={ "platform-invitation-status platform-invitation-status--" + invitation.Status }>{ invitationStatusLabel(invitation.Status) }</span></td>
+										<td>
+											<div class="platform-invitation-actions">
+												if invitation.Status == "active" {
+													<form class="platform-invitation-revoke-form" method="post" action={ "/platform/admin/invitations/" + int64String(invitation.ID) + "/revoke" } hx-post={ "/platform/admin/invitations/" + int64String(invitation.ID) + "/revoke" } hx-target="#invitations-panel" hx-swap="outerHTML">
+														<button class="platform-invitation-icon-button" type="submit" aria-label="Revoke invitation" title="Revoke invitation"><svg aria-hidden="true"><use href="/static/lucide.svg#trash-2"></use></svg></button>
+													</form>
+																	} else {
+																		<form class="platform-invitation-reissue-form" method="post" action={ "/platform/admin/invitations/" + int64String(invitation.ID) + "/reissue" } hx-post={ "/platform/admin/invitations/" + int64String(invitation.ID) + "/reissue" } hx-target="#invitations-panel" hx-swap="outerHTML">
+																			<input type="hidden" name="artist_id" value={ int64String(invitation.ArtistID) }/>
+																			<button class="platform-invitation-icon-button" type="submit" aria-label="Reissue invitation" title="Reissue invitation"><svg aria-hidden="true"><use href="/static/lucide.svg#rotate-cw"></use></svg></button>
+																		</form>
+													}
+											</div>
+										</td>
+									</tr>
+								}
+							} else {
+								<tr>
+									<td colspan="5">No pending invitations.</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</section>
+		</div>
+	</section>
+}
+

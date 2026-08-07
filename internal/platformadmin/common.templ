@@ -1,0 +1,31 @@
+package platformadmin
+
+templ htmxScript() {
+	<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+}
+
+templ platformAdminSidebar(active string) {
+	<aside class="platform-home-sidebar">
+		<div class="platform-home-sidebar-header">
+			if active == "invitations" {
+				<a class="platform-mobile-back" href="/platform/admin/users" aria-label="Back to users" title="Back to users">
+					<svg aria-hidden="true"><use href="/static/lucide.svg#chevron-left"></use></svg>
+				</a>
+			} else if active == "users" || active == "artists" {
+				<a class="platform-mobile-back" href="/platform/admin/" aria-label="Back to dashboard" title="Back to dashboard">
+					<svg aria-hidden="true"><use href="/static/lucide.svg#chevron-left"></use></svg>
+				</a>
+			}
+			<a class="platform-home-brand" href="/platform/admin/" aria-label="SongDock dashboard">
+				<img src="/static/songdock_logo_dark.v2.png" alt="SongDock"/>
+			</a>
+		</div>
+		<nav class="platform-nav" aria-label="Platform admin navigation">
+			<a href="/platform/admin/" aria-current={ platformNavCurrent(active, "dashboard") }><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#layout-dashboard"></use></svg>Dashboard</a>
+			<a href="/platform/admin/artists" aria-current={ platformNavCurrent(active, "artists") }><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#music"></use></svg>Artists</a>
+			<a href="/platform/admin/invitations" aria-current={ platformNavCurrent(active, "invitations") }><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#mail"></use></svg>Invitations</a>
+			<a href="/platform/admin/users" aria-current={ platformNavCurrent(active, "users") }><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#users"></use></svg>Users</a>
+		</nav>
+	</aside>
+}
+

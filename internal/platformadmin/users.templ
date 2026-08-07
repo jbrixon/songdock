@@ -1,0 +1,94 @@
+package platformadmin
+
+templ UsersPage(view usersView) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<link rel="icon" href="/static/favicon/favicon.ico"/>
+			<title>Platform Users</title>
+			@htmxScript()
+			<link rel="stylesheet" href="/static/platformadmin.v1.css"/>
+		</head>
+		<body class="platform-home-body">
+			<div class="platform-home">
+				@platformAdminSidebar("users")
+				<main class="platform-home-main platform-users-main">
+					<header class="platform-header platform-home-header platform-users-header">
+						<div>
+							<h1>Users</h1>
+							<p class="platform-copy">View platform users and their artist assignments.</p>
+						</div>
+					</header>
+					<a class="platform-button platform-users-invite-button" href="/platform/admin/invitations"><svg class="platform-users-button-icon" aria-hidden="true"><use href="/static/lucide.svg#plus"></use></svg>Invite User</a>
+					@UsersPanel(view)
+				</main>
+			</div>
+		</body>
+	</html>
+}
+
+templ UsersPanel(view usersView) {
+	<section id="users-panel" class="platform-users-panel" aria-label="User management">
+		<table class="platform-table platform-users-table">
+			<thead>
+				<tr>
+					<th scope="col">Email</th>
+					<th scope="col">Artists</th>
+					<th scope="col">Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				if view.Message != "" {
+					<tr>
+						<td colspan="3"><div class="platform-alert platform-alert--neutral" role="status">{ view.Message }</div></td>
+					</tr>
+				}
+				if len(view.Users) > 0 {
+					for _, user := range view.Users {
+						<tr>
+							<td>{ user.Email }</td>
+							<td>
+								if len(user.Artists) > 0 {
+									<div class="platform-user-artists">
+										for _, artist := range user.Artists {
+											<span class="platform-user-artist">{ artist.Name }</span>
+										}
+									</div>
+								} else {
+									<span>Unassigned</span>
+								}
+							</td>
+							<td class="platform-user-action">
+									if len(user.Artists) == 0 {
+										<form method="post" action={ "/platform/admin/users/" + int64String(user.ID) + "/delete" } hx-post={ "/platform/admin/users/" + int64String(user.ID) + "/delete" } hx-target="#users-panel" hx-swap="outerHTML" hx-confirm="Permanently delete this user?">
+											<button class="platform-user-delete" type="submit" aria-label="Delete user" title="Delete user"><svg aria-hidden="true"><use href="/static/lucide.svg#trash-2"></use></svg></button>
+										</form>
+									} else {
+										<span
+											class="platform-tooltip"
+											tabindex="0"
+											role="group"
+											aria-label="Delete user unavailable"
+											aria-describedby={ "delete-user-" + int64String(user.ID) + "-hint" }
+											data-tooltip="Unassign all artists before deleting."
+											title="Unassign all artists before deleting."
+										>
+											<button class="platform-user-delete" type="button" aria-label="Delete user unavailable" title="Unassign all artists before deleting." disabled><svg aria-hidden="true"><use href="/static/lucide.svg#trash-2"></use></svg></button>
+											<span id={ "delete-user-" + int64String(user.ID) + "-hint" } class="platform-visually-hidden">Unassign all artists before deleting.</span>
+										</span>
+									}
+								</td>
+						</tr>
+					}
+				} else {
+					<tr>
+						<td colspan="3">No users yet.</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</section>
+}
+

@@ -1,0 +1,56 @@
+main.admin-home { width: min(100%, 72.5rem); padding: 0; border: 0; background: transparent; box-shadow: none; backdrop-filter: none; }
+.admin-home-header { display: grid; grid-template-columns: 1fr auto; align-items: start; gap: 2rem; margin-bottom: 3rem; }
+.admin-home-header h1 { font-size: clamp(2.5rem, 5vw, 3.5rem); }
+.admin-home-header .admin-meta { display: flex; align-items: center; gap: 0.65rem; margin: 0; font-size: 1.1rem; }
+.admin-home-header__meta-row { display: flex; align-items: center; gap: 1rem; }
+.admin-home-header .admin-page-logo { display: none; }
+.admin-home-header__actions { display: flex; align-items: center; gap: 0.75rem; }
+.admin-icon { width: 1.25rem; height: 1.25rem; display: block; flex: 0 0 auto; }
+.admin-icon--section { width: 1.35rem; height: 1.35rem; }
+.admin-icon--button { width: 1.1rem; height: 1.1rem; }
+.artist-picker { display: flex; align-items: center; gap: 1rem; min-width: 23rem; padding: 0.75rem 1rem; border-radius: var(--radius-card); background: var(--surface-high); }
+.artist-picker__details { flex: 1; min-width: 0; }
+.artist-picker__label { display: block; margin: 0 0 0.35rem; color: var(--muted); font-size: 0.75rem; }
+.artist-picker__name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 1.3rem; font-weight: 700; text-transform: none; letter-spacing: 0; }
+.artist-picker select { min-height: 0; padding: 0; border: 0; background: transparent; font-size: 1.3rem; font-weight: 700; }
+.artist-picker__logout { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; min-height: 2.75rem; margin: 0; padding: 0; border-radius: 50%; background: transparent; color: var(--muted); box-shadow: none; line-height: 0; transition: background 160ms ease, color 160ms ease; }
+.artist-picker__logout:hover { transform: none; background: var(--surface-high); color: var(--text); box-shadow: none; }
+.artist-picker__logout:active { transform: none; background: var(--accent); color: var(--accent-text); box-shadow: none; }
+.admin-home-alerts { display: grid; gap: 0.75rem; margin-bottom: 1.5rem; }
+.admin-home-grid { display: grid; grid-template-columns: minmax(18rem, 0.9fr) minmax(0, 2fr); gap: 1.5rem; align-items: stretch; }
+.admin-home-panel { padding: 2.5rem; border-radius: var(--radius-card); background: var(--surface); box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28); }
+.admin-home-panel h2 { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 2.5rem; font-size: 1.8rem; }
+.admin-home-panel h2::before { content: none; }
+.admin-home-panel h2 .admin-icon-wrap { display: grid; place-items: center; width: 3rem; height: 3rem; flex: 0 0 3rem; border-radius: 50%; background: var(--surface-low); box-shadow: inset 0 0 0 1px var(--surface-border); }
+.admin-home-panel--tracking { display: flex; flex-direction: column; }
+.admin-home-panel--tracking .admin-form { flex: 1; }
+.admin-home-panel--tracking input { min-height: 4.4rem; margin-top: 0.5rem; font-size: 1.1rem; }
+.admin-home-panel--tracking .admin-meta { max-width: 19rem; margin: 1.25rem 0 2rem; }
+.admin-home-panel--tracking button { width: 100%; margin-top: auto; border: 1px solid var(--accent); background: transparent; color: var(--text); box-shadow: none; }
+.admin-home-panel--tracking button { display: inline-flex; align-items: center; justify-content: center; gap: 0.65rem; }
+.admin-home-panel--tracking button:hover { box-shadow: 0 0 24px rgba(255, 177, 198, 0.18); }
+.admin-home-panel--songs { min-width: 0; }
+.admin-home-panel--songs .admin-section-header { align-items: center; margin-bottom: 2rem; }
+.admin-home-panel--songs .admin-section-header h2 { margin: 0; }
+.admin-home-panel--songs .admin-link-button { gap: 4px; }
+.admin-home-panel--songs table { table-layout: auto; }
+.admin-home-panel--songs th, .admin-home-panel--songs td { padding: 1.1rem 0.65rem; vertical-align: middle; }
+.admin-home-panel--songs th:first-child, .admin-home-panel--songs td:first-child { width: 48%; }
+.admin-home-panel--songs th:nth-child(2), .admin-home-panel--songs td:nth-child(2) { width: 36%; }
+.admin-home-panel--songs th:last-child, .admin-home-panel--songs td:last-child { width: 16%; text-align: right; }
+.song-title-cell { display: flex; align-items: center; gap: 1rem; font-size: 1.2rem; }
+.song-artwork { width: 3.75rem; height: 3.75rem; flex: 0 0 3.75rem; border-radius: 0.65rem; object-fit: cover; background: var(--surface-low); }
+.song-url-cell { display: flex; align-items: center; gap: 0.75rem; }
+.song-url { color: var(--muted); font-size: 0.95rem; text-decoration: none; }
+.song-actions { display: flex; justify-content: flex-end; gap: 1.25rem; }
+.song-actions a { display: inline-flex; color: var(--muted); }
+.song-actions a:hover { color: var(--text); }
+.admin-home .admin-create-song { margin: 0; }
+.admin-home-footer { margin-top: 4.5rem; padding-top: 1rem; text-align: center; }
+.admin-home-footer .admin-page-logo { width: 7rem; margin: 0 auto; opacity: 0.82; }
+@media (max-width: 760px) {
+	.admin-home-header { grid-template-columns: 1fr; margin-bottom: 2rem; }
+	.artist-picker { min-width: 0; width: 100%; }
+	.admin-home-grid { grid-template-columns: 1fr; }
+}
+

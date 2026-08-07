@@ -1,0 +1,99 @@
+package platformadmin
+
+templ ArtistsPage(view artistsView) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<link rel="icon" href="/static/favicon/favicon.ico"/>
+			<title>Platform Artists</title>
+			@htmxScript()
+			<link rel="stylesheet" href="/static/platformadmin.v1.css"/>
+		</head>
+		<body class="platform-home-body">
+			<div class="platform-home">
+				@platformAdminSidebar("artists")
+				<main class="platform-home-main platform-artists-main">
+					<header class="platform-header platform-home-header platform-artists-header">
+						<div>
+							<h1>Artists</h1>
+							<p class="platform-copy">Create platform-managed artist tenants.</p>
+						</div>
+					</header>
+					@ArtistsPanel(view)
+				</main>
+			</div>
+		</body>
+	</html>
+}
+
+templ ArtistsPanel(view artistsView) {
+	<section id="artists-panel" class="platform-artists-panel" aria-label="Artist management">
+		if view.Message != "" {
+			<div class="platform-alert platform-alert--neutral" role="status">{ view.Message }</div>
+		}
+		<section class="platform-artists-card platform-artists-create-card" aria-labelledby="new-artist-title">
+			<h2 class="platform-artists-card-title" id="new-artist-title"><span class="platform-artists-card-icon"><svg class="platform-artists-icon" aria-hidden="true"><use href="/static/lucide.svg#plus"></use></svg></span>New Artist</h2>
+			<form
+				class="platform-form platform-artists-create-form"
+				method="post"
+				action="/platform/admin/artists"
+				hx-post="/platform/admin/artists"
+				hx-target="#artists-panel"
+				hx-swap="outerHTML"
+			>
+				<label class="platform-label" for="name">Artist name</label>
+				<input class="platform-input" id="name" name="name" required value={ view.Name } hx-get="/platform/admin/artists/slug/auto" hx-trigger="input changed delay:350ms" hx-include="#artist-slug-field" hx-target="#artist-slug-field" hx-swap="outerHTML"/>
+				@ArtistSlugFields(view)
+				<button class="platform-button" type="submit"><span>Create artist</span><svg class="platform-artists-button-icon" aria-hidden="true"><use href="/static/lucide.svg#arrow-right"></use></svg></button>
+			</form>
+		</section>
+		<section class="platform-artists-card platform-artists-directory-card" aria-labelledby="artist-directory-title">
+			<header class="platform-artists-directory-header">
+				<h2 class="platform-artists-directory-title" id="artist-directory-title"><svg class="platform-artists-icon" aria-hidden="true"><use href="/static/lucide.svg#list-music"></use></svg>Directory</h2>
+				<span class="platform-artists-count">{ len(view.Artists) } Active</span>
+			</header>
+			<div class="platform-artists-table-wrap">
+				<table class="platform-table platform-artists-table">
+					<thead>
+						<tr>
+							<th scope="col">Artist</th>
+							<th scope="col">Slug</th>
+							<th scope="col">Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						if len(view.Artists) > 0 {
+							for _, artist := range view.Artists {
+								<tr>
+									<td><div class="platform-artist-cell"><span class="platform-artist-avatar" aria-hidden="true">{ artistInitial(artist.Name) }</span><span class="platform-artist-name">{ artist.Name }</span></div></td>
+									<td class="platform-artist-slug">{ artist.Slug }</td>
+									<td class="platform-artist-action">
+										<form method="post" action={ "/platform/admin/artists/" + int64String(artist.ID) + "/delete" } hx-post={ "/platform/admin/artists/" + int64String(artist.ID) + "/delete" } hx-target="#artists-panel" hx-swap="outerHTML" hx-confirm="Delete this artist and all of its songs and artwork? This cannot be undone.">
+											<button class="platform-artist-delete" type="submit" aria-label={ "Delete " + artist.Name } title={ "Delete " + artist.Name }><svg aria-hidden="true"><use href="/static/lucide.svg#trash-2"></use></svg></button>
+										</form>
+									</td>
+								</tr>
+							}
+						} else {
+							<tr>
+								<td colspan="3">No artists yet.</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</section>
+	</section>
+}
+
+templ ArtistSlugFields(view artistsView) {
+	<div id="artist-slug-field" class="platform-form__slug">
+		<input type="hidden" name="slug_mode" value={ view.SlugMode }/>
+		<label class="platform-label" for="slug">Slug</label>
+		<input class="platform-input" id="slug" name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" aria-describedby="slug-status" value={ view.Slug } hx-get="/platform/admin/artists/slug/manual" hx-trigger="input changed delay:350ms" hx-include="#name" hx-target="#artist-slug-field" hx-swap="outerHTML"/>
+		<p class={ "platform-field-status" + artistSlugStatusClass(view.SlugStatus.State) } id="slug-status" aria-live="polite">{ view.SlugStatus.Message }</p>
+	</div>
+}
+

@@ -1,0 +1,106 @@
+package admin
+
+templ HomePage(view homeView) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<link rel="icon" href="/static/favicon/favicon.ico"/>
+			<title>Admin</title>
+			@htmxScript()
+			<link rel="stylesheet" href="/static/admin-base.v1.css"/>
+			<link rel="stylesheet" href="/static/admin-home.v1.css"/>
+		</head>
+		<body>
+			<main class="admin-home">
+				<header class="admin-home-header">
+					<div>
+						<img class="admin-page-logo" src="/static/songdock_logo_dark.v2.png" alt="SongDock"/>
+						<h1>Welcome, Admin</h1>
+						<div class="admin-home-header__meta-row">
+							<p class="admin-meta"><svg class="admin-icon" aria-hidden="true"><use href="/static/lucide.svg#mail"></use></svg>{ view.Email }</p>
+							<form class="admin-logout-form" method="post" action="/admin/logout">
+								<button class="artist-picker__logout" type="submit" aria-label="Log out"><svg class="admin-icon" aria-hidden="true"><use href="/static/lucide.svg#log-out"></use></svg></button>
+							</form>
+						</div>
+					</div>
+				if len(view.Artists) > 0 {
+					<div class="admin-home-header__actions">
+					<form class="artist-picker" method="post" action="/admin/active-artist" hx-post="/admin/active-artist" hx-trigger="change from:#artist_slug" hx-swap="none">
+						<div class="artist-picker__details">
+							<label class="artist-picker__label" for="artist_slug">Active artist</label>
+							<select id="artist_slug" name="artist_slug" required disabled>
+								for _, artist := range view.Artists {
+									if view.ActiveArtist != nil && view.ActiveArtist.Slug == artist.Slug {
+										<option value={ artist.Slug } selected>{ artist.Name }</option>
+									} else {
+										<option value={ artist.Slug }>{ artist.Name }</option>
+									}
+								}
+							</select>
+						</div>
+					</form>
+					</div>
+				}
+				</header>
+				if view.Error != "" {
+					<p class="admin-alert" role="alert">{ view.Error }</p>
+				}
+				if view.Message != "" {
+					<p class="admin-alert admin-alert--success" role="status">{ view.Message }</p>
+				}
+				if view.ActiveArtist != nil {
+					<div class="admin-home-grid">
+					<section class="admin-home-panel admin-home-panel--tracking" aria-labelledby="artist-settings-title">
+						<h2 id="artist-settings-title"><span class="admin-icon-wrap"><svg class="admin-icon admin-icon--section" aria-hidden="true"><use href="/static/lucide.svg#crosshair"></use></svg></span>Tracking</h2>
+						<form class="admin-form" method="post" action="/admin/artist-settings">
+							<label for="meta_pixel_id">Meta Pixel ID</label>
+							<input id="meta_pixel_id" name="meta_pixel_id" inputmode="numeric" pattern="[0-9]*" value={ view.ActiveArtist.MetaPixelID } aria-describedby="meta-pixel-help"/>
+							<p id="meta-pixel-help" class="admin-meta">Track conversions and build custom audiences across the Meta ecosystem for this artist's landing pages.</p>
+							<button type="submit">Save Settings <svg class="admin-icon" aria-hidden="true"><use href="/static/lucide.svg#arrow-right"></use></svg></button>
+						</form>
+					</section>
+					<section class="admin-home-panel admin-home-panel--songs" aria-labelledby="songs-title">
+						<div class="admin-section-header">
+							<h2 id="songs-title"><span class="admin-icon-wrap"><svg class="admin-icon admin-icon--section" aria-hidden="true"><use href="/static/lucide.svg#list-music"></use></svg></span>Discography</h2>
+							<p class="admin-create-song"><a class="admin-link-button" href="/admin/songs/new"><svg class="admin-icon admin-icon--button" aria-hidden="true"><use href="/static/lucide.svg#plus"></use></svg>New Song</a></p>
+						</div>
+						<table>
+							<thead>
+								<tr>
+									<th scope="col">Title</th>
+									<th scope="col">Final URL</th>
+									<th scope="col">Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								if len(view.Songs) > 0 {
+										for _, song := range view.Songs {
+										<tr>
+											<td><div class="song-title-cell"><img class="song-artwork" src={ song.ArtworkURL } alt=""/>{ song.Title }</div></td>
+											<td><div class="song-url-cell"><a class="song-url" href={ song.FinalURL } target="_blank" rel="noopener noreferrer">{ song.FinalURL }</a><a href={ song.FinalURL } target="_blank" rel="noopener noreferrer" aria-label={ "Open " + song.Title + " in a new tab" }><svg class="admin-icon" aria-hidden="true"><use href="/static/lucide.svg#external-link"></use></svg></a></div></td>
+											<td><div class="song-actions"><a href={ song.EditURL } aria-label={ "Edit " + song.Title }><svg class="admin-icon" aria-hidden="true"><use href="/static/lucide.svg#pencil"></use></svg></a></div></td>
+										</tr>
+									}
+								} else {
+									<tr>
+										<td colspan="3">No songs yet.</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</section>
+					</div>
+				} else {
+					<p>No artists are assigned to your account.</p>
+					<p class="admin-create-song"><span class="admin-link-button admin-link-button--disabled" aria-disabled="true">Create a new song</span></p>
+				}
+				<footer class="admin-home-footer">
+					<img class="admin-page-logo" src="/static/songdock_logo_dark.v2.png" alt="SongDock"/>
+				</footer>
+			</main>
+		</body>
+	</html>
+}
+

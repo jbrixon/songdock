@@ -1,0 +1,100 @@
+package admin
+
+templ LoginCard(view loginView) {
+	<section id="login-card" class="admin-card" aria-labelledby="admin-login-title">
+		<div class="admin-card__header">
+			<img class="admin-logo" src="/static/songdock_logo_dark.v2.png" alt="SongDock"/>
+			<p class="admin-eyebrow">Admin</p>
+			<h1 id="admin-login-title">Log in</h1>
+			<p class="admin-copy">Sign in to access admin pages.</p>
+		</div>
+		if view.Error != "" {
+			<div class="admin-alert" role="alert">{ view.Error }</div>
+		}
+		<form
+			class="admin-form"
+			method="post"
+			action="/admin/login"
+			hx-post="/admin/login"
+			hx-target="#login-card"
+			hx-swap="outerHTML"
+		>
+			<label class="admin-label" for="email">Email</label>
+			<input class="admin-input" id="email" name="email" type="email" autocomplete="email" required value={ view.Email }/>
+			<label class="admin-label" for="password">Password</label>
+			<input class="admin-input" id="password" name="password" type="password" autocomplete="current-password" required/>
+			<button class="admin-button" type="submit">Log in</button>
+		</form>
+		<p class="admin-copy admin-auth-footer">
+			New here? <a class="admin-inline-link" href="/admin/register">Create your account</a>
+		</p>
+	</section>
+}
+
+templ LoginPage(view loginView) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<link rel="icon" href="/static/favicon/favicon.ico"/>
+			<title>Admin Login</title>
+			@htmxScript()
+			<link rel="stylesheet" href="/static/admin-auth.v1.css"/>
+		</head>
+		<body>
+			@LoginCard(view)
+		</body>
+	</html>
+}
+
+templ RegisterCard(view registerView) {
+	<section id="register-card" class="admin-card" aria-labelledby="admin-register-title">
+		<div class="admin-card__header">
+			<img class="admin-logo" src="/static/songdock_logo_dark.v2.png" alt="SongDock"/>
+			<p class="admin-eyebrow">Admin</p>
+			<h1 id="admin-register-title">Create account</h1>
+			<p class="admin-copy">Enter the invite code you received and choose a password.</p>
+		</div>
+		if view.Error != "" {
+			<div class="admin-alert" role="alert">{ view.Error }</div>
+		}
+		<form
+			class="admin-form"
+			method="post"
+			action="/admin/register"
+			hx-post="/admin/register"
+			hx-target="#register-card"
+			hx-swap="outerHTML"
+		>
+			<label class="admin-label" for="invite_code">Invite code</label>
+			<input class="admin-input" id="invite_code" name="invite_code" type="text" autocomplete="off" required value={ view.InviteCode }/>
+			<label class="admin-label" for="password">Password</label>
+			<input class="admin-input" id="password" name="password" type="password" autocomplete="new-password" minlength="12" required/>
+			<label class="admin-label" for="password_confirm">Confirm password</label>
+			<input class="admin-input" id="password_confirm" name="password_confirm" type="password" autocomplete="new-password" minlength="12" required/>
+			<button class="admin-button" type="submit">Create account</button>
+		</form>
+		<p class="admin-copy admin-auth-footer">
+			Already have an account? <a class="admin-inline-link" href="/admin/login">Log in</a>
+		</p>
+	</section>
+}
+
+templ RegisterPage(view registerView) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<link rel="icon" href="/static/favicon/favicon.ico"/>
+			<title>Create Account</title>
+			@htmxScript()
+			<link rel="stylesheet" href="/static/admin-auth.v1.css"/>
+		</head>
+		<body>
+			@RegisterCard(view)
+		</body>
+	</html>
+}
+

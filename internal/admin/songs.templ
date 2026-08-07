@@ -1,0 +1,160 @@
+package admin
+
+templ SongFormPage(view songFormView) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<link rel="icon" href="/static/favicon/favicon.ico"/>
+			<title>{ view.PageTitle }</title>
+			@htmxScript()
+			<link rel="stylesheet" href="/static/admin-base.v1.css"/>
+			<link rel="stylesheet" href="/static/admin-song-form.v1.css"/>
+		</head>
+		<body class="song-form-body">
+			<main class="admin-form-page song-form-page">
+					<header class="song-form-hero">
+						<span class="song-form-hero__icon" aria-hidden="true">
+							<svg class="song-icon"><use href="/static/lucide.svg#audio-lines"></use></svg>
+						</span>
+						<div class="song-form-hero__content">
+						<p class="song-form-hero__crumbs"><span>Dashboard</span><svg class="song-icon" aria-hidden="true"><use href="/static/lucide.svg#chevron-right"></use></svg><strong>
+							if view.Mode == "edit" {
+								Edit Song
+							} else {
+								Create Song
+							}
+						</strong></p>
+						<h1>
+							if view.Mode == "edit" {
+								Edit Release
+							} else {
+								New Release
+							}
+						</h1>
+					</div>
+				</header>
+				if view.Error != "" {
+					<p class="admin-alert" role="alert">{ view.Error }</p>
+				}
+				if view.ActiveArtist != nil {
+					<span class="song-form-artist visually-hidden">Artist: { view.ActiveArtist.Name }</span>
+					<form class="admin-form" method="post" enctype="multipart/form-data" action={ view.Action }>
+						<div class="song-form-grid">
+							<div class="song-form-main">
+								<section class="song-panel song-panel--general" aria-labelledby="general-info-title">
+									<header class="song-panel__header">
+										<div class="song-panel__heading">
+											<svg class="song-icon" aria-hidden="true"><use href="/static/lucide.svg#info"></use></svg>
+											<h2 id="general-info-title">General Info</h2>
+										</div>
+									</header>
+									<div class="song-fields">
+										<div class="song-field">
+											<label for="title">Song Title</label>
+											<input id="title" name="title" required value={ view.Title } placeholder="Enter the official track name"/>
+										</div>
+										<div class="song-field">
+											<label for="description">Description</label>
+											<textarea id="description" name="description" placeholder="Enter a description for this release...">{ view.Description }</textarea>
+										</div>
+									</div>
+								</section>
+								<section class="song-panel song-panel--links" aria-labelledby="external-links-title">
+									<header class="song-panel__header">
+										<div class="song-panel__heading">
+											<svg class="song-icon" aria-hidden="true"><use href="/static/lucide.svg#link-2"></use></svg>
+											<h2 id="external-links-title">External Links</h2>
+										</div>
+										<span class="song-panel__badge">Streaming Platforms</span>
+									</header>
+									<div class="song-fields">
+										<div class="song-field">
+											<label for="spotify_url">Spotify URI</label>
+											<svg class="song-icon" aria-hidden="true"><use href="/static/lucide.svg#music-3"></use></svg>
+											<input id="spotify_url" name="spotify_url" value={ view.SpotifyURL } placeholder="spotify:track:..."/>
+										</div>
+										<div class="song-field">
+											<label for="apple_music_url">Apple Music</label>
+											<svg class="song-icon" aria-hidden="true"><use href="/static/lucide.svg#music-3"></use></svg>
+											<input id="apple_music_url" name="apple_music_url" value={ view.AppleMusicURL } placeholder="https://music.apple.com/..."/>
+										</div>
+										<div class="song-field">
+											<label for="youtube_url">YouTube Video</label>
+											<svg class="song-icon" aria-hidden="true"><use href="/static/lucide.svg#music-3"></use></svg>
+											<input id="youtube_url" name="youtube_url" value={ view.YouTubeURL } placeholder="https://youtube.com/watch?v=..."/>
+										</div>
+									</div>
+								</section>
+							</div>
+							<div class="song-form-side">
+								<section class="song-panel song-panel--artwork" aria-labelledby="cover-art-title">
+									<header class="song-panel__header">
+										<h2 id="cover-art-title">Cover Art</h2>
+										<svg class="song-icon" aria-hidden="true"><use href="/static/lucide.svg#image"></use></svg>
+									</header>
+									<label class="artwork-picker" for="artwork">
+										<img id="artwork-preview" src={ view.ArtworkURL } alt="Artwork preview"/>
+										<span class="visually-hidden">Choose cover artwork</span>
+									</label>
+									<input class="artwork-input" id="artwork" name="artwork" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="artwork-file-name"/>
+									<div class="artwork-file">
+										<svg class="song-icon" aria-hidden="true"><use href="/static/lucide.svg#image"></use></svg>
+										<span class="artwork-file__name" id="artwork-file-name">
+											if view.ArtworkPath != "" {
+												{ view.ArtworkPath }
+											} else {
+												No artwork selected
+											}
+										</span>
+										<span class="artwork-file__meta" id="artwork-file-meta">10 MB max</span>
+									</div>
+								</section>
+								<div class="admin-actions">
+									<a class="admin-link-button admin-link-button--secondary" href="/admin/">Cancel</a>
+									<button type="submit"><svg class="song-icon" aria-hidden="true"><use href="/static/lucide.svg#save"></use></svg>{ view.SubmitLabel }</button>
+								</div>
+							</div>
+						</div>
+					</form>
+					<script>
+						const artworkInput = document.getElementById("artwork");
+						const artworkPreview = document.getElementById("artwork-preview");
+						const artworkFileName = document.getElementById("artwork-file-name");
+						const artworkFileMeta = document.getElementById("artwork-file-meta");
+						const formatArtworkSize = (bytes) => `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+						artworkInput?.addEventListener("change", () => {
+							const file = artworkInput.files?.[0];
+							if (!file) return;
+							artworkFileName.textContent = file.name;
+							artworkFileMeta.textContent = formatArtworkSize(file.size);
+							const reader = new FileReader();
+							reader.addEventListener("load", () => artworkPreview.src = reader.result);
+							reader.readAsDataURL(file);
+						});
+					</script>
+					if view.Mode == "edit" {
+						<details class="admin-danger-menu">
+							<summary>More options</summary>
+							if view.ArtworkPath != "" {
+								<form method="post" action={ view.RemoveArtworkAction } hx-post={ view.RemoveArtworkAction } hx-confirm="Remove this artwork?" hx-swap="none">
+									<button type="submit">Remove Artwork</button>
+								</form>
+							}
+							<form method="post" action={ view.DeleteAction } hx-post={ view.DeleteAction } hx-confirm="Delete this song? This cannot be undone." hx-swap="none">
+								<button class="admin-danger-button" type="submit">Delete Song</button>
+							</form>
+						</details>
+					}
+				} else {
+					<p><a class="admin-link-button" href="/admin/">Back to dashboard</a></p>
+				}
+				<footer class="song-form-footer">
+					<img class="admin-page-logo" src="/static/songdock_logo_dark.v2.png" alt="SongDock"/>
+				</footer>
+			</main>
+		</body>
+	</html>
+}
+
