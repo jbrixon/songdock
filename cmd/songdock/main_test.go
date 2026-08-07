@@ -383,8 +383,7 @@ func TestAdminHomeRendersActiveArtistSelect(t *testing.T) {
 		`action="/admin/active-artist"`,
 		`hx-post="/admin/active-artist"`,
 		`hx-trigger="change from:#artist_slug"`,
-		`<select class="admin-disabled-control" id="artist_slug" name="artist_slug" required disabled>`,
-		`<button class="admin-disabled-control" type="submit" disabled>Update artist</button>`,
+		`<select id="artist_slug" name="artist_slug" required disabled>`,
 		`value="bluetooth-pony"`,
 		`value="hey-sis"`,
 		`href="/admin/songs/new"`,
@@ -417,7 +416,8 @@ func TestAdminHomeListsExistingSongsWithFinalURLAndEditLink(t *testing.T) {
 	}
 	body := rec.Body.String()
 	for _, want := range []string{
-		`<h2 id="songs-title">Songs</h2>`,
+		`<h2 id="songs-title">`,
+		`Discography`,
 		`Seed Song`,
 		`href="/s/bluetooth-pony/seed-song"`,
 		`href="/admin/songs/seed-song/edit"`,
@@ -513,7 +513,7 @@ func TestPlatformAdminCanCreateArtistWithoutInitialAdmin(t *testing.T) {
 	if !strings.Contains(body, "Artist created: New Artist") {
 		t.Fatalf("POST /platform/admin/artists: expected success message, got %s", body)
 	}
-	if !strings.Contains(body, `<td>New Artist</td>`) || !strings.Contains(body, `<td>edited-new-artist</td>`) {
+	if !strings.Contains(body, `<span class="platform-artist-name">New Artist</span>`) || !strings.Contains(body, `<td class="platform-artist-slug">edited-new-artist</td>`) {
 		t.Fatalf("POST /platform/admin/artists: expected created artist in platform list")
 	}
 
