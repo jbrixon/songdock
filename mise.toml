@@ -12,3 +12,6 @@ run = "go test ./..."
 
 [tasks.acceptance]
 run = "go test -tags acceptance ./test/acceptance/..."
+
+[tasks.postgres-test]
+run = "go test -tags integration ./internal/store"

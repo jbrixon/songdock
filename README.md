@@ -308,7 +308,11 @@ mise run dev         # start the development server
 mise run build       # build ./songdock
 mise run test        # run unit tests
 mise run acceptance  # run acceptance tests against a live server
+mise run postgres-test # run PostgreSQL integration tests in Testcontainers
 ```
+
+The PostgreSQL integration task requires Docker. The integration test starts a
+disposable PostgreSQL 17 container and passes its connection URL to the tests.
 
 Before opening a pull request, also check formatting and static analysis:
 

@@ -53,20 +53,6 @@ jobs:
 
   postgres-integration:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:17-alpine
-        env:
-          POSTGRES_USER: songdock
-          POSTGRES_PASSWORD: songdock
-          POSTGRES_DB: songdock
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U songdock -d songdock"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 12
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-go@v6
@@ -74,6 +60,4 @@ jobs:
           go-version-file: go.mod
           cache: true
       - name: Run PostgreSQL integration tests
-        env:
-          POSTGRES_URL: postgres://songdock:songdock@127.0.0.1:5432/songdock?sslmode=disable
         run: go test -tags integration ./internal/store

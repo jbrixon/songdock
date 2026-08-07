@@ -3,12 +3,22 @@
 package store
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/testcontainers/testcontainers-go/modules/postgres"
+)
+
+const (
+	postgresTestImage    = "postgres:17-alpine"
+	postgresTestDatabase = "songdock"
+	postgresTestUser     = "songdock"
+	postgresTestPassword = "songdock"
 )
 
 func TestPostgresConnectionErrorRedactsCredentials(t *testing.T) {
@@ -20,9 +30,9 @@ func TestPostgresConnectionErrorRedactsCredentials(t *testing.T) {
 }
 
 func TestPostgresRepositoryIntegration(t *testing.T) {
-	connectionURL := os.Getenv("POSTGRES_URL")
+	connectionURL := strings.TrimSpace(os.Getenv("POSTGRES_URL"))
 	if connectionURL == "" {
-		t.Skip("POSTGRES_URL is not set")
+		t.Fatal("POSTGRES_URL is not set")
 	}
 
 	if err := MigratePostgresDatabase(connectionURL); err != nil {
@@ -127,4 +137,48 @@ func TestPostgresRepositoryIntegration(t *testing.T) {
 	if err != nil || !revoked {
 		t.Fatalf("token revocation = %t, error = %v; want revoked", revoked, err)
 	}
+}
+
+func TestMain(m *testing.M) {
+	startContext, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	container, err := postgres.Run(
+		startContext,
+		postgresTestImage,
+		postgres.WithDatabase(postgresTestDatabase),
+		postgres.WithUsername(postgresTestUser),
+		postgres.WithPassword(postgresTestPassword),
+		postgres.BasicWaitStrategies(),
+	)
+	cancel()
+	if err != nil {
+		if container != nil {
+			_ = container.Terminate(context.Background())
+		}
+		fmt.Fprintf(os.Stderr, "start postgres testcontainer: %v\n", err)
+		os.Exit(1)
+	}
+
+	connectionURL, err := container.ConnectionString(context.Background(), "sslmode=disable")
+	if err != nil {
+		_ = container.Terminate(context.Background())
+		fmt.Fprintf(os.Stderr, "get postgres testcontainer URL: %v\n", err)
+		os.Exit(1)
+	}
+	if err := os.Setenv("POSTGRES_URL", connectionURL); err != nil {
+		_ = container.Terminate(context.Background())
+		fmt.Fprintf(os.Stderr, "set postgres testcontainer URL: %v\n", err)
+		os.Exit(1)
+	}
+
+	exitCode := m.Run()
+	cleanupContext, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	cleanupErr := container.Terminate(cleanupContext)
+	cancel()
+	if cleanupErr != nil {
+		fmt.Fprintf(os.Stderr, "stop postgres testcontainer: %v\n", cleanupErr)
+		if exitCode == 0 {
+			exitCode = 1
+		}
+	}
+	os.Exit(exitCode)
 }
