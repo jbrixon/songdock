@@ -295,6 +295,177 @@ templ platformStyles() {
 			gap: 0.75rem;
 			margin-top: 1.25rem;
 		}
+		.platform-home-body {
+			display: block;
+			padding: 0;
+		}
+		.platform-home {
+			min-height: 100dvh;
+		}
+		.platform-home-sidebar {
+			position: fixed;
+			inset: 0 auto 0 0;
+			width: 18rem;
+			overflow-y: auto;
+			padding: 2rem 1rem;
+			border-right: 1px solid var(--surface-border);
+			background: rgba(23, 31, 51, 0.42);
+		}
+		.platform-home-brand {
+			display: block;
+			padding: 0 0.875rem;
+		}
+		.platform-home-brand img {
+			display: block;
+			width: 8.5rem;
+			height: auto;
+		}
+		.platform-home .platform-nav {
+			display: grid;
+			gap: 0.5rem;
+			margin-top: 2rem;
+		}
+		.platform-home .platform-nav a {
+			justify-content: flex-start;
+			gap: 0.8rem;
+			width: 100%;
+			min-height: 3rem;
+			padding: 0.75rem 1rem;
+			border-color: transparent;
+			border-radius: var(--radius-control);
+			background: transparent;
+			color: var(--muted);
+			font-size: 0.9rem;
+			font-weight: 600;
+			box-shadow: none;
+		}
+		.platform-home .platform-nav a:hover {
+			transform: none;
+			background: rgba(34, 42, 61, 0.72);
+			color: var(--text);
+			box-shadow: none;
+		}
+		.platform-home .platform-nav a[aria-current="page"] {
+			background: var(--surface-high);
+			color: var(--text);
+		}
+		.platform-home-icon {
+			width: 1.5rem;
+			height: 1.5rem;
+			flex: 0 0 auto;
+			stroke-width: 1.75;
+		}
+		.platform-home-main {
+			min-width: 0;
+			min-height: 100dvh;
+			margin-left: 18rem;
+			padding: 2.5rem 3rem 4rem;
+		}
+		.platform-home-header {
+			align-items: flex-end;
+			margin-bottom: 3rem;
+		}
+		.platform-home-header .platform-eyebrow { margin-bottom: 1rem; }
+		.platform-home-header h1 { font-size: clamp(2.5rem, 5vw, 3rem); }
+		.platform-home-header .platform-copy {
+			max-width: 44rem;
+			margin-top: 1.25rem;
+			font-size: 1.05rem;
+		}
+		.platform-home-logout-form {
+			position: fixed;
+			z-index: 3;
+			top: 2.5rem;
+			right: 3rem;
+			margin: 0;
+		}
+		.platform-home-logout {
+			display: grid;
+			width: 2.75rem;
+			height: 2.75rem;
+			min-height: 2.75rem;
+			margin: 0;
+			padding: 0;
+			place-items: center;
+			border: 1px solid transparent;
+			border-radius: 50%;
+			background: transparent;
+			color: var(--muted);
+			box-shadow: none;
+			line-height: 0;
+			cursor: pointer;
+			transition: background 160ms ease, color 160ms ease;
+		}
+		.platform-home-logout:hover {
+			transform: none;
+			background: var(--surface-high);
+			color: var(--text);
+			box-shadow: none;
+		}
+		.platform-home-logout:active {
+			transform: none;
+			background: var(--accent);
+			color: var(--accent-text);
+		}
+		.platform-home-logout-tooltip:hover::after,
+		.platform-home-logout-tooltip:focus-within::after {
+			opacity: 1;
+			transform: translate(-50%, 0);
+		}
+		.platform-home-section-title {
+			margin: 0 0 1.75rem;
+			font-family: var(--font-display);
+			font-size: 1.5rem;
+			line-height: 1.2;
+		}
+		.platform-home-actions { max-width: 38rem; }
+		.platform-home-action-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 17.75rem));
+			gap: 1.5rem;
+		}
+		.platform-home-action-card {
+			display: flex;
+			min-height: 12.5rem;
+			flex-direction: column;
+			align-items: flex-start;
+			padding: 2rem;
+			border: 1px solid var(--surface-border);
+			border-radius: var(--radius-card);
+			background: var(--surface-low);
+			color: var(--text);
+			text-decoration: none;
+			transition: transform 160ms ease, box-shadow 160ms ease;
+		}
+		.platform-home-action-card:hover {
+			transform: translateY(-1px);
+			box-shadow: 0 0 34px rgba(255, 177, 198, 0.18);
+		}
+		.platform-home-action-icon {
+			display: grid;
+			width: 3.5rem;
+			height: 3.5rem;
+			place-items: center;
+			margin-bottom: 0.5rem;
+			border-radius: var(--radius-control);
+			background: var(--surface-high);
+			color: var(--accent);
+		}
+		.platform-home-action-icon .platform-home-icon {
+			width: 1.75rem;
+			height: 1.75rem;
+		}
+		.platform-home-action-card h3 {
+			margin: 0;
+			font-family: var(--font-display);
+			font-size: 1.15rem;
+			line-height: 1.25;
+		}
+		.platform-home-action-card p {
+			margin: 0.55rem 0 0;
+			color: var(--muted);
+			line-height: 1.5;
+		}
 		.platform-panel { overflow-x: auto; }
 		.platform-table {
 			width: 100%;
@@ -343,15 +514,45 @@ templ platformStyles() {
 				grid-column: auto !important;
 				grid-row: auto !important;
 			}
+			.platform-home {
+				display: block;
+			}
+			.platform-home-sidebar {
+				position: static;
+				width: auto;
+				min-height: 0;
+				overflow: visible;
+				padding: 1.25rem;
+				border-right: 0;
+				border-bottom: 0;
+				background: transparent;
+			}
+			.platform-home-brand { padding: 0; }
+			.platform-home-brand img { width: 8rem; }
+			.platform-home .platform-nav { display: none; }
+			.platform-home-main {
+				margin-left: 0;
+				padding: 2rem 1.25rem 3rem;
+			}
+			.platform-home-header { display: block; }
+			.platform-home-header > .platform-home-logout-form { margin: 0; }
+			.platform-home-logout-form {
+				top: 1.25rem;
+				right: 1.25rem;
+			}
+			.platform-home-action-grid { grid-template-columns: 1fr; }
 		}
 		@media (prefers-reduced-motion: reduce) {
 			.platform-button,
 			.platform-link,
 			.platform-nav a,
-			.platform-tooltip::after { transition: none; }
+			.platform-tooltip::after,
+			.platform-home-logout,
+			.platform-home-logout-tooltip::after { transition: none; }
 			.platform-button:hover,
 			.platform-link:hover,
-			.platform-nav a:hover { transform: none; box-shadow: none; }
+			.platform-nav a:hover,
+			.platform-home-action-card:hover { transform: none; box-shadow: none; }
 		}
 	</style>
 }
@@ -415,24 +616,49 @@ templ HomePage(view homeView) {
 			<title>Platform Admin</title>
 			@platformStyles()
 		</head>
-		<body>
-			<main class="platform-shell">
-				<header class="platform-header">
-					<div>
-						<img class="platform-page-logo" src="/static/songdock_logo_dark.v2.png" alt="SongDock"/>
-						<p class="platform-eyebrow">Platform Admin</p>
-						<h1>Dashboard</h1>
-						<p class="platform-copy">Signed in as { view.Email }.</p>
-					</div>
-					<form method="post" action="/platform/admin/logout">
-						<button class="platform-button" type="submit">Log out</button>
-					</form>
-				</header>
-				<nav class="platform-nav" aria-label="Platform admin navigation">
-					<a href="/platform/admin/users">Manage users</a>
-					<a href="/platform/admin/artists">Manage artists</a>
-				</nav>
-			</main>
+		<body class="platform-home-body">
+			<div class="platform-home">
+				<aside class="platform-home-sidebar">
+					<a class="platform-home-brand" href="/platform/admin/" aria-label="SongDock dashboard">
+						<img src="/static/songdock_logo_dark.v2.png" alt="SongDock"/>
+					</a>
+					<nav class="platform-nav" aria-label="Platform admin navigation">
+						<a href="/platform/admin/" aria-current="page"><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#layout-dashboard"></use></svg>Dashboard</a>
+						<a href="/platform/admin/artists"><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#music"></use></svg>Artists</a>
+						<a href="/platform/admin/invitations"><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#mail"></use></svg>Invitations</a>
+						<a href="/platform/admin/users"><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#users"></use></svg>Users</a>
+					</nav>
+				</aside>
+				<main class="platform-home-main">
+					<header class="platform-header platform-home-header">
+						<div>
+							<p class="platform-eyebrow">System Overview</p>
+							<h1>Welcome, Admin</h1>
+							<p class="platform-copy">Signed in as { view.Email }. Here is the current pulse of SongDock.</p>
+						</div>
+						<form class="platform-home-logout-form" method="post" action="/platform/admin/logout">
+							<span class="platform-tooltip platform-home-logout-tooltip" data-tooltip="Log out">
+								<button class="platform-home-logout" type="submit" aria-label="Log out" title="Log out"><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#log-out"></use></svg></button>
+							</span>
+						</form>
+					</header>
+					<section class="platform-home-actions" aria-labelledby="platform-home-actions-title">
+						<h2 id="platform-home-actions-title" class="platform-home-section-title">Quick Actions</h2>
+						<div class="platform-home-action-grid">
+							<a class="platform-home-action-card" href="/platform/admin/users">
+								<span class="platform-home-action-icon"><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#users"></use></svg></span>
+								<h3>Manage Users</h3>
+								<p>Review users, send invitations, and manage access.</p>
+							</a>
+							<a class="platform-home-action-card" href="/platform/admin/artists">
+								<span class="platform-home-action-icon"><svg class="platform-home-icon" aria-hidden="true"><use href="/static/lucide.svg#music"></use></svg></span>
+								<h3>Manage Artists</h3>
+								<p>Create, manage, and delete artists.</p>
+							</a>
+						</div>
+					</section>
+				</main>
+			</div>
 		</body>
 	</html>
 }
