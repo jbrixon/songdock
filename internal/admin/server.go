@@ -71,7 +71,7 @@ func (s *Server) HandleHome(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 			return
 		}
-		songs = songListItems(artistSongs)
+		songs = s.songListItems(artistSongs)
 	}
 
 	w.Header().Set("Cache-Control", "no-store")
@@ -896,15 +896,16 @@ func findArtistBySlug(artists []store.Artist, slug string) *store.Artist {
 	return nil
 }
 
-func songListItems(songs []store.Song) []songListItem {
+func (s *Server) songListItems(songs []store.Song) []songListItem {
 	items := make([]songListItem, 0, len(songs))
 	for _, song := range songs {
 		finalURL := "/s/" + url.PathEscape(song.ArtistSlug) + "/" + url.PathEscape(song.SongSlug)
 		items = append(items, songListItem{
-			Title:    song.Title,
-			SongSlug: song.SongSlug,
-			FinalURL: finalURL,
-			EditURL:  "/admin/songs/" + url.PathEscape(song.SongSlug) + "/edit",
+			Title:      song.Title,
+			SongSlug:   song.SongSlug,
+			FinalURL:   finalURL,
+			EditURL:    "/admin/songs/" + url.PathEscape(song.SongSlug) + "/edit",
+			ArtworkURL: s.artwork.URL(song.ArtworkPath),
 		})
 	}
 	return items

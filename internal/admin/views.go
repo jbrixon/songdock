@@ -24,6 +24,7 @@ type songListItem struct {
 	SongSlug string
 	FinalURL string
 	EditURL  string
+	ArtworkURL string
 }
 
 // songFormView is the template data for the create/edit song form page.
