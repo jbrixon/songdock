@@ -20,10 +20,10 @@ type homeView struct {
 
 // songListItem is the template data for a song listed on the admin dashboard.
 type songListItem struct {
-	Title    string
-	SongSlug string
-	FinalURL string
-	EditURL  string
+	Title      string
+	SongSlug   string
+	FinalURL   string
+	EditURL    string
 	ArtworkURL string
 }
 
