@@ -689,239 +689,309 @@ func SongFormPage(view songFormView) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "</head><body><main class=\"admin-form-page\"><header class=\"admin-section-header\"><div><img class=\"admin-page-logo\" src=\"/static/songdock_logo_dark.v2.png\" alt=\"SongDock\"><h1>")
+		templ_7745c5c3_Err = songFormStyles().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var31 string
-		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(view.PageTitle)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 697, Col: 26}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "</head><body class=\"song-form-body\"><main class=\"admin-form-page song-form-page\"><header class=\"song-form-hero\"><span class=\"song-form-hero__icon\" aria-hidden=\"true\"><svg class=\"song-icon\"><use href=\"/static/lucide.svg#audio-lines\"></use></svg></span><div class=\"song-form-hero__content\"><p class=\"song-form-hero__crumbs\"><span>Dashboard</span><svg class=\"song-icon\" aria-hidden=\"true\"><use href=\"/static/lucide.svg#chevron-right\"></use></svg><strong>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "</h1></div></header>")
+		if view.Mode == "edit" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "Edit Song")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "Create Song")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "</strong></p><h1>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if view.Mode == "edit" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "Edit Release")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "New Release")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "</h1></div></header>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if view.Error != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "<p class=\"admin-alert\" role=\"alert\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "<p class=\"admin-alert\" role=\"alert\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var32 string
-			templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(view.Error)
+			var templ_7745c5c3_Var31 string
+			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(view.Error)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 701, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 717, Col: 53}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "</p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "</p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		if view.ActiveArtist != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<p class=\"admin-meta\">Artist: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "<span class=\"song-form-artist visually-hidden\">Artist: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var33 string
-			templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(view.ActiveArtist.Name)
+			var templ_7745c5c3_Var32 string
+			templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(view.ActiveArtist.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 704, Col: 59}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 720, Col: 84}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "</span><form class=\"admin-form\" method=\"post\" enctype=\"multipart/form-data\" action=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var33 templ.SafeURL
+			templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinURLErrs(view.Action)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 721, Col: 94}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "</p><form class=\"admin-form\" method=\"post\" enctype=\"multipart/form-data\" action=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "\"><div class=\"song-form-grid\"><div class=\"song-form-main\"><section class=\"song-panel song-panel--general\" aria-labelledby=\"general-info-title\"><header class=\"song-panel__header\"><div class=\"song-panel__heading\"><svg class=\"song-icon\" aria-hidden=\"true\"><use href=\"/static/lucide.svg#info\"></use></svg><h2 id=\"general-info-title\">General Info</h2></div></header><div class=\"song-fields\"><div class=\"song-field\"><label for=\"title\">Song Title</label> <input id=\"title\" name=\"title\" required value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var34 templ.SafeURL
-			templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinURLErrs(view.Action)
+			var templ_7745c5c3_Var34 string
+			templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 705, Col: 94}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 734, Col: 69}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var34)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "\"><label for=\"title\">Title</label> <input id=\"title\" name=\"title\" required value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "\" placeholder=\"Enter the official track name\"></div><div class=\"song-field\"><label for=\"description\">Description</label> <textarea id=\"description\" name=\"description\" placeholder=\"Enter a description for this release...\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var35 string
-			templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.Title)
+			templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(view.Description)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 707, Col: 64}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 738, Col: 129}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var35)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "\"> <label for=\"description\">Description</label> <textarea id=\"description\" name=\"description\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "</textarea></div></div></section><section class=\"song-panel song-panel--links\" aria-labelledby=\"external-links-title\"><header class=\"song-panel__header\"><div class=\"song-panel__heading\"><svg class=\"song-icon\" aria-hidden=\"true\"><use href=\"/static/lucide.svg#link-2\"></use></svg><h2 id=\"external-links-title\">External Links</h2></div><span class=\"song-panel__badge\">Streaming Platforms</span></header><div class=\"song-fields\"><div class=\"song-field\"><label for=\"spotify_url\">Spotify URI</label> <svg class=\"song-icon\" aria-hidden=\"true\"><use href=\"/static/lucide.svg#music-3\"></use></svg> <input id=\"spotify_url\" name=\"spotify_url\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var36 string
-			templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(view.Description)
+			templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.SpotifyURL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 709, Col: 70}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 754, Col: 77}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var36)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "</textarea> <label for=\"artwork\">Cover artwork</label><div class=\"artwork-preview\"><img id=\"artwork-preview\" src=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "\" placeholder=\"spotify:track:...\"></div><div class=\"song-field\"><label for=\"apple_music_url\">Apple Music</label> <svg class=\"song-icon\" aria-hidden=\"true\"><use href=\"/static/lucide.svg#music-3\"></use></svg> <input id=\"apple_music_url\" name=\"apple_music_url\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var37 string
-			templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.ArtworkURL)
+			templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.AppleMusicURL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 711, Col: 82}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 759, Col: 88}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var37)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "\" alt=\"Artwork preview\"></div><input id=\"artwork\" name=\"artwork\" type=\"file\" accept=\"image/jpeg,image/png,image/webp\"> <label for=\"youtube_url\">YouTube URL</label> <input id=\"youtube_url\" name=\"youtube_url\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "\" placeholder=\"https://music.apple.com/...\"></div><div class=\"song-field\"><label for=\"youtube_url\">YouTube Video</label> <svg class=\"song-icon\" aria-hidden=\"true\"><use href=\"/static/lucide.svg#music-3\"></use></svg> <input id=\"youtube_url\" name=\"youtube_url\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var38 string
 			templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.YouTubeURL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 714, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 764, Col: 77}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var38)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "\"> <label for=\"spotify_url\">Spotify URL</label> <input id=\"spotify_url\" name=\"spotify_url\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "\" placeholder=\"https://youtube.com/watch?v=...\"></div></div></section></div><div class=\"song-form-side\"><section class=\"song-panel song-panel--artwork\" aria-labelledby=\"cover-art-title\"><header class=\"song-panel__header\"><h2 id=\"cover-art-title\">Cover Art</h2><svg class=\"song-icon\" aria-hidden=\"true\"><use href=\"/static/lucide.svg#image\"></use></svg></header><label class=\"artwork-picker\" for=\"artwork\"><img id=\"artwork-preview\" src=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var39 string
-			templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.SpotifyURL)
+			templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.ArtworkURL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 716, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 776, Col: 57}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var39)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "\"> <label for=\"apple_music_url\">Apple Music URL</label> <input id=\"apple_music_url\" name=\"apple_music_url\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "\" alt=\"Artwork preview\"> <span class=\"visually-hidden\">Choose cover artwork</span></label> <input class=\"artwork-input\" id=\"artwork\" name=\"artwork\" type=\"file\" accept=\"image/jpeg,image/png,image/webp\" aria-describedby=\"artwork-file-name\"><div class=\"artwork-file\"><svg class=\"song-icon\" aria-hidden=\"true\"><use href=\"/static/lucide.svg#image\"></use></svg> <span class=\"artwork-file__name\" id=\"artwork-file-name\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var40 string
-			templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.AppleMusicURL)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 718, Col: 83}
+			if view.ArtworkPath != "" {
+				var templ_7745c5c3_Var40 string
+				templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(view.ArtworkPath)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 784, Col: 30}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "No artwork selected")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var40)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "\"><div class=\"admin-actions\"><button type=\"submit\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "</span> <span class=\"artwork-file__meta\" id=\"artwork-file-meta\">10 MB max</span></div></section><div class=\"admin-actions\"><a class=\"admin-link-button admin-link-button--secondary\" href=\"/admin/\">Cancel</a> <button type=\"submit\"><svg class=\"song-icon\" aria-hidden=\"true\"><use href=\"/static/lucide.svg#save\"></use></svg>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var41 string
 			templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(view.SubmitLabel)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 720, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 794, Col: 139}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "</button> <a class=\"admin-link-button admin-link-button--secondary\" href=\"/admin/\">Cancel</a></div></form><script>\n\t\t\t\t\t\tconst artworkInput = document.getElementById(\"artwork\");\n\t\t\t\t\t\tconst artworkPreview = document.getElementById(\"artwork-preview\");\n\t\t\t\t\t\tartworkInput?.addEventListener(\"change\", () => {\n\t\t\t\t\t\t\tconst file = artworkInput.files?.[0];\n\t\t\t\t\t\t\tif (!file) return;\n\t\t\t\t\t\t\tconst reader = new FileReader();\n\t\t\t\t\t\t\treader.addEventListener(\"load\", () => artworkPreview.src = reader.result);\n\t\t\t\t\t\t\treader.readAsDataURL(file);\n\t\t\t\t\t\t});\n\t\t\t\t\t</script> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "</button></div></div></div></form><script>\n\t\t\t\t\t\tconst artworkInput = document.getElementById(\"artwork\");\n\t\t\t\t\t\tconst artworkPreview = document.getElementById(\"artwork-preview\");\n\t\t\t\t\t\tconst artworkFileName = document.getElementById(\"artwork-file-name\");\n\t\t\t\t\t\tconst artworkFileMeta = document.getElementById(\"artwork-file-meta\");\n\t\t\t\t\t\tconst formatArtworkSize = (bytes) => `${(bytes / (1024 * 1024)).toFixed(1)} MB`;\n\t\t\t\t\t\tartworkInput?.addEventListener(\"change\", () => {\n\t\t\t\t\t\t\tconst file = artworkInput.files?.[0];\n\t\t\t\t\t\t\tif (!file) return;\n\t\t\t\t\t\t\tartworkFileName.textContent = file.name;\n\t\t\t\t\t\t\tartworkFileMeta.textContent = formatArtworkSize(file.size);\n\t\t\t\t\t\t\tconst reader = new FileReader();\n\t\t\t\t\t\t\treader.addEventListener(\"load\", () => artworkPreview.src = reader.result);\n\t\t\t\t\t\t\treader.readAsDataURL(file);\n\t\t\t\t\t\t});\n\t\t\t\t\t</script> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if view.Mode == "edit" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<details class=\"admin-danger-menu\"><summary>More options</summary> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, "<details class=\"admin-danger-menu\"><summary>More options</summary> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if view.ArtworkPath != "" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "<form method=\"post\" action=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 75, "<form method=\"post\" action=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var42 templ.SafeURL
 					templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.JoinURLErrs(view.RemoveArtworkAction)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 739, Col: 61}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 819, Col: 61}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var42))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "\" hx-post=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "\" hx-post=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var43 string
 					templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.RemoveArtworkAction)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 739, Col: 98}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 819, Col: 98}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var43)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "\" hx-confirm=\"Remove this artwork?\" hx-swap=\"none\"><button type=\"submit\">Remove Artwork</button></form>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "\" hx-confirm=\"Remove this artwork?\" hx-swap=\"none\"><button type=\"submit\">Remove Artwork</button></form>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "<form method=\"post\" action=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "<form method=\"post\" action=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var44 templ.SafeURL
 				templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinURLErrs(view.DeleteAction)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 743, Col: 53}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 823, Col: 53}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "\" hx-post=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 79, "\" hx-post=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var45 string
 				templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.ResolveAttributeValue(view.DeleteAction)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 743, Col: 83}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/admin/views.templ`, Line: 823, Col: 83}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var45)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "\" hx-confirm=\"Delete this song? This cannot be undone.\" hx-swap=\"none\"><button class=\"admin-danger-button\" type=\"submit\">Delete Song</button></form></details>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 80, "\" hx-confirm=\"Delete this song? This cannot be undone.\" hx-swap=\"none\"><button class=\"admin-danger-button\" type=\"submit\">Delete Song</button></form></details>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, "<p><a class=\"admin-link-button\" href=\"/admin/\">Back to dashboard</a></p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 81, "<p><a class=\"admin-link-button\" href=\"/admin/\">Back to dashboard</a></p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 75, "</main></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 82, "<footer class=\"song-form-footer\"><img class=\"admin-page-logo\" src=\"/static/songdock_logo_dark.v2.png\" alt=\"SongDock\"></footer></main></body></html>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func songFormStyles() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var46 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var46 == nil {
+			templ_7745c5c3_Var46 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 83, "<style>\n\t\t.song-form-body { padding: 2.5rem 1rem 4rem; }\n\t\t.song-form-page { width: min(100%, 58rem) !important; max-width: none; padding: 0; border: 0; background: transparent; box-shadow: none; backdrop-filter: none; }\n\t\t.song-form-hero { display: flex; align-items: center; gap: 1rem; min-height: 7rem; margin-bottom: 2.5rem; padding: 1.5rem; border-radius: var(--radius-card); background: var(--surface); box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28); }\n\t\t.song-form-hero__icon { display: grid; place-items: center; width: 3rem; height: 3rem; flex: 0 0 3rem; border-radius: 50%; background: var(--accent); color: var(--surface-low); }\n\t\t.song-form-hero__icon .song-icon { width: 1.35rem; height: 1.35rem; color: inherit; }\n\t\t.song-form-hero__content { min-width: 0; }\n\t\t.song-form-hero__crumbs { display: flex; align-items: center; gap: 0.6rem; margin: 0 0 0.45rem; color: var(--muted); font-family: var(--font-label); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }\n\t\t.song-form-hero__crumbs .song-icon { width: 0.8rem; height: 0.8rem; color: var(--muted); }\n\t\t.song-form-hero__crumbs strong { color: var(--text); }\n\t\t.song-form-hero h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 2rem); letter-spacing: -0.035em; }\n\t\t.song-form-artist { display: none; }\n\t\t.song-form-footer { display: flex; justify-content: center; margin-top: 2.5rem; }\n\t\t.song-form-footer .admin-page-logo { width: 6rem; margin: 0; }\n\t\t.song-form-page .admin-form { display: block; }\n\t\t.song-form-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(18rem, 1fr); gap: 1rem; align-items: start; }\n\t\t.song-form-main, .song-form-side { display: grid; gap: 1rem; min-width: 0; }\n\t\t.song-panel { position: relative; margin-top: 0; padding: 2.5rem 3rem; border-radius: var(--radius-card); background: var(--surface); box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28); overflow: hidden; }\n\t\t.song-panel--general::after { content: \"\"; position: absolute; top: -9rem; right: -7rem; width: 16rem; height: 16rem; border-radius: 50%; background: var(--surface-high); opacity: 0.42; pointer-events: none; }\n\t\t.song-panel__header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; position: relative; z-index: 1; margin-bottom: 2rem; }\n\t\t.song-panel__heading { display: flex; align-items: center; gap: 0.8rem; min-width: 0; }\n\t\t.song-panel h2 { margin: 0; font-size: 1.5rem; letter-spacing: -0.025em; }\n\t\t.song-icon { display: block; width: 1.25rem; height: 1.25rem; flex: 0 0 auto; color: var(--accent); }\n\t\t.song-panel__header > .song-icon { color: var(--muted); }\n\t\t.song-panel--links .song-panel__header { padding-bottom: 1rem; border-bottom: 1px solid var(--surface-border); }\n\t\t.song-panel__badge { display: inline-flex; align-items: center; padding: 0.35rem 0.75rem; border: 1px solid var(--surface-border); border-radius: var(--radius-pill); background: var(--surface-low); color: var(--muted); font-size: 0.72rem; white-space: nowrap; }\n\t\t.song-fields { display: grid; gap: 1.75rem; position: relative; z-index: 1; }\n\t\t.song-field { position: relative; }\n\t\t.song-field label { position: absolute; top: -0.5rem; left: 1rem; z-index: 1; margin: 0; padding: 0 0.25rem; background: var(--surface); font-size: 0.68rem; line-height: 1; }\n\t\t.song-field input, .song-field textarea { position: relative; z-index: 0; min-height: 3.75rem; padding: 1.25rem 1rem 0.7rem; border: 0; border-radius: var(--radius-control); background: #060e20; }\n\t\t.song-field textarea { min-height: 7.5rem; resize: vertical; }\n\t\t.song-panel--general .song-field label { position: static; margin: 0 0 6px; padding: 0; background: transparent; line-height: 1rem; }\n\t\t.song-panel--general .song-field input, .song-panel--general .song-field textarea { padding: 0.75rem 1rem; }\n\t\t.song-panel--links .song-fields { gap: 1.5rem; }\n\t\t.song-panel--links .song-field label { position: static; margin: 0 0 6px; padding: 0; background: transparent; line-height: 1rem; }\n\t\t.song-panel--links .song-field input { padding: 0.75rem 1rem 0.75rem 3rem; font-family: var(--font-label); font-size: 0.9rem; }\n\t\t.song-panel--links .song-field > .song-icon { top: calc(1rem + 6px + 1.875rem); }\n\t\t.song-field > .song-icon { position: absolute; top: 50%; left: 1rem; z-index: 1; width: 1.15rem; height: 1.15rem; transform: translateY(-50%); color: var(--muted); }\n\t\t.song-panel--artwork { padding: 1.5rem; }\n\t\t.song-panel--artwork .song-panel__header { margin-bottom: 1.25rem; }\n\t\t.artwork-picker { display: block; position: relative; aspect-ratio: 1 / 1; border: 1px dashed var(--surface-border); border-radius: var(--radius-control); background: var(--surface-low); cursor: pointer; overflow: hidden; }\n\t\t.artwork-picker:hover { border-color: var(--accent); }\n\t\t.artwork-picker img { display: block; width: 100%; height: 100%; padding: 0.75rem; object-fit: contain; }\n\t\t.artwork-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }\n\t\t.artwork-file { display: flex; align-items: center; gap: 0.65rem; min-width: 0; margin-top: 1.25rem; padding: 0.75rem 0.8rem; border-radius: var(--radius-control); background: #060e20; }\n\t\t.artwork-file .song-icon { width: 1rem; height: 1rem; color: var(--text); }\n\t\t.artwork-file__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-label); font-size: 0.72rem; }\n\t\t.artwork-file__meta { margin-left: auto; padding: 0.3rem 0.45rem; border-radius: 0.25rem; background: var(--surface-high); color: var(--text); font-family: var(--font-label); font-size: 0.62rem; white-space: nowrap; }\n\t\t.song-form-page .admin-actions { display: grid; grid-template-columns: minmax(7rem, 0.85fr) minmax(0, 1.45fr); gap: 1rem; margin-top: 1rem; }\n\t\t.song-form-page .admin-actions button, .song-form-page .admin-actions .admin-link-button { display: inline-flex; align-items: center; justify-content: center; gap: 0.55rem; min-height: 3rem; margin: 0; padding: 0.8rem 1rem; }\n\t\t.song-form-page .admin-actions button { width: 100%; }\n\t\t.song-form-page .admin-actions .song-icon { width: 1rem; height: 1rem; color: currentColor; }\n\t\t.song-form-page .admin-actions .admin-link-button--secondary { background: transparent; transition: transform 160ms ease, box-shadow 160ms ease; }\n\t\t.song-form-page .admin-actions .admin-link-button--secondary:hover { transform: translateY(-1px); box-shadow: 0 0 24px rgba(255, 177, 198, 0.18); }\n\t\t.song-form-page .admin-actions .admin-link-button--secondary:active { transform: translateY(0); }\n\t\t.song-form-page .admin-danger-menu { margin-top: 2.5rem; }\n\t\t.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }\n\t\t@media (max-width: 760px) { .song-form-grid { grid-template-columns: 1fr; } .song-form-side { order: -1; } }\n\t\t@media (max-width: 640px) { .song-form-body { display: block; padding: 1rem; } .song-form-page { width: 100% !important; padding: 0; border-radius: 0; } .song-form-hero { min-height: 6.5rem; margin-bottom: 1rem; padding: 1.25rem; } .song-panel { padding: 2rem 1.25rem; } .song-panel--artwork { padding: 1.25rem; } .song-form-page .admin-actions { grid-template-columns: 1fr 1.4fr; } }\n\t\t@media (prefers-reduced-motion: reduce) { .artwork-picker:hover { border-color: var(--surface-border); } .song-form-page .admin-actions .admin-link-button--secondary { transition: none; } .song-form-page .admin-actions .admin-link-button--secondary:hover { transform: none; } }\n\t</style>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

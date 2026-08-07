@@ -688,45 +688,125 @@ templ SongFormPage(view songFormView) {
 			<title>{ view.PageTitle }</title>
 			@htmxScript()
 			@adminBaseStyles()
+			@songFormStyles()
 		</head>
-		<body>
-			<main class="admin-form-page">
-				<header class="admin-section-header">
-					<div>
-						<img class="admin-page-logo" src="/static/songdock_logo_dark.v2.png" alt="SongDock"/>
-						<h1>{ view.PageTitle }</h1>
+		<body class="song-form-body">
+			<main class="admin-form-page song-form-page">
+					<header class="song-form-hero">
+						<span class="song-form-hero__icon" aria-hidden="true">
+							<svg class="song-icon"><use href="/static/lucide.svg#audio-lines"></use></svg>
+						</span>
+						<div class="song-form-hero__content">
+						<p class="song-form-hero__crumbs"><span>Dashboard</span><svg class="song-icon" aria-hidden="true"><use href="/static/lucide.svg#chevron-right"></use></svg><strong>
+							if view.Mode == "edit" {
+								Edit Song
+							} else {
+								Create Song
+							}
+						</strong></p>
+						<h1>
+							if view.Mode == "edit" {
+								Edit Release
+							} else {
+								New Release
+							}
+						</h1>
 					</div>
 				</header>
 				if view.Error != "" {
 					<p class="admin-alert" role="alert">{ view.Error }</p>
 				}
 				if view.ActiveArtist != nil {
-					<p class="admin-meta">Artist: { view.ActiveArtist.Name }</p>
+					<span class="song-form-artist visually-hidden">Artist: { view.ActiveArtist.Name }</span>
 					<form class="admin-form" method="post" enctype="multipart/form-data" action={ view.Action }>
-						<label for="title">Title</label>
-						<input id="title" name="title" required value={ view.Title }/>
-						<label for="description">Description</label>
-						<textarea id="description" name="description">{ view.Description }</textarea>
-						<label for="artwork">Cover artwork</label>
-						<div class="artwork-preview"><img id="artwork-preview" src={ view.ArtworkURL } alt="Artwork preview"/></div>
-						<input id="artwork" name="artwork" type="file" accept="image/jpeg,image/png,image/webp"/>
-						<label for="youtube_url">YouTube URL</label>
-						<input id="youtube_url" name="youtube_url" value={ view.YouTubeURL }/>
-						<label for="spotify_url">Spotify URL</label>
-						<input id="spotify_url" name="spotify_url" value={ view.SpotifyURL }/>
-						<label for="apple_music_url">Apple Music URL</label>
-						<input id="apple_music_url" name="apple_music_url" value={ view.AppleMusicURL }/>
-						<div class="admin-actions">
-							<button type="submit">{ view.SubmitLabel }</button>
-							<a class="admin-link-button admin-link-button--secondary" href="/admin/">Cancel</a>
+						<div class="song-form-grid">
+							<div class="song-form-main">
+								<section class="song-panel song-panel--general" aria-labelledby="general-info-title">
+									<header class="song-panel__header">
+										<div class="song-panel__heading">
+											<svg class="song-icon" aria-hidden="true"><use href="/static/lucide.svg#info"></use></svg>
+											<h2 id="general-info-title">General Info</h2>
+										</div>
+									</header>
+									<div class="song-fields">
+										<div class="song-field">
+											<label for="title">Song Title</label>
+											<input id="title" name="title" required value={ view.Title } placeholder="Enter the official track name"/>
+										</div>
+										<div class="song-field">
+											<label for="description">Description</label>
+											<textarea id="description" name="description" placeholder="Enter a description for this release...">{ view.Description }</textarea>
+										</div>
+									</div>
+								</section>
+								<section class="song-panel song-panel--links" aria-labelledby="external-links-title">
+									<header class="song-panel__header">
+										<div class="song-panel__heading">
+											<svg class="song-icon" aria-hidden="true"><use href="/static/lucide.svg#link-2"></use></svg>
+											<h2 id="external-links-title">External Links</h2>
+										</div>
+										<span class="song-panel__badge">Streaming Platforms</span>
+									</header>
+									<div class="song-fields">
+										<div class="song-field">
+											<label for="spotify_url">Spotify URI</label>
+											<svg class="song-icon" aria-hidden="true"><use href="/static/lucide.svg#music-3"></use></svg>
+											<input id="spotify_url" name="spotify_url" value={ view.SpotifyURL } placeholder="spotify:track:..."/>
+										</div>
+										<div class="song-field">
+											<label for="apple_music_url">Apple Music</label>
+											<svg class="song-icon" aria-hidden="true"><use href="/static/lucide.svg#music-3"></use></svg>
+											<input id="apple_music_url" name="apple_music_url" value={ view.AppleMusicURL } placeholder="https://music.apple.com/..."/>
+										</div>
+										<div class="song-field">
+											<label for="youtube_url">YouTube Video</label>
+											<svg class="song-icon" aria-hidden="true"><use href="/static/lucide.svg#music-3"></use></svg>
+											<input id="youtube_url" name="youtube_url" value={ view.YouTubeURL } placeholder="https://youtube.com/watch?v=..."/>
+										</div>
+									</div>
+								</section>
+							</div>
+							<div class="song-form-side">
+								<section class="song-panel song-panel--artwork" aria-labelledby="cover-art-title">
+									<header class="song-panel__header">
+										<h2 id="cover-art-title">Cover Art</h2>
+										<svg class="song-icon" aria-hidden="true"><use href="/static/lucide.svg#image"></use></svg>
+									</header>
+									<label class="artwork-picker" for="artwork">
+										<img id="artwork-preview" src={ view.ArtworkURL } alt="Artwork preview"/>
+										<span class="visually-hidden">Choose cover artwork</span>
+									</label>
+									<input class="artwork-input" id="artwork" name="artwork" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="artwork-file-name"/>
+									<div class="artwork-file">
+										<svg class="song-icon" aria-hidden="true"><use href="/static/lucide.svg#image"></use></svg>
+										<span class="artwork-file__name" id="artwork-file-name">
+											if view.ArtworkPath != "" {
+												{ view.ArtworkPath }
+											} else {
+												No artwork selected
+											}
+										</span>
+										<span class="artwork-file__meta" id="artwork-file-meta">10 MB max</span>
+									</div>
+								</section>
+								<div class="admin-actions">
+									<a class="admin-link-button admin-link-button--secondary" href="/admin/">Cancel</a>
+									<button type="submit"><svg class="song-icon" aria-hidden="true"><use href="/static/lucide.svg#save"></use></svg>{ view.SubmitLabel }</button>
+								</div>
+							</div>
 						</div>
 					</form>
 					<script>
 						const artworkInput = document.getElementById("artwork");
 						const artworkPreview = document.getElementById("artwork-preview");
+						const artworkFileName = document.getElementById("artwork-file-name");
+						const artworkFileMeta = document.getElementById("artwork-file-meta");
+						const formatArtworkSize = (bytes) => `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 						artworkInput?.addEventListener("change", () => {
 							const file = artworkInput.files?.[0];
 							if (!file) return;
+							artworkFileName.textContent = file.name;
+							artworkFileMeta.textContent = formatArtworkSize(file.size);
 							const reader = new FileReader();
 							reader.addEventListener("load", () => artworkPreview.src = reader.result);
 							reader.readAsDataURL(file);
@@ -748,7 +828,74 @@ templ SongFormPage(view songFormView) {
 				} else {
 					<p><a class="admin-link-button" href="/admin/">Back to dashboard</a></p>
 				}
+				<footer class="song-form-footer">
+					<img class="admin-page-logo" src="/static/songdock_logo_dark.v2.png" alt="SongDock"/>
+				</footer>
 			</main>
 		</body>
 	</html>
+}
+
+templ songFormStyles() {
+	<style>
+		.song-form-body { padding: 2.5rem 1rem 4rem; }
+		.song-form-page { width: min(100%, 58rem) !important; max-width: none; padding: 0; border: 0; background: transparent; box-shadow: none; backdrop-filter: none; }
+		.song-form-hero { display: flex; align-items: center; gap: 1rem; min-height: 7rem; margin-bottom: 2.5rem; padding: 1.5rem; border-radius: var(--radius-card); background: var(--surface); box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28); }
+		.song-form-hero__icon { display: grid; place-items: center; width: 3rem; height: 3rem; flex: 0 0 3rem; border-radius: 50%; background: var(--accent); color: var(--surface-low); }
+		.song-form-hero__icon .song-icon { width: 1.35rem; height: 1.35rem; color: inherit; }
+		.song-form-hero__content { min-width: 0; }
+		.song-form-hero__crumbs { display: flex; align-items: center; gap: 0.6rem; margin: 0 0 0.45rem; color: var(--muted); font-family: var(--font-label); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+		.song-form-hero__crumbs .song-icon { width: 0.8rem; height: 0.8rem; color: var(--muted); }
+		.song-form-hero__crumbs strong { color: var(--text); }
+		.song-form-hero h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 2rem); letter-spacing: -0.035em; }
+		.song-form-artist { display: none; }
+		.song-form-footer { display: flex; justify-content: center; margin-top: 2.5rem; }
+		.song-form-footer .admin-page-logo { width: 6rem; margin: 0; }
+		.song-form-page .admin-form { display: block; }
+		.song-form-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(18rem, 1fr); gap: 1rem; align-items: start; }
+		.song-form-main, .song-form-side { display: grid; gap: 1rem; min-width: 0; }
+		.song-panel { position: relative; margin-top: 0; padding: 2.5rem 3rem; border-radius: var(--radius-card); background: var(--surface); box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28); overflow: hidden; }
+		.song-panel--general::after { content: ""; position: absolute; top: -9rem; right: -7rem; width: 16rem; height: 16rem; border-radius: 50%; background: var(--surface-high); opacity: 0.42; pointer-events: none; }
+		.song-panel__header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; position: relative; z-index: 1; margin-bottom: 2rem; }
+		.song-panel__heading { display: flex; align-items: center; gap: 0.8rem; min-width: 0; }
+		.song-panel h2 { margin: 0; font-size: 1.5rem; letter-spacing: -0.025em; }
+		.song-icon { display: block; width: 1.25rem; height: 1.25rem; flex: 0 0 auto; color: var(--accent); }
+		.song-panel__header > .song-icon { color: var(--muted); }
+		.song-panel--links .song-panel__header { padding-bottom: 1rem; border-bottom: 1px solid var(--surface-border); }
+		.song-panel__badge { display: inline-flex; align-items: center; padding: 0.35rem 0.75rem; border: 1px solid var(--surface-border); border-radius: var(--radius-pill); background: var(--surface-low); color: var(--muted); font-size: 0.72rem; white-space: nowrap; }
+		.song-fields { display: grid; gap: 1.75rem; position: relative; z-index: 1; }
+		.song-field { position: relative; }
+		.song-field label { position: absolute; top: -0.5rem; left: 1rem; z-index: 1; margin: 0; padding: 0 0.25rem; background: var(--surface); font-size: 0.68rem; line-height: 1; }
+		.song-field input, .song-field textarea { position: relative; z-index: 0; min-height: 3.75rem; padding: 1.25rem 1rem 0.7rem; border: 0; border-radius: var(--radius-control); background: #060e20; }
+		.song-field textarea { min-height: 7.5rem; resize: vertical; }
+		.song-panel--general .song-field label { position: static; margin: 0 0 6px; padding: 0; background: transparent; line-height: 1rem; }
+		.song-panel--general .song-field input, .song-panel--general .song-field textarea { padding: 0.75rem 1rem; }
+		.song-panel--links .song-fields { gap: 1.5rem; }
+		.song-panel--links .song-field label { position: static; margin: 0 0 6px; padding: 0; background: transparent; line-height: 1rem; }
+		.song-panel--links .song-field input { padding: 0.75rem 1rem 0.75rem 3rem; font-family: var(--font-label); font-size: 0.9rem; }
+		.song-panel--links .song-field > .song-icon { top: calc(1rem + 6px + 1.875rem); }
+		.song-field > .song-icon { position: absolute; top: 50%; left: 1rem; z-index: 1; width: 1.15rem; height: 1.15rem; transform: translateY(-50%); color: var(--muted); }
+		.song-panel--artwork { padding: 1.5rem; }
+		.song-panel--artwork .song-panel__header { margin-bottom: 1.25rem; }
+		.artwork-picker { display: block; position: relative; aspect-ratio: 1 / 1; border: 1px dashed var(--surface-border); border-radius: var(--radius-control); background: var(--surface-low); cursor: pointer; overflow: hidden; }
+		.artwork-picker:hover { border-color: var(--accent); }
+		.artwork-picker img { display: block; width: 100%; height: 100%; padding: 0.75rem; object-fit: contain; }
+		.artwork-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+		.artwork-file { display: flex; align-items: center; gap: 0.65rem; min-width: 0; margin-top: 1.25rem; padding: 0.75rem 0.8rem; border-radius: var(--radius-control); background: #060e20; }
+		.artwork-file .song-icon { width: 1rem; height: 1rem; color: var(--text); }
+		.artwork-file__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-label); font-size: 0.72rem; }
+		.artwork-file__meta { margin-left: auto; padding: 0.3rem 0.45rem; border-radius: 0.25rem; background: var(--surface-high); color: var(--text); font-family: var(--font-label); font-size: 0.62rem; white-space: nowrap; }
+		.song-form-page .admin-actions { display: grid; grid-template-columns: minmax(7rem, 0.85fr) minmax(0, 1.45fr); gap: 1rem; margin-top: 1rem; }
+		.song-form-page .admin-actions button, .song-form-page .admin-actions .admin-link-button { display: inline-flex; align-items: center; justify-content: center; gap: 0.55rem; min-height: 3rem; margin: 0; padding: 0.8rem 1rem; }
+		.song-form-page .admin-actions button { width: 100%; }
+		.song-form-page .admin-actions .song-icon { width: 1rem; height: 1rem; color: currentColor; }
+		.song-form-page .admin-actions .admin-link-button--secondary { background: transparent; transition: transform 160ms ease, box-shadow 160ms ease; }
+		.song-form-page .admin-actions .admin-link-button--secondary:hover { transform: translateY(-1px); box-shadow: 0 0 24px rgba(255, 177, 198, 0.18); }
+		.song-form-page .admin-actions .admin-link-button--secondary:active { transform: translateY(0); }
+		.song-form-page .admin-danger-menu { margin-top: 2.5rem; }
+		.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+		@media (max-width: 760px) { .song-form-grid { grid-template-columns: 1fr; } .song-form-side { order: -1; } }
+		@media (max-width: 640px) { .song-form-body { display: block; padding: 1rem; } .song-form-page { width: 100% !important; padding: 0; border-radius: 0; } .song-form-hero { min-height: 6.5rem; margin-bottom: 1rem; padding: 1.25rem; } .song-panel { padding: 2rem 1.25rem; } .song-panel--artwork { padding: 1.25rem; } .song-form-page .admin-actions { grid-template-columns: 1fr 1.4fr; } }
+		@media (prefers-reduced-motion: reduce) { .artwork-picker:hover { border-color: var(--surface-border); } .song-form-page .admin-actions .admin-link-button--secondary { transition: none; } .song-form-page .admin-actions .admin-link-button--secondary:hover { transform: none; } }
+	</style>
 }
