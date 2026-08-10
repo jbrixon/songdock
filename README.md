@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/screenshot_landing-page.png" alt="SongDock landing page screenshot">
+  <a href="https://songdock.bluetoothpony.com/s/bluetooth-pony/frankfurt"><img src="assets/screenshot_landing-page.png" alt="SongDock landing page screenshot"></a>
 </p>
 
 # SongDock
