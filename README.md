@@ -9,11 +9,21 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
 </p>
 
+<p align="center">
+  <img src="assets/screenshot_landing-page.png" alt="SongDock landing page screenshot">
+</p>
+
 # SongDock
 
 Create clean, shareable pages for your releases with links to Spotify,
 Apple Music, YouTube, and more — without handing your audience to an
 advertising platform.
+
+## Who is this for?
+  - independent artists,
+  - small labels,
+  - artist collectives,
+  - self-hosters managing release pages for multiple artists.
 
 ## Why SongDock?
 
@@ -213,7 +223,7 @@ Keep `ADMIN_BACKEND_SECRET` stable after creating users. Changing it invalidates
 
 ## Docker deployment with Caddy
 
-The release workflow publishes images such as `ghcr.io/jbrixon/songdock:v1.2.3` and `ghcr.io/jbrixon/songdock:latest`. The container listens on port `8080` and uses SQLite at `DB_PATH` unless `POSTGRES_URL` is configured.
+The release workflow publishes images such as `ghcr.io/jbrixon/songdock:v0.3.0` and `ghcr.io/jbrixon/songdock:latest`. The container listens on port `8080` and uses SQLite at `DB_PATH` unless `POSTGRES_URL` is configured.
 
 Create a deployment directory containing `.env`, `compose.yaml`, and `Caddyfile`:
 
@@ -297,7 +307,7 @@ docker compose up -d
 
 Caddy provisions HTTPS automatically when the domain resolves to the server and ports 80/443 are reachable. The `songdock_data` volume is the important part for application data: it persists `songs.db` across container upgrades and restarts. Back it up regularly, and keep the environment secrets backed up separately.
 
-For a pinned deployment, replace `latest` with a release tag such as `v1.2.3`.
+For a pinned deployment, replace `latest` with a release tag such as `v0.3.0`.
 
 ## Development
 
